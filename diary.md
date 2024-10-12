@@ -8,3 +8,7 @@ Next step will be to continue research especially a book I came across explainin
 Read more research papers and the book which taught me new knowledge about AI and MCTs therefore I can improve the abstract section of the project plan.  
 Furthermore, finalising the timeline of the project and next I will be continuing research while determining about the possible risks and mitigations.
 
+**12/10/2024**
+Finalised and submitted the Project Plan yesterday, I have been continuing research on MCTs and gained a lot of knowledge therefore next week I will start  
+extending my research on Bandit Problems to understand the trade-off between exploration and exploitation and the UCB score. 
+
