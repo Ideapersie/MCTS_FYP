@@ -12,3 +12,6 @@ Furthermore, finalising the timeline of the project and next I will be continuin
 Finalised and submitted the Project Plan yesterday, I have been continuing research on MCTs and gained a lot of knowledge therefore next week I will start  
 extending my research on Bandit Problems to understand the trade-off between exploration and exploitation and the UCB score. 
 
+**15/10/2024**   
+Doing research on the Multi-Armed Bandit problem and understanding the UCB algorithm, asked my supervisor about the Bandit problem early deliverables.  
+Next I will be implementing the Bandit problem into Python trying out different selection algorithms and comparing it to the UCB algorithm. 
