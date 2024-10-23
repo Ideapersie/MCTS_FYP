@@ -1,17 +1,17 @@
 from menus.bandit_environment import MultiArmedBanditEnv
-from menus.bandit_random import Random_select
+from menus.bandit_random import RandomSelect
 
-class Simulate_random:
+class SimulateRandom:
     def __init__(self):
 
-        probabilites = [0.2,0.5,0.8]
-        num_arms = len(probabilites)
+        probabilities = [0.2,0.5,0.8]
+        num_arms = len(probabilities)
 
         # initialise env bandit
-        bandit = MultiArmedBanditEnv(probabilites)
+        bandit = MultiArmedBanditEnv(probabilities)
 
         # initialise random selection 
-        random_selection = Random_select(num_arms)
+        random_selection = RandomSelect(num_arms)
 
         iterations = 1000
 
