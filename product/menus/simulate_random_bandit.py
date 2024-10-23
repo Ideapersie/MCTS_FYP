@@ -16,15 +16,13 @@ class Simulate_random:
         iterations = 1000
 
 
-        #Loop 
-
+        #Loop through num of iterations 
         for i in range(iterations):
             arm = random_selection.select_arm()
             reward = bandit.pull(arm)
 
             random_selection.update(arm,reward)
-            random_selection.average(arm)
 
         print(f"\nfinal total rewards per arm: {random_selection.total_rewards}")
-        print(f"final estimated values of each arm: {random_selection.mean}") 
+        print(f"final estimated value of each arm: {random_selection.mean}") 
         print(f"total number of times each arm pulled: {random_selection.count}")
