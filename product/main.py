@@ -1,5 +1,5 @@
 from menus.main_menu import display_main_menu
-from menus.bandit_problem import display_bandit
+from menus.bandit.bandit_problem import display_bandit
 from menus.go_game import display_go
 
 def main():

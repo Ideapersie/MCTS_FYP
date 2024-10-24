@@ -1,6 +1,6 @@
-from menus.simulate_random import SimulateRandom
-from menus.simulate_egreedy import SimulateEGreedy
-from menus.simulate_decayepsilon import SimulateDecayEpsilon
+from bandit.simulate_random import SimulateRandom
+from bandit.simulate_egreedy import SimulateEGreedy
+from bandit.simulate_decayepsilon import SimulateDecayEpsilon
 
 def display_bandit():
     while True:
