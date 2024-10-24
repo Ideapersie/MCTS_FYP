@@ -1,4 +1,9 @@
-# FYP Diary
+# FYP Diary  
+
+**24/10/2024**
+Added 3 different algorithms for the Bandit problem, Random selection, epsilon-greedy and decay epsilon-greedy algorithm. Displaying total numbers of pull and mean rewards per arm,
+allowing to track the efficiency of each algorithm (will be illustrated in a latter stage). Next I will be experimenting with the UCB algorithm and analysing which algorithm is more
+efficient.  
 
 **22/10/2024**
 Made a simple CLI for the main menu with options leading to a page where the bandit problems will be experimented and analysed, and another page for the Command-Line GO game.Will continue researching the algorithm and constantly keep testing it in the respective files, starting with a simple bandit problem with naive strategies.  
@@ -7,7 +12,7 @@ Made a simple CLI for the main menu with options leading to a page where the ban
 Understanding the formulas of each algorithms and will be comparing between naive and non-naive strategies, will plan to implement a GUI to show these results later on as per my supervisor recommendations.
 Once I fully grasp these formulas and how they work, I will implement each one into Python therefore showing statistical results between each algorithm and compare it to UCB.   
   
-**15/10/2024**   
+**15/10/2024**
 Doing research on the Multi-Armed Bandit problem and understanding the UCB algorithm, asked my supervisor about the Bandit problem early deliverables.  
 Next I will be implementing the Bandit problem into Python trying out different selection algorithms and comparing it to the UCB algorithm.  
 
