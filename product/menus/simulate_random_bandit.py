@@ -16,13 +16,16 @@ class SimulateRandom:
         iterations = 1000
 
 
-        #Loop through num of iterations 
+        # loop through num of iterations 
         for i in range(iterations):
             arm = random_selection.select_arm()
             reward = bandit.pull(arm)
 
             random_selection.update(arm,reward)
 
-        print(f"\nfinal total rewards per arm: {random_selection.total_rewards}")
+        # differentiate between total rewards and total per arm
+        print(f"\nfinal total rewards: {random_selection.total_rewards}")
+        print(f"final total rewards per arm: {random_selection.total_per_arm}\n")
+
         print(f"final estimated value of each arm: {random_selection.mean}") 
         print(f"total number of times each arm pulled: {random_selection.count}")
