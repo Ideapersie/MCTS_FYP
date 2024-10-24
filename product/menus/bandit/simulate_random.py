@@ -1,5 +1,5 @@
-from menus.bandit_environment import MultiArmedBanditEnv
-from menus.bandit_random import RandomSelect
+from bandit.bandit_environment import MultiArmedBanditEnv
+from bandit.bandit_random import RandomSelect
 
 class SimulateRandom:
     def __init__(self):

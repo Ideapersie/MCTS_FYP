@@ -1,5 +1,5 @@
-from menus.bandit_decayepsilon import DecayEpsilonGreedy
-from menus.bandit_environment import MultiArmedBanditEnv
+from bandit.bandit_decayepsilon import DecayEpsilonGreedy
+from bandit.bandit_environment import MultiArmedBanditEnv
 import numpy as np
 
 class SimulateDecayEpsilon:
