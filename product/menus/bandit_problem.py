@@ -1,12 +1,13 @@
-from menus.simulate_random_bandit import SimulateRandom
-from menus.simulate_egreedy_bandit import SimulateEGreedy
+from menus.simulate_random import SimulateRandom
+from menus.simulate_egreedy import SimulateEGreedy
+from menus.simulate_decayepsilon import SimulateDecayEpsilon
 
 def display_bandit():
     while True:
         print("\nTest bandit algorithm\n")
         print("1) Random Selection Algorithm")
         print("2) Epsilon-greedy Algorithm")
-        print("3) More algorithms to continue")
+        print("3) Decay Epsilon Algorithm")
         print("4) Back to main menu")
 
         user_input = input("\nEnter choice: ")
@@ -20,7 +21,7 @@ def display_bandit():
             SimulateEGreedy()
 
         elif user_input == '3':
-            print("Please wait for updates")
+            SimulateDecayEpsilon()
 
         elif user_input == '4':
             print("Returning to main menu....")
