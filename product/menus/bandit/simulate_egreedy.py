@@ -1,5 +1,5 @@
-from bandit.bandit_egreedy import EpsilonGreedy
-from bandit.bandit_environment import MultiArmedBanditEnv
+from menus.bandit.bandit_egreedy import EpsilonGreedy
+from menus.bandit.bandit_environment import MultiArmedBanditEnv
 
 class SimulateEGreedy:
     def __init__(self):

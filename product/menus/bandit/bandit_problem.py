@@ -1,14 +1,16 @@
-from bandit.simulate_random import SimulateRandom
-from bandit.simulate_egreedy import SimulateEGreedy
-from bandit.simulate_decayepsilon import SimulateDecayEpsilon
+from menus.bandit.simulate_random import SimulateRandom
+from menus.bandit.simulate_egreedy import SimulateEGreedy
+from menus.bandit.simulate_decayepsilon import SimulateDecayEpsilon
+from menus.bandit.simulate_ucb import SimulateUCB
 
 def display_bandit():
     while True:
         print("\nTest bandit algorithm\n")
-        print("1) Random Selection Algorithm")
-        print("2) Epsilon-greedy Algorithm")
-        print("3) Decay Epsilon Algorithm")
-        print("4) Back to main menu")
+        print("1) Random Selection")
+        print("2) Epsilon-greedy")
+        print("3) Decay Epsilon")
+        print("4) Upper Confidence Bound")
+        print("5) Back to main menu")
 
         user_input = input("\nEnter choice: ")
 
@@ -24,6 +26,9 @@ def display_bandit():
             SimulateDecayEpsilon()
 
         elif user_input == '4':
+            SimulateUCB()
+
+        elif user_input == '5':
             print("Returning to main menu....")
             break
 
