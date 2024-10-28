@@ -1,4 +1,9 @@
-# FYP Diary  
+# FYP Diary    
+
+**28/10/2024**
+Improved the decay epsilon-greedy algorithm and implemented the UCB algorithm, using the confidence bound score to determine the next arm selected. Next I will be including a 
+'temperature' variable or the exploration score to determine the balance between exploitation and exploration, further also increasing the number of arms in the problem to 
+estimate the efficiency of the algorithm and different number of exploration options.  
 
 **24/10/2024**
 Added 3 different algorithms for the Bandit problem, Random selection, epsilon-greedy and decay epsilon-greedy algorithm. Displaying total numbers of pull and mean rewards per arm,
