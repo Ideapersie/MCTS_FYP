@@ -1,5 +1,8 @@
 # FYP Diary    
 
+**01/11/2024**
+Tested UCB algorithm with increased numbers of total pulls analysing whether it will results in a better average estimated mean value of each arm, which it does until a certain point alongside increasing the number of arms from 3 to 10 and analysing the difference in average rewards. Furthermore, implemented the 'temperature' variable in the UCB algorithm which is used to balance the exploration and exploitation. Started with 1.5 which was suggested in a book for GO however this was too high for the 10 arm bandit problem therefore currently the best found value is around 0.8, not resulting in the best rewards however it is more consistent and gives a better estimate of each arms's probabilities.  
+
 **28/10/2024**
 Improved the decay epsilon-greedy algorithm and implemented the UCB algorithm, using the confidence bound score to determine the next arm selected. Next I will be including a 
 'temperature' variable or the exploration score to determine the balance between exploitation and exploration, further also increasing the number of arms in the problem to 
