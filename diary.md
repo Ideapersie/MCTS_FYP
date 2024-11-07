@@ -1,4 +1,7 @@
-# FYP Diary    
+# FYP Diary 
+
+**06/11/2024**
+Increased the number of arms for the bandit problem on each algorithm and further optimizing it and analysing the difference the number of arms affecting the constant values of each algorithm since for the Epsilon algorithms, the epsilon value had to be increased from 0.12 to around 0.35 to advocate for the increase in number of arms and promote exploration since it was too focused on exploitation. Further improved UCB algorithm and merged with Main branch to start working on a new branch (test-go-game), which will start the implementation of the GO board game using Python, first in CLI and further along the line as a GUI. Next I will be continuing this implementation and solidify the rules of Go in this branch making sure its playable and efficient. 
 
 **01/11/2024**
 Tested UCB algorithm with increased numbers of total pulls analysing whether it will results in a better average estimated mean value of each arm, which it does until a certain point alongside increasing the number of arms from 3 to 10 and analysing the difference in average rewards. Furthermore, implemented the 'temperature' variable in the UCB algorithm which is used to balance the exploration and exploitation. Started with 1.5 which was suggested in a book for GO however this was too high for the 10 arm bandit problem therefore currently the best found value is around 0.8, not resulting in the best rewards however it is more consistent and gives a better estimate of each arms's probabilities.  
