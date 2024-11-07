@@ -5,11 +5,11 @@ import numpy as np
 class SimulateDecayEpsilon:
     def __init__(self):
 
-        probabilities = [0.2,0.5,0.8]
+        probabilities = [0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]
         num_arms = len(probabilities)
-        epsilon = 0.15
-        decay = 0.6
-        decay_interval = 100
+        epsilon = 0.35
+        decay = 0.8
+        decay_interval = 200
 
         # initialise env bandit
         bandit = MultiArmedBanditEnv(probabilities)
@@ -39,7 +39,7 @@ class SimulateDecayEpsilon:
                 print(f"""After {i + 1} iterations -> Estimated Mean rewards per arm:{np.round(mean_rewards,3)} Total pulls per arm:{pulls_per_arm}\n""")
 
 
-        
+        # Important information - for further analysis later 
         print(f"Final total rewards: {decay_epsilon.total_rewards}")
         print(f"Final total rewards per arm: {decay_epsilon.total_per_arm}")
         print(f"Total number of times each arm pulled: {pulls_per_arm}\n")
