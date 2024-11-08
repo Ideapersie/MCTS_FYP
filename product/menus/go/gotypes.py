@@ -8,14 +8,14 @@ class Player(enum.Enum):
     @property 
     def other(self):
         if self == Player.white:
-            return Player.Black 
+            return Player.black 
         else: 
             return Player.white
         
         
 # With namedtuple, can access the points using point.row instead of point[0] 
 class Point(namedtuple('Point', 'row col')):
-    def neighbors(self):
+    def neighbours(self):
         return  [
             Point(self.row - 1 , self.col),
             Point(self.row + 1 , self.col),
