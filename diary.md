@@ -1,5 +1,8 @@
 # FYP Diary 
 
+**07/11/2024**
+Had the second meeting with My Supervisor to catch up on my progress. I demonstrated my findings so far on the bandit problem solver on different algorithms and asked about the best way to illustrate this, my Supervisor recommended to show it in a graph form therefore it can easily be determined which algorithms yield the best results with a good predicted on the estimated probability of each arm, my Supervisor also suggested building my own GUI for the GO game and also look into Parallelism while running the MCTs for the GO game to be able to reduce the search tree. Next I will continue implementing GO using Python. 
+
 **06/11/2024**
 Increased the number of arms for the bandit problem on each algorithm and further optimizing it and analysing the difference the number of arms affecting the constant values of each algorithm since for the Epsilon algorithms, the epsilon value had to be increased from 0.12 to around 0.35 to advocate for the increase in number of arms and promote exploration since it was too focused on exploitation. Further improved UCB algorithm and merged with Main branch to start working on a new branch (test-go-game), which will start the implementation of the GO board game using Python, first in CLI and further along the line as a GUI. Next I will be continuing this implementation and solidify the rules of Go in this branch making sure its playable and efficient. 
 
