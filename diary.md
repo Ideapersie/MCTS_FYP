@@ -1,5 +1,9 @@
 # FYP Diary 
 
+**15/11/2024**
+I Added 2 new files, containing functions which will help determine if a point is an eye therefore helping to end the game of GO since without this function, the AI might self-capture itself but filling the eye which will lead to a loss. Furthermore, I have been continuing to understand and research about implementing algorithms into the game of GO using Python and Next I will be starting with an AI which plays random moves then further implement other algorithms from there on. 
+
+
 **12/11/2024**
 Since the last entry, I have been constantly implementing the game of Go using Python, recently I have added the Ko and Self-capture rules which are illegal moves in most international rulesets for Go, currently there are 4 different classes specifying Go moving options, a Go string containing each groups of same coloured Go, Board and GameState class. Next, I will be implementing how to end the game of Go including many conditions to check for while ending the game of Go.   
 
