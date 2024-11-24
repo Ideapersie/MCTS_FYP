@@ -1,6 +1,5 @@
 import copy 
 from go.gotypes import Player
-from go.gotypes import Point
 
 class Move():
     def __init__(self, point=None, is_pass=False, is_resign=False):
@@ -34,7 +33,7 @@ class GoString():
         
     # Liberty is any empty point touching a connected group 
     def remove_liberty(self, point):
-        self.liberty.remove(point)
+        self.liberties.remove(point)
         
     def add_liberty(self, point):
         self.liberties.add(point)
