@@ -1,6 +1,6 @@
 import unittest
-from go.gotypes import Player 
-from go.gotypes import Point
+from go.goplayer import Player 
+from go.goplayer import Point
 
 class TestPlayer(unittest.TestCase):
     def test_other(self):

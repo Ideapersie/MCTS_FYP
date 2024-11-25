@@ -1,5 +1,5 @@
 import copy 
-from go.gotypes import Player
+from go.goplayer import Player,Point
 
 class Move():
     def __init__(self, point=None, is_pass=False, is_resign=False):
@@ -52,3 +52,48 @@ class GoString():
             self.colour == other.colour and \
             self.stones == other.stones and \
             self.liberties == other.liberties
+            
+class Board():
+    def __init__(self, num_rows, num_cols):
+        self.num_rows = num_rows
+        self.num_cols = num_cols
+        self._grid = {}
+    
+    # Checking if the stone is in the board boundaries    
+    def in_grid(self, point):
+        # Too low 
+        if point.row < 1 or point.col < 1:
+            return False 
+        # Too high 
+        elif point.row > self.num_rows or point.col > self.num_cols:
+            return False
+        else:
+            return True
+        
+        
+    def place_stone(self, player, point):
+        if not self.in_grid(point):
+            raise ValueError(f"Illegal move: The point {point} is outside the board's bound")
+        
+        if self._grid.get(point) is not None:
+            raise ValueError(f"Illegal move: The point {point} is already occupied")
+        
+        same_colour_stones = [] 
+        opposite_colour_stones = []
+        liberties = []
+        
+        for neighbour in point.neighbours():
+            # Skip neighbours which are out of bounds
+            if not self.in_grid(neighbour):
+                continue
+            
+            neighbour_string = self._grid.get(neighbour)
+            
+            if neighbour_string is None:
+                liberties.append(neighbour)
+            
+            
+            
+            
+        self._grid.add(point)
+        
