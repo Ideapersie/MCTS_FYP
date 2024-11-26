@@ -17,6 +17,6 @@ class Point(namedtuple('Point', 'row col')):
         return [
             Point(self.row - 1, self.col), # left 
             Point(self.row + 1, self.col), # right 
-            Point(self.row, self.col - 1), # below 
             Point(self.row, self.col + 1), # above
+            Point(self.row, self.col - 1), # below
         ]

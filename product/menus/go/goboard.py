@@ -69,8 +69,25 @@ class Board():
             return False
         else:
             return True
+    
+    # Return player colour of stone on point else None 
+    def get_player(self, point):
+        stone_point = self._grid.get(point)
+        if stone_point is None:
+            return None
+        else:
+            return stone_point.colour
+    
+    # Return go string at a point else None 
+    def get_go_string(self, point):
+        string_point = self._grid.get(point)
+        if string_point is None:
+            return None 
+        else: 
+            return string_point
         
         
+    # Placing a stone on the board & manages liberties of neighbouring stones    
     def place_stone(self, player, point):
         if not self.in_grid(point):
             raise ValueError(f"Illegal move: The point {point} is outside the board's bound")
@@ -78,8 +95,9 @@ class Board():
         if self._grid.get(point) is not None:
             raise ValueError(f"Illegal move: The point {point} is already occupied")
         
-        same_colour_stones = [] 
-        opposite_colour_stones = []
+        # stones neighbouring the new placed stone  
+        same_colour_neighbours = [] 
+        opposite_colour_neighbours = []
         liberties = []
         
         for neighbour in point.neighbours():
@@ -92,8 +110,16 @@ class Board():
             if neighbour_string is None:
                 liberties.append(neighbour)
             
-            
-            
-            
-        self._grid.add(point)
+            elif neighbour_string.colour == player:
+                if neighbour_string not in same_colour_neighbours:
+                    same_colour_neighbours.append(neighbour_string)
+                    
+            else:
+                if neighbour_string not in opposite_colour_neighbours:
+                    opposite_colour_neighbours.append(neighbour_string)
+                    
+        new_string = GoString(player, [point], liberties)
+        
+        if new_string.colour == same_colour_neighbours:
+            new_string.merged_with(same_colour_neighbours)
         

@@ -24,8 +24,8 @@ class TestPoint(unittest.TestCase):
         expected_neighbours = [
             Point(3,4), # left
             Point(5,4), # right
-            Point(4,3), # below
             Point(4,5), # above
+            Point(4,3), # below
         ]
         self.assertEqual(neighbours, expected_neighbours)
         

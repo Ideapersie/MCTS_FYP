@@ -1,7 +1,7 @@
 import unittest
 
 from go.goplayer import Point, Player
-from go.goboard_slow import Move, GoString, Board
+from go.goboard import Move, GoString, Board
 
 class TestMove(unittest.TestCase):
     def test_play(self):
@@ -102,6 +102,12 @@ class TestBoard(unittest.TestCase):
             str(error_msg.exception),
             "Illegal move: The point Point(row=10, col=10) is outside the board's bound"                 
         )
+        
+    def test_get(self):
+        point = Point(4,4)
+        get_point = self.board.get(point)
+        
+        self.assertTrue
         
         
     def test_place_stone(self):
