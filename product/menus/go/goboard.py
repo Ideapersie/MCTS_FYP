@@ -86,6 +86,16 @@ class Board():
         else: 
             return string_point
         
+    # Removing a string, can create liberties for other string
+    def _remove_string(self, string):
+        for stone in string.stones:
+            for neighbour in stone.neighbours():
+                neighbour_string = self._grid.get(neighbour)
+                if neighbour_string is None:
+                    continue
+                elif neighbour_string is not string:
+                    neighbour_string.add_liberty(stone)
+            self._grid[stone] = None
         
     # Placing a stone on the board & manages liberties of neighbouring stones    
     def place_stone(self, player, point):
@@ -118,8 +128,20 @@ class Board():
                 if neighbour_string not in opposite_colour_neighbours:
                     opposite_colour_neighbours.append(neighbour_string)
                     
-        new_string = GoString(player, [point], liberties)
+        placed_string = GoString(player, [point], liberties)
         
-        if new_string.colour == same_colour_neighbours:
-            new_string.merged_with(same_colour_neighbours)
         
+        # Merge Strings if connected to same coloured strings 
+        for placed_string_same in same_colour_neighbours:
+            placed_string = placed_string.merged_with(placed_string_same)
+            
+        # Update board grid with new merged string
+        for placed_string_point in placed_string.stones:
+            self._grid[placed_string_point] = placed_string
+            
+        # Reduce liberties of opponent's neighbouring strings, If 0 then remove it 
+        for place_string_other in opposite_colour_neighbours:
+            place_string_other.remove_liberty(point)
+            if place_string_other.num_liberties == 0:
+                self._remove_string(place_string_other)
+            

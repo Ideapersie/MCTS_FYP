@@ -34,6 +34,7 @@ class TestMove(unittest.TestCase):
         self.assertTrue(move.is_resign)
         
 class TestGoString(unittest.TestCase):
+    # Settings up stones with different lengths and no. of neighbours
     def setUp(self):
         self.str1 = GoString(Player.black, {(1,1)}, {(1,2),(2,1)})
         self.str2 = GoString(Player.black, {(2,1),(2,2)},{(1,1),(1,2),(2,3),(3,2),(3,1)})
@@ -51,6 +52,7 @@ class TestGoString(unittest.TestCase):
     def test_remove_liberty(self):
         self.str1.remove_liberty((1,2))
         self.assertNotIn((1,2), self.str1.liberties)
+        self.assertEqual(self.str1.num_liberties, 1)
         
     # Test combinining connected stones 
     def test_merged_with(self):
@@ -102,20 +104,47 @@ class TestBoard(unittest.TestCase):
             str(error_msg.exception),
             "Illegal move: The point Point(row=10, col=10) is outside the board's bound"                 
         )
-        
-    def test_get(self):
-        point = Point(4,4)
-        get_point = self.board.get(point)
-        
-        self.assertTrue
-        
-        
+             
+    # Testing player colour of placing stone function and occupied point        
     def test_place_stone(self):
         point = Point(4,4)
         
         self.board.place_stone(Player.black, point)
         self.assertIn(point, self.board._grid)
-        self.assertEqual(self.board._grid[point].colour, Player.black)
+        
+        # Testing get_player function 
+        self.assertEqual(self.board.get_player(point), Player.black)
+        
+        # Test get_player empty point
+        self.assertIsNone(self.board.get_player(Point(3,3)))
+        
+        # Testing placing stone on occupied point
+        with self.assertRaises(ValueError):
+            self.board.place_stone(Player.white, point)
+            
+    def test_merge_strings(self):
+        self.board.place_stone(Player.black, Point(1,1))
+        self.board.place_stone(Player.black, Point(1,2))
+        self.board.place_stone(Player.black, Point(1,3))
+        
+        # Check if stones are in the same GoString
+        str1 = self.board.get_go_string(Point(1,1))
+        str2 = self.board.get_go_string(Point(1,3))
+        
+        self.assertEqual(str1,str2)
+        
+    def test_remove_strings(self):
+        # White stone
+        self.board.place_stone(Player.white, Point(3,3))
+        # Black stones surrounding it 
+        self.board.place_stone(Player.black, Point(4,3))
+        self.board.place_stone(Player.black, Point(2,3))
+        self.board.place_stone(Player.black, Point(3,4))
+        self.board.place_stone(Player.black, Point(3,2))
+        
+        # Testing the remove_string function
+        self.assertIsNone(self.board.get_go_string(Point(3,3)))
+
         
         
 if __name__ == '__main__':
