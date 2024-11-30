@@ -1,7 +1,7 @@
 import unittest
 
 from go.goplayer import Point, Player
-from go.goboard import Move, GoString, Board
+from go.goboard import Move, GoString, Board, GoState
 
 class TestMove(unittest.TestCase):
     def test_play(self):
@@ -145,7 +145,53 @@ class TestBoard(unittest.TestCase):
         # Testing the remove_string function
         self.assertIsNone(self.board.get_go_string(Point(3,3)))
 
+class TestGoState(unittest.TestCase):
+    def setUp(self):
+        self.board_size = 9 
+        self.game = GoState.new_game(self.board_size)
         
+    def test_game_initial_state(self):
+        self.assertEqual(self.game.board.num_rows, self.board_size)
+        self.assertEqual(self.game.board.num_cols, self.board_size)
+        self.assertEqual(self.game.next_player, Player.black)
+
+    # Testing different variables including current and next player
+    def test_play_move(self):
+        
+        move = Move.play(Point(4,4))
+        new_state = self.game.play_move(move)
+
+        self.assertEqual(new_state.board.get_player(Point(4,4)),Player.black)
+        self.assertEqual(new_state.next_player, Player.white)
+        self.assertEqual(new_state.last_move, move)
+        self.assertEqual(new_state.previous_state, self.game)
+        
+    # Testing if move is pass
+    def test_pass_move(self):
+        move = Move.resign()
+        new_state = self.game.play_move(move)
+        
+        # board should be unchanged 
+        self.assertEqual(new_state.board, self.game.board)
+        self.assertEqual(new_state.next_player, Player.white)
+        self.assertEqual(new_state.last_move, move)
+        self.assertEqual(new_state.previous_state, self.game)
+      
+    # Testing 1 move after another   
+    def test_play_2_moves(self):
+        move1 = Move.play(Point(3,3))
+        move2 = Move.play(Point(4,4))
+        
+        play1 = self.game.play_move(move1)
+        play2 = play1.play_move(move2)
+        
+        # Checking previous state
+        self.assertEqual(play1.previous_state, self.game)
+        self.assertEqual(play2.previous_state, play1)
+        
+        # Check if board state reflects the moves
+        self.assertEqual(play1.board.get_player(Point(3, 3)), Player.black)
+        self.assertEqual(play2.board.get_player(Point(4, 4)), Player.white)
         
 if __name__ == '__main__':
     unittest.main()

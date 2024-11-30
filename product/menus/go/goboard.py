@@ -10,15 +10,15 @@ class Move():
         self.is_resign = is_resign
         
     @classmethod
-    def play(coor, point):
+    def play(cls, point):
         return Move(point=point)
     
     @classmethod
-    def pass_turn(coor):
+    def pass_turn(cls):
         return Move(is_pass=True)
     
     @classmethod
-    def resign(coor):
+    def resign(cls):
         return Move(is_resign=True)
     
 # Go strings are same coloured stones which are connected
@@ -145,3 +145,26 @@ class Board():
             if place_string_other.num_liberties == 0:
                 self._remove_string(place_string_other)
             
+class GoState():
+    def __init__(self, board, previous_state, last_move, next_player):
+        self.board = board 
+        self.previous_state = previous_state
+        self.last_move = last_move
+        self.next_player = next_player
+        
+    @classmethod
+    def new_game(cls, board_size):
+        if isinstance(board_size, int):
+            board_size = (board_size, board_size)
+        board = Board(board_size[0], board_size[1])
+        # Player with black stone starts first 
+        return GoState(board, None, None, Player.black)
+        
+    def play_move(self, move):
+        if move.is_play:
+            next_move = copy.deepcopy(self.board)
+            next_move.place_stone(self.next_player, move.point)
+        else:
+            next_move = self.board
+            
+        return GoState(next_move, self, move, self.next_player.other)
