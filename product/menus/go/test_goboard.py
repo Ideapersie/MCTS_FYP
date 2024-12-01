@@ -193,5 +193,78 @@ class TestGoState(unittest.TestCase):
         self.assertEqual(play1.board.get_player(Point(3, 3)), Player.black)
         self.assertEqual(play2.board.get_player(Point(4, 4)), Player.white)
         
+    # Test gameover function when player resigns 
+    def test_game_resign(self):
+        over_move = Move.resign()
+        play_resign = self.game.play_move(over_move)
+        
+        self.assertTrue(play_resign.game_over())
+        
+    # Test when game starts 
+    def test_game_start(self):
+        start_move = Move.play(Point(4,4))
+        play_start = self.game.play_move(start_move)
+        
+        self.assertFalse(play_start.game_over())
+        
+    # Test when both player passes 
+    def test_game_passes(self):
+        pass_move1 = Move.pass_turn()
+        pass_move2 = Move.pass_turn()
+        
+        pass_turn1 = self.game.play_move(pass_move1)
+        pass_turn2 = pass_turn1.play_move(pass_move2)
+        
+        self.assertFalse(pass_turn1.game_over())
+        self.assertTrue(pass_turn2.game_over())
+        
+    # Test self_capture function if move is a self-capture  
+    def test_self_capture(self):
+        # Placing stones with 1 liberty left for black 
+        self.game.board.place_stone(Player.black, Point(3,3))
+        self.game.board.place_stone(Player.white, Point(2,3))
+        self.game.board.place_stone(Player.white, Point(3,2))
+        self.game.board.place_stone(Player.white, Point(3,4))
+        self.game.board.place_stone(Player.white, Point(4,4))
+        self.game.board.place_stone(Player.white, Point(4,2))
+        self.game.board.place_stone(Player.white, Point(5,3))
+        
+        selfcap_move = Move.play(Point(4,3))
+        outcome = self.game.self_capture(Player.black, selfcap_move)
+        
+        self.assertTrue(outcome)
+        
+    def test_self_capture_corner(self):
+        # Placing stones around corner with 1 liberty left for black 
+        self.game.board.place_stone(Player.black, Point(1,1))
+        self.game.board.place_stone(Player.white, Point(2,1))
+        self.game.board.place_stone(Player.white, Point(2,2))
+        self.game.board.place_stone(Player.white, Point(1,3))
+        
+        cornercap_move = Move.play(Point(1,2))
+        outcome = self.game.self_capture(Player.black, cornercap_move)
+        
+        self.assertTrue(outcome)
+        
+    def test_self_capture_false(self):
+        # Placing stones with more than 1 liberty left for black 
+        self.game.board.place_stone(Player.black, Point(3,3))
+        self.game.board.place_stone(Player.white, Point(2,3))
+        self.game.board.place_stone(Player.white, Point(3,2))
+        self.game.board.place_stone(Player.white, Point(3,4))
+        self.game.board.place_stone(Player.white, Point(4,4))
+        self.game.board.place_stone(Player.white, Point(4,2))
+        
+        self_move = Move.play(Point(4,3))
+        outcome = self.game.self_capture(Player.black, self_move)
+        
+        self.assertFalse(outcome)
+        
+    def test_self_capture_resign(self):
+        resign_move = Move.resign()
+        outcome = self.game.self_capture(Player.black, resign_move)
+        
+        self.assertFalse(outcome)
+        
 if __name__ == '__main__':
     unittest.main()

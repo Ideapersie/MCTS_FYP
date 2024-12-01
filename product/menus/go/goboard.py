@@ -168,3 +168,27 @@ class GoState():
             next_move = self.board
             
         return GoState(next_move, self, move, self.next_player.other)
+    
+    # Moves signifying the game is over 
+    def game_over(self):
+        previous_last_move = self.previous_state.last_move
+        
+        if self.last_move.is_resign: 
+            return True
+        elif self.last_move is None:
+            return False 
+        elif previous_last_move is None:
+            return False 
+        # if both player passes, the game is over 
+        return self.last_move.is_pass and previous_last_move.is_pass
+    
+    def self_capture(self, player, move):
+        next_board = copy.deepcopy(self.board)
+        # if move is pass or resign, cant be self capture 
+        if not move.is_play:
+            return False 
+        next_board.place_stone(player, move.point)
+        # retrieve the string connected to the point
+        next_string = next_board.get_go_string(move.point)
+        # if next move, liberty = 0 it is a self capture
+        return next_string.num_liberties == 0
