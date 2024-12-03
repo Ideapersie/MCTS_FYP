@@ -265,6 +265,56 @@ class TestGoState(unittest.TestCase):
         outcome = self.game.self_capture(Player.black, resign_move)
         
         self.assertFalse(outcome)
+        self.assertFalse(outcome_pass)
+        
+    # Test ko rule at start of the game (no previous moves)
+    def test_ko_rule_start(self):
+        first_move = Move.play(Point(3,3))
+        
+        self.assertIsNone(self.game.previous_state)
+        self.assertFalse(self.game.ko_rule(Player.black, first_move))
+        
+    def test_ko_rule(self):
+        # Black stones with empty point in the middle 
+        black_move1 = Move.play(Point(1,3)) # left 
+        black_move2 = Move.play(Point(3,3)) # right
+        black_move3 = Move.play(Point(2,4)) # top 
+        black_move4 = Move.play(Point(2,2)) # bottom
+        
+        # White stones with black point in the middle 
+        white_move1 = Move.play(Point(4,3)) # right
+        white_move2 = Move.play(Point(3,4)) # top
+        white_move3 = Move.play(Point(3,2)) # bottom
+        
+        play1 = self.game.play_move(black_move1)
+        play2 = play1.play_move(white_move1)
+        play3 = play2.play_move(black_move2)
+        play4 = play3.play_move(white_move2)
+        play5 = play4.play_move(black_move3)
+        play6 = play5.play_move(white_move3)
+        play7 = play6.play_move(black_move4)
+        
+        # White captures black stone
+        white_captures = Move.play(Point(2,3)) # middle
+        play_white_captures = play7.play_move(white_captures)
+        
+        # Verify the black stone (3,3) was captured
+        self.assertIsNone(play_white_captures.board.get_go_string(Point(3, 3)))
+        
+        # Captures white and returns to previous state 
+        black_captures = Move.play(Point(3,3))
+        
+        # This move violates the ko rule 
+        self.assertTrue(play_white_captures.ko_rule(Player.black, black_captures))
+        
+        
+    def test_ko_rule_not_play(self):
+        resign_move = Move.resign()
+        pass_move = Move.pass_turn()
+        
+        self.assertFalse(self.game.ko_rule(Player.black, resign_move))
+        self.assertFalse(self.game.ko_rule(Player.black, pass_move))
+        
         
 if __name__ == '__main__':
     unittest.main()

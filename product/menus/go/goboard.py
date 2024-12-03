@@ -192,3 +192,21 @@ class GoState():
         next_string = next_board.get_go_string(move.point)
         # if next move, liberty = 0 it is a self capture
         return next_string.num_liberties == 0
+    
+    # Ko rule is when the current move returns the board to previous state 
+    def ko_rule(self, player, move):
+        # Ko rule does not apply to resign or pass moves
+        if not move.is_play:
+            return False 
+        
+        next_board = copy.deepcopy(self.board)
+        next_board.place_stone(player, move.point)
+        past_state = self.previous_state
+        
+        # Compare only with previous state's board
+        if past_state is not None:
+            return past_state.board == next_board
+        # If not previous state, then ko rule does not apply
+        return False 
+    
+        
