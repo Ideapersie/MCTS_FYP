@@ -154,6 +154,7 @@ class TestGoState(unittest.TestCase):
         self.assertEqual(self.game.board.num_rows, self.board_size)
         self.assertEqual(self.game.board.num_cols, self.board_size)
         self.assertEqual(self.game.next_player, Player.black)
+        self.assertIsNone(self.game.previous_state)
 
     # Testing different variables including current and next player
     def test_play_move(self):
@@ -192,6 +193,32 @@ class TestGoState(unittest.TestCase):
         # Check if board state reflects the moves
         self.assertEqual(play1.board.get_player(Point(3, 3)), Player.black)
         self.assertEqual(play2.board.get_player(Point(4, 4)), Player.white)
+        
+    def test_play_capture(self):
+        # the black stones are surrounding the (4,3) white stone
+        black_move1 = Move.play(Point(3,3)) # left 
+        white_move1 = Move.play(Point(4,3)) # middle 
+        black_move2 = Move.play(Point(5,3)) # right
+        white_move2 = Move.play(Point(1,1)) # elsewhere
+        black_move3 = Move.play(Point(4,4)) # top 
+        white_move3 = Move.play(Point(1,2)) # elsewhere 
+        black_move4 = Move.play(Point(4,2)) # bottom
+        
+        play1 = self.game.play_move(black_move1)
+        play2 = play1.play_move(white_move1)
+        play3 = play2.play_move(black_move2)
+        play4 = play3.play_move(white_move2)
+        play5 = play4.play_move(black_move3)
+        play6 = play5.play_move(white_move3)
+        capture_play = play6.play_move(black_move4)
+        
+        # Before the stone is captured 
+        self.assertEqual(play1.board.get_player(Point(3, 3)), Player.black)
+        self.assertEqual(play2.board.get_player(Point(4, 3)), Player.white)
+        # After the stone has been captured, the stone point is None
+        self.assertIsNone(capture_play.board.get_player(Point(4,3)))
+        self.assertIsNone(capture_play.board.get_go_string(Point(4,3)))
+        
         
     # Test gameover function when player resigns 
     def test_game_resign(self):
@@ -260,9 +287,12 @@ class TestGoState(unittest.TestCase):
         
         self.assertFalse(outcome)
         
-    def test_self_capture_resign(self):
+    def test_self_capture_not_play(self):
         resign_move = Move.resign()
+        pass_move = Move.pass_turn()
+        
         outcome = self.game.self_capture(Player.black, resign_move)
+        outcome_pass = self.game.self_capture(Player.black, pass_move)
         
         self.assertFalse(outcome)
         self.assertFalse(outcome_pass)

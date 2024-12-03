@@ -143,7 +143,24 @@ class Board():
         for place_string_other in opposite_colour_neighbours:
             place_string_other.remove_liberty(point)
             if place_string_other.num_liberties == 0:
+                print(f"Captured string: {place_string_other.stones}")
                 self._remove_string(place_string_other)
+      
+    # To compare board states, especially for the Ko rule          
+    def __eq__(self, other):
+        if not isinstance(other, Board):
+            return False
+        # Checking board dimensions
+        if self.num_rows != other.num_rows or self.num_cols != other.num_cols:
+            return False
+        
+        # Zero indexing while go uses 1-based indexing 
+        for row in range(1, self.num_rows+1 ):
+            for col in range(1, self.num_cols+1):
+                point = Point(row, col)
+                if self.get_go_string(point) != other.get_go_string(point):
+                    return False
+        return True
             
 class GoState():
     def __init__(self, board, previous_state, last_move, next_player):
@@ -158,16 +175,26 @@ class GoState():
             board_size = (board_size, board_size)
         board = Board(board_size[0], board_size[1])
         # Player with black stone starts first 
-        return GoState(board, None, None, Player.black)
-        
+        return GoState(
+                board=board, 
+                previous_state=None, 
+                last_move=None, 
+                next_player=Player.black
+            )
+    
     def play_move(self, move):
         if move.is_play:
-            next_move = copy.deepcopy(self.board)
-            next_move.place_stone(self.next_player, move.point)
+            next_board = copy.deepcopy(self.board)
+            next_board.place_stone(self.next_player, move.point)
         else:
-            next_move = self.board
+            next_board = self.board
             
-        return GoState(next_move, self, move, self.next_player.other)
+        return GoState(
+            board=next_board, 
+            previous_state=self, 
+            last_move=move, 
+            next_player=self.next_player.other
+        )
     
     # Moves signifying the game is over 
     def game_over(self):
@@ -182,6 +209,7 @@ class GoState():
         # if both player passes, the game is over 
         return self.last_move.is_pass and previous_last_move.is_pass
     
+    # Self-capture is when player places stone and it captures itself 
     def self_capture(self, player, move):
         next_board = copy.deepcopy(self.board)
         # if move is pass or resign, cant be self capture 
