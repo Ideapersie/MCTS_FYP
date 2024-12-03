@@ -198,13 +198,13 @@ class GoState():
     
     # Moves signifying the game is over 
     def game_over(self):
-        previous_last_move = self.previous_state.last_move
-        
         if self.last_move.is_resign: 
             return True
-        elif self.last_move is None:
+        if self.last_move is None:
             return False 
-        elif previous_last_move is None:
+        
+        previous_last_move = self.previous_state.last_move
+        if previous_last_move is None:
             return False 
         # if both player passes, the game is over 
         return self.last_move.is_pass and previous_last_move.is_pass
@@ -237,4 +237,20 @@ class GoState():
         # If not previous state, then ko rule does not apply
         return False 
     
+    def valid_move(self, move):
+        if self.game_over():
+            return False
+        
+        # Passes and resign move always valid 
+        if move.is_resign or move.is_pass:
+            return True 
+        if (  
+            self.board.get_player(move.point) is None and # Point must be empty 
+            not self.self_capture(self.next_player, move) and # No-self capture 
+            not self.ko_rule(self.next_player, move) # Does not violate ko-rule 
+        ):
+            return True 
+        # Else, move is invalid 
+        return False 
+
         

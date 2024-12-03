@@ -144,7 +144,22 @@ class TestBoard(unittest.TestCase):
         
         # Testing the remove_string function
         self.assertIsNone(self.board.get_go_string(Point(3,3)))
-
+        
+    def test_eq_notinstance(self):
+        self.assertNotEqual(self.board, "Not a board")
+        self.assertNotEqual(self.board, None)
+        
+    def test_eq_dimensions(self):
+        wrong_rows = Board(8,9)
+        wrong_cols = Board(9,8)
+        diff_dimensions = Board(13,13)
+        
+        # Test various dimension changes 
+        self.assertNotEqual(self.board, wrong_rows)
+        self.assertNotEqual(self.board, wrong_cols)
+        self.assertNotEqual(self.board, diff_dimensions)
+        
+        
 class TestGoState(unittest.TestCase):
     def setUp(self):
         self.board_size = 9 
@@ -344,6 +359,53 @@ class TestGoState(unittest.TestCase):
         
         self.assertFalse(self.game.ko_rule(Player.black, resign_move))
         self.assertFalse(self.game.ko_rule(Player.black, pass_move))
+        
+    # Testing if valid move when game is over 
+    def test_valid_move_gameover(self):
+        pass_move1 = Move.pass_turn()
+        pass_move2 = Move.pass_turn()
+        
+        # First player passes 
+        pass_turn1 = self.game.play_move(pass_move1)
+        # Second player passes 
+        pass_turn2 = pass_turn1.play_move(pass_move2)
+        
+        # After first pass, move is still valid 
+        self.assertTrue(pass_turn1.valid_move(pass_move2))
+        # After both passes, move shouuld not be valid 
+        self.assertFalse(pass_turn2.valid_move(pass_move2))
+        
+    def test_valid_move_true(self):
+        move1 = Move.play(Point(3,3))
+        move2 = Move.play(Point(4,4))
+    
+        play1 = self.game.play_move(move1)
+        
+        # Valid move 
+        self.assertTrue(play1.valid_move(move2))
+        
+    def test_valid_move_selfcapture(self):
+        # Placing stones around corner with 1 liberty left for black 
+        black_move1 = Move.play(Point(1,1))
+        white_move1 = Move.play(Point(2,1))
+        black_move2 = Move.play(Point(4,3))
+        white_move2 = Move.play(Point(2,2))
+        black_move3 = Move.play(Point(4,4))
+        white_move3 = Move.play(Point(1,3))
+        
+        play1 = self.game.play_move(black_move1)
+        play2 = play1.play_move(white_move1)
+        play3 = play2.play_move(black_move2)
+        play4 = play3.play_move(white_move2)
+        play5 = play4.play_move(black_move3)
+        play6 = play5.play_move(white_move3)
+        
+        # Valid move before self-capture
+        self.assertTrue(play5.valid_move(white_move3))
+        
+        cornercap_move = Move.play(Point(1,2))
+        # False due to self-capture
+        self.assertFalse(play6.valid_move(cornercap_move))
         
         
 if __name__ == '__main__':
