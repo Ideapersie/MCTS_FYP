@@ -58,6 +58,34 @@ class Board():
         self.num_rows = num_rows
         self.num_cols = num_cols
         self._grid = {}
+        
+    def __str__(self):
+        # Stores representation of each row 
+        rows = []
+        col_labels = ['A','B','C','D','E','F','G','H','I']
+        # start from the bottom and end on -1 to account for zero indexing 
+        for row in range(self.num_rows, 0, -1):
+            current_row = []
+            for col in range(1, self.num_cols + 1):
+                point = Point(row, col)
+                string = self.get_go_string(point)
+                
+                if string is None:
+                    current_row.append('.') # Using dot for empty point 
+                elif string.colour == Player.black:
+                    current_row.append('X') # Using X for black stones 
+                elif string.colour == Player.white:
+                    current_row.append('O') # Using O for white stones 
+                    
+                # Joining all strings in this row with spacing in between 
+            rows.append(f"{row} "+' '.join(current_row))
+        
+        # Add space to align with the space 
+        col_label_bottom = '  ' + ' '.join(col_labels) 
+        
+        # Joining each row seperated by a new line and alphabetical label for columns 
+        final_board = '\n'.join(rows) + '\n' + col_label_bottom
+        return final_board
     
     # Checking if the stone is in the board boundaries    
     def in_grid(self, point):
@@ -143,7 +171,6 @@ class Board():
         for place_string_other in opposite_colour_neighbours:
             place_string_other.remove_liberty(point)
             if place_string_other.num_liberties == 0:
-                print(f"Captured string: {place_string_other.stones}")
                 self._remove_string(place_string_other)
       
     # To compare board states, especially for the Ko rule          

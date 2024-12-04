@@ -83,15 +83,60 @@ class TestBoard(unittest.TestCase):
         self.assertEqual(self.board.num_rows, 9)
         self.assertEqual(self.board.num_cols, 9)
        
+    def test_str(self):
+        # White stone at bottom left 
+        self.board.place_stone(Player.white, Point(1,1))
+        # Black stones at top right
+        self.board.place_stone(Player.black, Point(9,9))
+        
+        expected_str = (
+            
+            "9 . . . . . . . . X\n"
+            "8 . . . . . . . . .\n"
+            "7 . . . . . . . . .\n"
+            "6 . . . . . . . . .\n"
+            "5 . . . . . . . . .\n"
+            "4 . . . . . . . . .\n"
+            "3 . . . . . . . . .\n"
+            "2 . . . . . . . . .\n"
+            "1 O . . . . . . . .\n"
+            "  A B C D E F G H I "
+        )
+        #print(f"\n{str(self.board)}")
+        self.assertEqual(str(self.board).strip(), expected_str.strip())
+        
+    def test_str_false(self):
+        # White stone at bottom left 
+        self.board.place_stone(Player.white, Point(1,1))
+        # Black stones at top right
+        self.board.place_stone(Player.black, Point(9,9))
+        
+        wrong_str = (
+            
+            "9 . . . . . . . . .\n"
+            "8 . . . . . . . . .\n"
+            "7 . . . . . . . . .\n"
+            "6 . . . . . . . . .\n"
+            "5 . . . . X . . . .\n"
+            "4 . . . . . . . . .\n"
+            "3 . . . . . . . . .\n"
+            "2 . . . . . . . . .\n"
+            "1 O . . . . . . . .\n"
+            "  A B C D E F G H I "
+        )
+        # Altered expected_str to be wrong 
+        self.assertNotEqual(str(self.board).strip(), wrong_str.strip())
+        
+        
     # Testing if the point is on the grind  
     def test_in_grid(self):
         in_grid_point = Point(2,2)
-        toolow_grid_point = Point(0,0)
-        toohigh_grid_point = Point(10,9)
+        too_low_grid_point = Point(0,0)
+        too_high_grid_point = Point(10,9)
         
         self.assertTrue(self.board.in_grid(in_grid_point))
-        self.assertFalse(self.board.in_grid(toolow_grid_point))
-        self.assertFalse(self.board.in_grid(toohigh_grid_point))
+        self.assertFalse(self.board.in_grid(too_low_grid_point))
+        self.assertFalse(self.board.in_grid(too_high_grid_point))
         
     # Testing if the point is out of bounds and error exception 
     def test_stone_out_of_bounds(self):
@@ -273,6 +318,7 @@ class TestGoState(unittest.TestCase):
         
         selfcap_move = Move.play(Point(4,3))
         outcome = self.game.self_capture(Player.black, selfcap_move)
+        print(outcome)
         
         self.assertTrue(outcome)
         
