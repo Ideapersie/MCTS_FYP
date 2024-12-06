@@ -225,10 +225,12 @@ class GoState():
     
     # Moves signifying the game is over 
     def game_over(self):
-        if self.last_move.is_resign: 
-            return True
+        
         if self.last_move is None:
             return False 
+        
+        if self.last_move.is_resign: 
+            return True
         
         previous_last_move = self.previous_state.last_move
         if previous_last_move is None:
