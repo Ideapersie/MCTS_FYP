@@ -8,6 +8,12 @@ class RandomSelect:
         self.total_per_arm = np.zeros(num_arms) # total rewards for each arm
         self.total_rewards = 0 # total rewards  
 
+    def reset(self):
+        self.count = np.zeros(self.num_arms) 
+        self.mean = np.zeros(self.num_arms) 
+        self.total_per_arm = np.zeros(self.num_arms) 
+        self.total_rewards = 0 
+        
     # select an arm randomly
     def select_arm(self):
         return np.random.randint(0,self.num_arms)

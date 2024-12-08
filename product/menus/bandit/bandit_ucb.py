@@ -10,6 +10,12 @@ class UpperConfidenceBound:
         self.total_per_arm = np.zeros(num_arms) # total rewards for each arm
         self.ucb_value = np.zeros(num_arms)
         self.total_rewards = 0
+        
+    def reset(self):
+        self.count = np.zeros(self.num_arms) 
+        self.mean = np.zeros(self.num_arms) 
+        self.total_per_arm = np.zeros(self.num_arms) 
+        self.total_rewards = 0 
 
     # apply UCB algorithm to select arm
     def select_arm(self, arm):
