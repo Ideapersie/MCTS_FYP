@@ -30,8 +30,6 @@ class UpperConfidenceBound:
             confidence_bound = math.sqrt(2* math.log(sum(self.count))/self.count[arm])
             self.ucb_value[arm] = self.mean[arm] + self.temperature * confidence_bound
 
-            if sum(self.count) % 500 == 0:
-                print(f"UCB value [{arm+1}]: {self.ucb_value[arm]:.3f}, Confidence bound: { confidence_bound:.3f}, Average value[{arm+1}]: {self.mean[arm]:.3f}\n")
 
         # select arm with highest UCB value 
         return np.argmax(self.ucb_value)
