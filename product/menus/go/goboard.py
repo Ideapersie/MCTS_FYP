@@ -322,7 +322,9 @@ class GoState():
 
         else:
             next_board = self.board
-            
+            next_captured = self.captured.copy()
+        
+        # Updates each variable for next GoState    
         return GoState(
             board=next_board, 
             previous_state=self, 
