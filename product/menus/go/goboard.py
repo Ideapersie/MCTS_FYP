@@ -389,5 +389,19 @@ class GoState():
             return True 
         # Else, move is invalid 
         return False 
-
+    
+    # Calculates the final score, adding komi
+    def final_score(self, komi=6.5):
         
+        black_territory, white_territory, neutral = self.board.calculate_territory()
+        
+        black_score = black_territory + self.captured[Player.black]
+        
+        # Add 6.5 komi for the white player
+        white_score = white_territory + self.captured[Player.white] + komi
+        
+        return {"Black": black_score, "White": white_score}
+    
+if __name__ == "__main__":
+    GoState.new_game(board_size=9)
+    
