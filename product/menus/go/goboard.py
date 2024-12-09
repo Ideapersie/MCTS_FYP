@@ -173,6 +173,95 @@ class Board():
             place_string_other.remove_liberty(point)
             if place_string_other.num_liberties == 0:
                 self._remove_string(place_string_other)
+         
+    # For explored region used for calculate_territory method  
+    def explore_region(self, start, visited):
+        # Stack stores explored points 
+        stack = [start]
+        territory = set()
+        borders = set()
+        
+        # Using DFS to explore the region 
+        while stack:
+            point = stack.pop()
+            
+            # Skip if point has been visited 
+            if point in visited:
+                continue
+            # If not, mark point as visited 
+            visited.add(point)
+            
+            # If point is empty, add it to territory
+            if self.get_player(point) is None:
+                territory.add(point)
+                
+                for neighbours in point.neighbours():
+                    if self.in_grid(neighbours):
+                        stack.append(neighbours)
+            # If point occupied = border of the region 
+            else:
+                borders.add(point)
+                
+        return territory, borders
+      
+    # Calculates the territory for both players           
+    def calculate_territory(self):
+        # Territories of each player 
+        black_territory = 0 
+        white_territory = 0
+        neutral_territory = 0
+        
+        # Set containing all visited points
+        visited = set()
+        
+        # Iterate over all the points 
+        for row in range(1, self.num_rows + 1):
+            for col in range(1, self.num_cols + 1):
+                point = Point(row,col)
+                
+                # Skip occupied on visited points 
+                if point in visited or self.get_player(point) is not None:
+                    continue
+                
+                # explore region and gather the territory and borders of each point 
+                territory, borders = self.explore_region(point, visited)
+                
+                """"
+                # Checks if ALL the borders are the same colour if theres any 
+                if all(self.get_player(border) == Player.black for border in borders):
+                    black_territory += len(territory)
+                    
+                elif all(self.get_player(border) == Player.white for border in borders):
+                    white_territory += len(territory)
+                    
+                # If none then neutral
+                else:
+                    neutral_territory += len(territory)
+                """
+                black_border = True
+                white_border = True
+                
+                for border in borders:
+                    player = self.get_player(border)
+                    print(f"Checking border: {border} -> Player: {player}")  # Debug log
+                    if player == Player.black:
+                        white_border = False
+                    elif player == Player.white:
+                        black_border = False
+
+                # Assign territory ownership based on the surrounding borders
+                if black_border and not white_border:
+                    print("Black territory detected")
+                    black_territory += len(territory)
+                elif white_border and not black_border:
+                    print("White territory detected")
+                    white_territory += len(territory)
+                else:
+                    print("Neutral territory detected")
+                    neutral_territory += len(territory)
+
+                    
+        return black_territory, white_territory, neutral_territory
       
     # To compare board states, especially for the Ko rule          
     def __eq__(self, other):
