@@ -1,5 +1,5 @@
 import copy 
-from go.goplayer import Player,Point
+from menus.go.goplayer import Player,Point
 
 class Move():
     def __init__(self, point=None, is_pass=False, is_resign=False):
@@ -77,7 +77,7 @@ class Board():
                 elif string.colour == Player.white:
                     current_row.append('O') # Using O for white stones 
                     
-                # Joining all strings in this row with spacing in between 
+            # Joining all strings in this row with spacing in between 
             rows.append(f"{row} "+' '.join(current_row))
         
         # Add space to align with the space 
@@ -148,6 +148,7 @@ class Board():
             if neighbour_string is None:
                 liberties.append(neighbour)
             
+            # If same coloured neighbours then append 
             elif neighbour_string.colour == player:
                 if neighbour_string not in same_colour_neighbours:
                     same_colour_neighbours.append(neighbour_string)
@@ -190,14 +191,16 @@ class Board():
         return True
             
 class GoState():
-    def __init__(self, board, previous_state, last_move, next_player):
+    def __init__(self, board, previous_state, last_move, next_player, captured):
         self.board = board 
         self.previous_state = previous_state
         self.last_move = last_move
         self.next_player = next_player
+        self.captured = captured or {Player.black: 0, Player.white: 0}
         
     @classmethod
     def new_game(cls, board_size):
+        # Set board_size to have same dimensions
         if isinstance(board_size, int):
             board_size = (board_size, board_size)
         board = Board(board_size[0], board_size[1])
@@ -206,9 +209,11 @@ class GoState():
                 board=board, 
                 previous_state=None, 
                 last_move=None, 
-                next_player=Player.black
+                next_player=Player.black,
+                captured={Player.black: 0, Player.white: 0}
             )
     
+    # Apply the move to the board state and captured strings
     def play_move(self, move):
         if move.is_play:
             next_board = copy.deepcopy(self.board)
@@ -228,7 +233,7 @@ class GoState():
         
         if self.last_move is None:
             return False 
-        
+        # If player resigns, the game is over 
         if self.last_move.is_resign: 
             return True
         
