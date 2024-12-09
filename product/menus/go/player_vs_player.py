@@ -44,29 +44,42 @@ class PlayerVsPlayer:
             # since next_player is stored as Player.colour
             current_player = str(self.game.next_player).split('.', 1)
 
-        print(f"\n{current_player[1]}'s turn: \n")
-        print_board(new_game.board)
+            print(f"\n{current_player[1]}'s turn: \n")
+            self.print_board()
+            
+            move = None 
+            while move is None or not self.game.valid_move(move):
+                move = self.player_input()
+                if move and not self.game.valid_move(move):
+                    print("Invalid move! Please try again")
+                    
+            self.game = self.game.play_move(move)
+        # Display results
+        self.end_PVPgame()
         
-        move = None 
-        while move is None or not new_game.valid_move(move):
-            move = player_input()
-            if move and not new_game.valid_move(move):
-                print("Invalid move! Please try again")
-                
-        new_game = new_game.play_move(move)
-    
-    print("\n Game Over!")
-    print_board(new_game.board)
-    
-    if new_game.last_move.is_resign:
-        next_player = str(new_game.next_player).split('.', 1)
-        print(f"{next_player[1]} wins by resignation")
+    # Handles the end of the game and display results
+    def end_PVPgame(self):
+        # Show final board state
+        print("\nFinal Board state: ")
+        self.print_board()
         
-    elif new_game.last_move.is_pass:
-        print("\nBoth players passed, the game is a draw")
+        scores = self.game.final_score()
         
+        if self.game.last_move.is_resign:
+            next_player = str(self.game.next_player).split('.', 1)
+            print(f"\n{next_player[1]} wins by resignation\n")
+            
+        else:
+            print(f"Final Score: Black {scores['Black']} - White {scores['White']}")
+            
+            if scores["Black"] > scores["White"]:
+                print("Black wins!") 
+            elif scores["Black"] == scores["White"]:
+                print("It is a draw!")
+            else:
+                print("White wins!")
+            
+            
 if __name__ == "__main__":
-    print(f"""Welcome to Go! 
-You can type 'pass' to pass a turn or 'resign' to forfeit the game
-        ENJOY!""")
-    player_vs_player_game()
+    PlayerVsPlayer()
+    
