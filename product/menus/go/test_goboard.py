@@ -102,7 +102,8 @@ class TestBoard(unittest.TestCase):
             "1 O . . . . . . . .\n"
             "  A B C D E F G H I "
         )
-        #print(f"\n{str(self.board)}")
+        print(f"\n{str(self.board)}")
+        print(f"\n{expected_str}")
         self.assertEqual(str(self.board).strip(), expected_str.strip())
         
     def test_str_false(self):
@@ -213,7 +214,8 @@ class TestGoState(unittest.TestCase):
     def test_game_initial_state(self):
         self.assertEqual(self.game.board.num_rows, self.board_size)
         self.assertEqual(self.game.board.num_cols, self.board_size)
-        self.assertEqual(self.game.next_player, Player.black)
+
+        self.assertEqual(self.game.next_player.value, Player.black.value)
         self.assertIsNone(self.game.previous_state)
 
     # Testing different variables including current and next player
@@ -222,8 +224,9 @@ class TestGoState(unittest.TestCase):
         move = Move.play(Point(4,4))
         new_state = self.game.play_move(move)
 
-        self.assertEqual(new_state.board.get_player(Point(4,4)),Player.black)
-        self.assertEqual(new_state.next_player, Player.white)
+        # Uses .value to compare the enum values instead of instances 
+        self.assertEqual(new_state.board.get_player(Point(4,4)).value,Player.black.value)
+        self.assertEqual(new_state.next_player.value, Player.white.value)
         self.assertEqual(new_state.last_move, move)
         self.assertEqual(new_state.previous_state, self.game)
         
@@ -234,7 +237,7 @@ class TestGoState(unittest.TestCase):
         
         # board should be unchanged 
         self.assertEqual(new_state.board, self.game.board)
-        self.assertEqual(new_state.next_player, Player.white)
+        self.assertEqual(new_state.next_player.value, Player.white.value)
         self.assertEqual(new_state.last_move, move)
         self.assertEqual(new_state.previous_state, self.game)
       
@@ -251,8 +254,8 @@ class TestGoState(unittest.TestCase):
         self.assertEqual(play2.previous_state, play1)
         
         # Check if board state reflects the moves
-        self.assertEqual(play1.board.get_player(Point(3, 3)), Player.black)
-        self.assertEqual(play2.board.get_player(Point(4, 4)), Player.white)
+        self.assertEqual(play1.board.get_player(Point(3, 3)).value, Player.black.value)
+        self.assertEqual(play2.board.get_player(Point(4, 4)).value, Player.white.value)
         
     def test_play_capture(self):
         # the black stones are surrounding the (4,3) white stone
@@ -273,8 +276,8 @@ class TestGoState(unittest.TestCase):
         capture_play = play6.play_move(black_move4)
         
         # Before the stone is captured 
-        self.assertEqual(play1.board.get_player(Point(3, 3)), Player.black)
-        self.assertEqual(play2.board.get_player(Point(4, 3)), Player.white)
+        self.assertEqual(play1.board.get_player(Point(3, 3)).value, Player.black.value)
+        self.assertEqual(play2.board.get_player(Point(4, 3)).value, Player.white.value)
         # After the stone has been captured, the stone point is None
         self.assertIsNone(capture_play.board.get_player(Point(4,3)))
         self.assertIsNone(capture_play.board.get_go_string(Point(4,3)))
