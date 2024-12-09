@@ -293,6 +293,7 @@ class GoState():
         if isinstance(board_size, int):
             board_size = (board_size, board_size)
         board = Board(board_size[0], board_size[1])
+        
         # Player with black stone starts first 
         return GoState(
                 board=board, 
@@ -307,6 +308,18 @@ class GoState():
         if move.is_play:
             next_board = copy.deepcopy(self.board)
             next_board.place_stone(self.next_player, move.point)
+            
+            # Captured strings in the next move
+            next_captured = self.captured.copy()
+            captured_string = self.board.get_go_string(move.point)
+            
+            if captured_string is None:
+                captured_string = []
+            
+            # Amount of captured string
+            for string in captured_string:
+                next_captured[self.next_player.other] += len(string.stones)
+
         else:
             next_board = self.board
             
@@ -314,7 +327,8 @@ class GoState():
             board=next_board, 
             previous_state=self, 
             last_move=move, 
-            next_player=self.next_player.other
+            next_player=self.next_player.other,
+            captured=next_captured
         )
     
     # Moves signifying the game is over 
