@@ -1,5 +1,10 @@
 # FYP Diary 
 
+**26/11/2024**
+Implemented the Board class which allows specifying the size of the board and the main size used in this project will be 9x9 since it is much more computational viable and easier for 
+the MCTS algorithm to be implemented and understood. This class includes a place_stone method which is very crucial since it places the specified stone on the point while determining 
+the liberties surrounding that point which will be used in the capturing method later on. Also included the method to retrieves the player's colour and string connected to a certain stone.
+
 **24/11/2024**
 Started with the Player class and move class including functions such as playing moves, passing turn and resigning while the Player class has 2 players, black or white and a neighbour function determining the neighbours of each point. This is tested using unittest and this will be used throughout the project.
 
