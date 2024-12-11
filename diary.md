@@ -1,5 +1,8 @@
 # FYP Diary 
 
+**07/12/2024** 
+For the visual representation in the presentation, I decided to revisit the bandit problem and created matplotlib graphs for each simulated to illustrate the difference in each algorithms for the bandit problem. For a reliable and accurate results, I implemented a way to gather average results from 100 simulation of each algorithm where each simulation is a 1000 iterations each. Next I will be finalizing the values gather and also display these values in a graph. 
+  
 **06/12/2024**
 New file to incorporate all the previous classes into a player_vs_player method where a new game starts once called, the players inputs plays representing stones on the board and prints an "invalid move" if the move is invalid such as the ko rule or the rows are larger than board size. The player can also pass turn or resign by typing in "pass" and "resign" respectively however I will be implementing a scoring method to calculate the territories next and further testing required. 
   
