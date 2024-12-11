@@ -1,8 +1,10 @@
 # FYP Diary 
 
+**04/12/2024**
+New str method which will represent the go board in CLI using x and o as black and white stones and columns will be defined with letters from A to I, rows are defined with numbers from 1 to 9. However, testing this method has been a challenge since I would have to convery the board into a string while keeping the same format and also find a way to compare the values rather than instances. 
+  
 **03/12/2024**
 Implemented another special rule called the Ko Rule which is when then board can't return to the previous state after capturing a stone since this could end in an infinite loop of capturing the same points over and over again, this Rule is implemented by comparing next move with the previous state of the board. While testing, the comparing between board states was an issue since it was comparing instances instead of values therefore I had to make my own __eq__ method, lastly combined both previous rules into valid_move which determines if the next move played is a valid move, if not an "invalid move" prompt will appear. 
-
   
 **01/12/2024**
 Implemented a self_capture method which is a rule in go where the player can't place stone if it results in its own stones being captured, this prevents certain moves from the game therefore it is required and requires copying the state of the board to compare number of liberties to a point. Furthermore, testing all the gameover function implemented earlier including the self_capture method
@@ -26,7 +28,6 @@ After understanding the implementation of the GO board in Python and applying a 
 
 **15/11/2024**
 I Added 2 new files, containing functions which will help determine if a point is an eye therefore helping to end the game of GO since without this function, the AI might self-capture itself but filling the eye which will lead to a loss. Furthermore, I have been continuing to understand and research about implementing algorithms into the game of GO using Python and Next I will be starting with an AI which plays random moves then further implement other algorithms from there on. 
-
 
 **12/11/2024**
 Since the last entry, I have been constantly implementing the game of Go using Python, recently I have added the Ko and Self-capture rules which are illegal moves in most international rulesets for Go, currently there are 4 different classes specifying Go moving options, a Go string containing each groups of same coloured Go, Board and GameState class. Next, I will be implementing how to end the game of Go including many conditions to check for while ending the game of Go.   
