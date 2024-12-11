@@ -1,10 +1,13 @@
 # FYP Diary 
 
+**09/12/2024**
+Added the calculate_territory method while calculates the territories of each player and where there are neutral territory which does not contribute to the final scoring, this is included in the final_score function where the territory are counted at the end and will be displayed in the CLI also printing who the winner is (player with the most territory), this still requires further testing since territory is inaccurately scoring the neutral territories as black territories.
+
 **08/12/2024**
 Using Matplotlib and the average results gathered, I decided to make 3 graphs with the first graph on the left being the average rewards per arm then the average pull count per arm then estimated mean probablities per arm with the total rewards of each algorithm displayed at the top. The most important variable is the average pull per arm since this determines which algorithm prioritises the total rewards while also explores other arms efficiently, with careful variable testing, the UCB score is best for this method since it only prioritises the arms with higher rewards unlike e-greedy where the lower arms are randomly pulled. 
   
 **07/12/2024** 
-For the visual representation in the presentation, I decided to revisit the bandit problem and created matplotlib graphs for each simulated to illustrate the difference in each algorithms for the bandit problem. For a reliable and accurate results, I implemented a way to gather average results from 100 simulation of each algorithm where each simulation is a 1000 iterations each. Next I will be finalizing the values gather and also display these values in a graph. 
+For the visual representation in the presentation, I decided to revisit the bandit problem and created matplotlib graphs for each simulated to illustrate the difference in each algorithms for the bandit problem. For a reliable and accurate results, I implemented a way to gather average results from 100 simulation of each algorithm where each simulation is a 1000 iterations each. Next I will be finalizing the values gather and also display these values in a graph. Furthermore, I am finalizing the presentation and will be using the graph displayed by MatPlotlib.
   
 **06/12/2024**
 New file to incorporate all the previous classes into a player_vs_player method where a new game starts once called, the players inputs plays representing stones on the board and prints an "invalid move" if the move is invalid such as the ko rule or the rows are larger than board size. The player can also pass turn or resign by typing in "pass" and "resign" respectively however I will be implementing a scoring method to calculate the territories next and further testing required. 
