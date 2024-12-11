@@ -1,9 +1,12 @@
 # FYP Diary 
 
+**03/12/2024**
+Implemented another special rule called the Ko Rule which is when then board can't return to the previous state after capturing a stone since this could end in an infinite loop of capturing the same points over and over again, this Rule is implemented by comparing next move with the previous state of the board. While testing, the comparing between board states was an issue since it was comparing instances instead of values therefore I had to make my own __eq__ method, lastly combined both previous rules into valid_move which determines if the next move played is a valid move, if not an "invalid move" prompt will appear. 
+
+  
 **01/12/2024**
 Implemented a self_capture method which is a rule in go where the player can't place stone if it results in its own stones being captured, this prevents certain moves from the game therefore it is required and requires copying the state of the board to compare number of liberties to a point. Furthermore, testing all the gameover function implemented earlier including the self_capture method
   
-
 **30/11/2024**
 New class of Gostate which will be storing the board positions, next player, previous game states(will be used in the Ko Rule) and the last move played. Also including function like starting a new game including the variable values initialised when the game is starting such as the starting player will be the Player with black stones, another function is the is_over to state that the game ends when both player passes or either resigns.
   
@@ -17,7 +20,7 @@ the liberties surrounding that point which will be used in the capturing method 
   
 **24/11/2024**
 Started with the Player class and move class including functions such as playing moves, passing turn and resigning while the Player class has 2 players, black or white and a neighbour function determining the neighbours of each point. This is tested using unittest and this will be used throughout the project.
-
+  
 **23/11/2024** 
 After understanding the implementation of the GO board in Python and applying a random algorithm, I decided to create a new branch to implement those files again with proper testing and coverage tests to make sure the codes will be efficient and follow coding standards, starting with the Player files and possible move functions. Next will be the implementation of the GO board and I will continue this until I implement a basic algorithm and enable player vs player game in CLI then work on a GUI for the game. 
 
