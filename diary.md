@@ -1,5 +1,8 @@
 # FYP Diary 
 
+**30/11/2024**
+New class of Gostate which will be storing the board positions, next player, previous game states(will be used in the Ko Rule) and the last move played. Also including function like starting a new game including the variable values initialised when the game is starting such as the starting player will be the Player with black stones, another function is the is_over to state that the game ends when both player passes or either resigns.
+
 **29/11/2024**
 Completed the Board class with the addition of remove_string method since this is used to remove strings with no liberties left when the stones are placed, also added a function to merge strings if they are connected to same coloured stones. Furthermore, improved these methods through testing and making sure each method is functioning as expected. Will be starting the GoState class next which will contain method such as starting a new game. 
 
