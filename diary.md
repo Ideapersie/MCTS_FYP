@@ -3,6 +3,9 @@
 **06/12/2024**
 New file to incorporate all the previous classes into a player_vs_player method where a new game starts once called, the players inputs plays representing stones on the board and prints an "invalid move" if the move is invalid such as the ko rule or the rows are larger than board size. The player can also pass turn or resign by typing in "pass" and "resign" respectively however I will be implementing a scoring method to calculate the territories next and further testing required. 
   
+**05/12/2024**
+Had the third meeting with my supervisor, shown him my progress so far with the outlines to my presentation and reports, Got feedback on what I could include in my reports such as A plan for next term and also explanation for the research and experimentation I have done. He also suggested to fully complete the PVP mode then focus on creating a GUI in the next term to make a completed early deliverable on time. 
+  
 **04/12/2024**
 New str method which will represent the go board in CLI using x and o as black and white stones and columns will be defined with letters from A to I, rows are defined with numbers from 1 to 9. However, testing this method has been a challenge since I would have to convery the board into a string while keeping the same format and also find a way to compare the values rather than instances. 
   
