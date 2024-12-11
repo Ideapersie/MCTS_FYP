@@ -305,7 +305,7 @@ class GoState():
     
     # Apply the move to the board state and captured strings
     def play_move(self, move):
-        if move.is_play:
+        if move is not None and move.is_play:
             next_board = copy.deepcopy(self.board)
             next_board.place_stone(self.next_player, move.point)
             
@@ -395,7 +395,7 @@ class GoState():
     # Calculates the final score, adding komi
     def final_score(self, komi=6.5):
         
-        black_territory, white_territory, neutral = self.board.calculate_territory()
+        black_territory, white_territory, _ = self.board.calculate_territory()
         
         black_score = black_territory + self.captured[Player.black]
         
