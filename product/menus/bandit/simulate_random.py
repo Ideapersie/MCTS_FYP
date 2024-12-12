@@ -7,7 +7,8 @@ import numpy as np
 class SimulateRandom:
     def __init__(self):
 
-        probabilities = [0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]
+        # Probabilities from 0% to 99% win rate
+        probabilities = np.arange(0.0,1.00,0.01)
         num_arms = len(probabilities)
 
         # Initialise env bandit
@@ -20,7 +21,7 @@ class SimulateRandom:
         self.iterations = 1000
         
         # Number of simulations for graphs
-        self.simulations = 100
+        self.simulations = 10
 
     def run_simulation(self):
         all_rewards = []

@@ -5,8 +5,10 @@ import numpy as np
 class SimulateDecayEpsilon:
     def __init__(self):
 
-        probabilities = [0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]
+        # Probabilities from 0% to 99% win rate
+        probabilities = np.arange(0.0,1.00,0.01)
         num_arms = len(probabilities)
+        # Specific variables for decay strategy
         epsilon = 0.35
         decay = 0.8
         decay_interval = 200
@@ -17,7 +19,7 @@ class SimulateDecayEpsilon:
         # initialise E-greedy selection & variables
         self.decay_epsilon = DecayEpsilonGreedy(num_arms, epsilon, decay, decay_interval)
         self.iterations = 1000
-        self.simulation = 100
+        self.simulation = 10
 
     def run_simulation(self):
         all_rewards = []

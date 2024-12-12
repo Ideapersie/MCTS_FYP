@@ -5,7 +5,8 @@ import numpy as np
 class SimulateEGreedy:
     def __init__(self):
 
-        probabilities = [0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]
+        # Probabilities from 0% to 99% win rate
+        probabilities = np.arange(0.0,1.00,0.01)
         num_arms = len(probabilities)
         epsilon = 0.25
 
@@ -15,7 +16,7 @@ class SimulateEGreedy:
         # initialise E-greedy selection & variables
         self.epsilon_selection = EpsilonGreedy(num_arms, epsilon)
         self.iterations = 1000
-        self.simulation = 100
+        self.simulation = 10
         
     def run_simulation(self):
         all_rewards = []
