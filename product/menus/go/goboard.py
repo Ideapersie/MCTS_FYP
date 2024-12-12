@@ -62,7 +62,13 @@ class Board():
     def __str__(self):
         # Stores representation of each row 
         rows = []
-        col_labels = ['A','B','C','D','E','F','G','H','I']
+        # Dynamically generate column labels based on the number of columns
+        col_labels = []
+        for i in range(self.num_cols):
+            # Convert each unicode index to letter 
+            col_label = chr(ord('A')+ i)
+            col_labels.append(col_label)
+        
         # start from the bottom and end on -1 to account for zero indexing 
         for row in range(self.num_rows, 0, -1):
             current_row = []
@@ -85,6 +91,7 @@ class Board():
         
         # Joining each row seperated by a new line and alphabetical label for columns 
         final_board = '\n'.join(rows) + '\n' + col_label_bottom
+        
         return final_board
     
     # Checking if the stone is in the board boundaries    
@@ -151,15 +158,13 @@ class Board():
             # If same coloured neighbours then append 
             elif neighbour_string.colour == player:
                 if neighbour_string not in same_colour_neighbours:
-                    same_colour_neighbours.append(neighbour_string)
-                    
+                    same_colour_neighbours.append(neighbour_string)     
             else:
                 if neighbour_string not in opposite_colour_neighbours:
                     opposite_colour_neighbours.append(neighbour_string)
                     
         placed_string = GoString(player, [point], liberties)
-        
-        
+             
         # Merge Strings if connected to same coloured strings 
         for placed_string_same in same_colour_neighbours:
             placed_string = placed_string.merged_with(placed_string_same)
@@ -202,6 +207,9 @@ class Board():
             else:
                 borders.add(point)
                 
+        # Debugging output
+        print(f" Borders: {borders}")
+                
         return territory, borders
       
     # Calculates the territory for both players           
@@ -226,14 +234,12 @@ class Board():
                 # explore region and gather the territory and borders of each point 
                 territory, borders = self.explore_region(point, visited)
                 
-                """"
                 # Checks if ALL the borders are the same colour if theres any 
                 if all(self.get_player(border) == Player.black for border in borders):
                     black_territory += len(territory)
                     
                 elif all(self.get_player(border) == Player.white for border in borders):
                     white_territory += len(territory)
-                    
                 # If none then neutral
                 else:
                     neutral_territory += len(territory)
@@ -258,8 +264,8 @@ class Board():
                     white_territory += len(territory)
                 else:
                     print("Neutral territory detected")
-                    neutral_territory += len(territory)
-
+                    neutral_territory += len(territory) 
+                    """           
                     
         return black_territory, white_territory, neutral_territory
       

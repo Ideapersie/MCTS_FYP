@@ -29,9 +29,7 @@ class SimulateRandom:
         # New simulation
         for x in range(self.simulations):
             # Resets the environment for each simulation run 
-            #self.random_selection.reset
             self.random_selection.reset()
-            
             # Run each simulation with given no. of iterations  
             for _ in range(self.iterations):
                 arm = self.random_selection.select_arm()
@@ -43,7 +41,6 @@ class SimulateRandom:
             all_counts.append(self.random_selection.count.copy())  # pulls per arm 
             all_means.append(self.random_selection.mean.copy()) # estimated probability per-arm
     
-                
             # Print the stats for the last simulation 
             if x == (self.simulations-1):
                 # differentiate between total rewards and total per arm

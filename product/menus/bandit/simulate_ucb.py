@@ -6,14 +6,15 @@ import numpy as np
 class SimulateUCB:
     def __init__(self):
 
-        probabilities = [0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]
+        # Probabilities from 0% to 99% win rate
+        probabilities = np.arange(0.0,1.00,0.01)
         num_arms = len(probabilities)
-        temperature = 0.7 # balance between exploration and exploitation 
+        temperature = 0.4 # balance between exploration and exploitation 
         
-        
+        # No. of iterations per simulation 
         self.iterations = 1000
-        
-        self.simulation = 100
+        # No. of simulations for graph results 
+        self.simulation = 10
 
         # initialise env bandit
         self.bandit = MultiArmedBanditEnv(probabilities)
@@ -41,7 +42,7 @@ class SimulateUCB:
                     mean_rewards = self.upper_confidence.mean
                     pulls_per_arm = self.upper_confidence.count
 
-                    print(f"""After {i + 1} iterations -> Estimated Mean rewards per arm:{np.round(mean_rewards,2)} Total pulls per arm:{pulls_per_arm}\n""")
+                    #print(f"""After {i + 1} iterations -> Estimated Mean rewards per arm:{np.round(mean_rewards,2)} Total pulls per arm:{pulls_per_arm}\n""")
 
                     
             # Store the rewards and counts for each simultion   
@@ -54,13 +55,13 @@ class SimulateUCB:
                 join_mean_rewards = ', '.join([f"{x:.2f}" for x in mean_rewards]) # format each value in the array to string with 2f
                 join_confidence_bound = ', '.join([f"{x:.3f}" for x in self.upper_confidence.ucb_value]) # format each value in the array to string with 3f
                 
-                print(f"Final total rewards: {self.upper_confidence.total_rewards}")
-                print(f"Final total rewards per arm: {self.upper_confidence.total_per_arm}")
-                print(f"Total number of times each arm pulled: {pulls_per_arm}")
-                print(f"Final estimated Mean of each arm: {join_mean_rewards}\n") 
+                #print(f"Final total rewards: {self.upper_confidence.total_rewards}")
+                #print(f"Final total rewards per arm: {self.upper_confidence.total_per_arm}")
+                #print(f"Total number of times each arm pulled: {pulls_per_arm}")
+                #print(f"Final estimated Mean of each arm: {join_mean_rewards}\n") 
                 
                 # Important information - for further analysis later 
-                print(f"UCB score: {join_confidence_bound}")    
+                #print(f"UCB score: {join_confidence_bound}")    
                  
                 
         return np.array(all_rewards), np.array(all_counts), np.array(all_means)
