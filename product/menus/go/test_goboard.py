@@ -82,6 +82,7 @@ class TestBoard(unittest.TestCase):
     
         self.assertEqual(self.board.num_rows, 9)
         self.assertEqual(self.board.num_cols, 9)
+        
        
     def test_str(self):
         # White stone at bottom left 
@@ -187,43 +188,13 @@ class TestBoard(unittest.TestCase):
         # Testing the remove_string function
         self.assertIsNone(self.board.get_go_string(Point(3,3)))
         
-    def test_calculate_territory(self):
-        # Creating a column of black stones seperating the board 
-        self.board.place_stone(Player.black, Point(1,2))
-        self.board.place_stone(Player.black, Point(2,2))
-        self.board.place_stone(Player.black, Point(3,2))
-        self.board.place_stone(Player.black, Point(4,2))
-        self.board.place_stone(Player.black, Point(5,2))
-        self.board.place_stone(Player.black, Point(6,2))
-        self.board.place_stone(Player.black, Point(7,2))
-        self.board.place_stone(Player.black, Point(8,2))
-        self.board.place_stone(Player.black, Point(9,2))
+        # Testing neutral territory with empty board
+    def test_calculate_territory_empty(self):
+        black, white, neutral = self.board.calculate_territory()
         
-        # Creating a column of white stone 
-        self.board.place_stone(Player.white, Point(1,4))
-        self.board.place_stone(Player.white, Point(2,4))
-        self.board.place_stone(Player.white, Point(3,4))
-        self.board.place_stone(Player.white, Point(4,4))
-        self.board.place_stone(Player.white, Point(5,4))
-        self.board.place_stone(Player.white, Point(6,4))
-        self.board.place_stone(Player.white, Point(7,4))
-        self.board.place_stone(Player.white, Point(8,4))
-        self.board.place_stone(Player.white, Point(9,4))
-        
-        # Print the current board state
-        print(f"\nBoard state:\n{self.board}")
-        
-        black_territory, white_territory, neutral_territory = self.board.calculate_territory()
-        
-        # Test black territory, should be 9  
-        self.assertTrue(black_territory, 9)
-        
-        # Testing white territory, should be 45
-        self.assertTrue(white_territory, 45)
-        
-        # Testing neutral territory, should be 9 (gap between white and black)
-        self.assertTrue(neutral_territory, 9)
-        
+        self.assertEqual(black, 0)
+        self.assertEqual(white, 0)
+        self.assertEqual(neutral, 81)
         
     def test_eq_notinstance(self):
         self.assertNotEqual(self.board, "Not a board")

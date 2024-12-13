@@ -84,10 +84,10 @@ class Board():
                     current_row.append('O') # Using O for white stones 
                     
             # Joining all strings in this row with spacing in between 
-            rows.append(f"{row} "+' '.join(current_row))
+            rows.append(f"{row} "+" ".join(current_row))
         
         # Add space to align with the space 
-        col_label_bottom = '  ' + ' '.join(col_labels) 
+        col_label_bottom = "  " + " ".join(col_labels) 
         
         # Joining each row seperated by a new line and alphabetical label for columns 
         final_board = '\n'.join(rows) + '\n' + col_label_bottom
@@ -116,6 +116,7 @@ class Board():
     # Return go string at a point else None 
     def get_go_string(self, point):
         string_point = self._grid.get(point)
+        
         if string_point is None:
             return None 
         else: 
@@ -207,9 +208,6 @@ class Board():
             else:
                 borders.add(point)
                 
-        # Debugging output
-        print(f" Borders: {borders}")
-                
         return territory, borders
       
     # Calculates the territory for both players           
@@ -231,41 +229,34 @@ class Board():
                 if point in visited or self.get_player(point) is not None:
                     continue
                 
-                # explore region and gather the territory and borders of each point 
+                # Explore region and gather the territory and borders of each point 
                 territory, borders = self.explore_region(point, visited)
                 
-                # Checks if ALL the borders are the same colour if theres any 
-                if all(self.get_player(border) == Player.black for border in borders):
-                    black_territory += len(territory)
-                    
-                elif all(self.get_player(border) == Player.white for border in borders):
-                    white_territory += len(territory)
-                # If none then neutral
-                else:
-                    neutral_territory += len(territory)
-                """
+                # Checking if certain region is surrounded by ONLY black or white stones
                 black_border = True
                 white_border = True
                 
+                # Loop over border points
                 for border in borders:
                     player = self.get_player(border)
-                    print(f"Checking border: {border} -> Player: {player}")  # Debug log
                     if player == Player.black:
                         white_border = False
                     elif player == Player.white:
                         black_border = False
-
-                # Assign territory ownership based on the surrounding borders
-                if black_border and not white_border:
-                    print("Black territory detected")
-                    black_territory += len(territory)
-                elif white_border and not black_border:
-                    print("White territory detected")
-                    white_territory += len(territory)
-                else:
-                    print("Neutral territory detected")
-                    neutral_territory += len(territory) 
-                    """           
+                    else:
+                        black_border = False
+                        white_border = False
+                       
+                # Iterate over points in each territory       
+                for point in territory:
+                    # Empty points inside the border
+                    if self.get_player(point) is None: 
+                        if black_border and not white_border:
+                            black_territory += 1
+                        elif white_border and not black_border:
+                            white_territory += 1
+                        else:
+                            neutral_territory += 1
                     
         return black_territory, white_territory, neutral_territory
       
