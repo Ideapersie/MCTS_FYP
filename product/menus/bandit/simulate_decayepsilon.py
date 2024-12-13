@@ -9,9 +9,9 @@ class SimulateDecayEpsilon:
         probabilities = np.arange(0.0,1.00,0.01)
         num_arms = len(probabilities)
         # Specific variables for decay strategy
-        epsilon = 0.35
-        decay = 0.8
-        decay_interval = 200
+        epsilon = 0.96
+        decay = 0.94
+        decay_interval = 100
 
         # initialise env bandit
         self.bandit = MultiArmedBanditEnv(probabilities)
@@ -47,17 +47,18 @@ class SimulateDecayEpsilon:
                     mean_rewards = self.decay_epsilon.mean
                     pulls_per_arm = self.decay_epsilon.count
 
-                    print(f"""After {i + 1} iterations -> Estimated Mean rewards per arm:{np.round(mean_rewards,2)} Total pulls per arm:{pulls_per_arm}\n""")
+                    #print(f"""After {i + 1} iterations -> Estimated Mean rewards per arm:{np.round(mean_rewards,2)} Total pulls per arm:{pulls_per_arm}\n""")
              
             # Printing total results from last simulation
             if x == (self.simulation - 1):
                 # Important information - for further analysis later 
                 print(f"Final total rewards: {self.decay_epsilon.total_rewards}")
-                print(f"Final total rewards per arm: {self.decay_epsilon.total_per_arm}")
-                print(f"Total number of times each arm pulled: {pulls_per_arm}\n")
+                
+                #print(f"Final total rewards per arm: {self.decay_epsilon.total_per_arm}")
+                #print(f"Total number of times each arm pulled: {pulls_per_arm}\n")
 
-                join_mean_rewards = ', '.join([f"{x:.2f}" for x in mean_rewards]) # format each value in the array to string with 3f
-                print(f"Final estimated Mean of each arm: {join_mean_rewards}") 
+                #join_mean_rewards = ', '.join([f"{x:.2f}" for x in mean_rewards]) # format each value in the array to string with 3f
+                #print(f"Final estimated Mean of each arm: {join_mean_rewards}") 
         
             # Store the rewards and counts for each simultion   
             all_rewards.append(self.decay_epsilon.total_per_arm.copy())  # Per-arm rewards
