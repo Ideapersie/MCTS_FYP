@@ -1,5 +1,12 @@
 # FYP Diary 
 
+**12/12/2024**
+Due to changes to the bandit problem, I decided to add red dots instead of statistical labels to avoid clutter while providing a visual method of comparing the accuracy of how well each algorithm estimates the mean probability of each arm since the more linear the models, the better the estimation. Furthermore, finalised the calculate_territory method to avoid neutral points be mistaken as black points especially at the start of the games with no points or no defined territories yet. 
+
+**11/12/2024**
+Increased the number of arms from 10 arms to 99 arms in the bandit problems since this allows for better understanding between the tradeoff of exploration vs exploitation since the more number of possible moves, the harder it is to get the best results. Hence now arm 0 starts at 0% and increases by 1% per arm until arm 99, with this the simulations will be reduced from 100 to 10 due to lack of computational power and graph compiling times. Due to the no. of arms changed, experimentation and change in variable values was required especially the epsilon variables. 
+
+  
 **09/12/2024**
 Added the calculate_territory method while calculates the territories of each player and where there are neutral territory which does not contribute to the final scoring, this is included in the final_score function where the territory are counted at the end and will be displayed in the CLI also printing who the winner is (player with the most territory), this still requires further testing since territory is inaccurately scoring the neutral territories as black territories.
 
