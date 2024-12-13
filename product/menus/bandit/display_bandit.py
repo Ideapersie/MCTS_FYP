@@ -17,16 +17,16 @@ def display_bandit():
         user_input = user_input.strip() #incase whitespaces was added 
         
         if user_input == '1':
-            SimulateRandom()
+            SimulateRandom().plot_results()
 
         elif user_input == '2':
-            SimulateEGreedy()
+            SimulateEGreedy().plot_results()
 
         elif user_input == '3':
-            SimulateDecayEpsilon()
+            SimulateDecayEpsilon().plot_results()
 
         elif user_input == '4':
-            SimulateUCB()
+            SimulateUCB().plot_results()
 
         elif user_input == '5':
             print("Returning to main menu....")

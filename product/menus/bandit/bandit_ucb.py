@@ -10,6 +10,12 @@ class UpperConfidenceBound:
         self.total_per_arm = np.zeros(num_arms) # total rewards for each arm
         self.ucb_value = np.zeros(num_arms)
         self.total_rewards = 0
+        
+    def reset(self):
+        self.count = np.zeros(self.num_arms) 
+        self.mean = np.zeros(self.num_arms) 
+        self.total_per_arm = np.zeros(self.num_arms) 
+        self.total_rewards = 0 
 
     # apply UCB algorithm to select arm
     def select_arm(self, arm):
@@ -24,8 +30,6 @@ class UpperConfidenceBound:
             confidence_bound = math.sqrt(2* math.log(sum(self.count))/self.count[arm])
             self.ucb_value[arm] = self.mean[arm] + self.temperature * confidence_bound
 
-            if sum(self.count) % 500 == 0:
-                print(f"UCB value [{arm+1}]: {self.ucb_value[arm]:.3f}, Confidence bound: { confidence_bound:.3f}, Average value[{arm+1}]: {self.mean[arm]:.3f}\n")
 
         # select arm with highest UCB value 
         return np.argmax(self.ucb_value)

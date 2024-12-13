@@ -6,11 +6,26 @@ class DecayEpsilonGreedy:
         self.epsilon = epsilon
         self.decay = decay # reducing the value of epsilon
         self.decay_interval = decay_interval # interval which decay is applied
+        
+        # Used for resetting simulations
+        self.initial_epsilon = epsilon
+        self.initial_decay = decay
+        self.initial_decay_interval = decay_interval
 
         self.count = np.zeros(num_arms)
         self.mean = np.zeros(num_arms)
         self.total_per_arm = np.zeros(num_arms) 
         self.total_rewards = 0 
+    # Resetting function, includes epsilon and decay since every 
+    # simulation the epsilon needs to reset 
+    def reset(self):
+        self.count = np.zeros(self.num_arms) 
+        self.mean = np.zeros(self.num_arms) 
+        self.total_per_arm = np.zeros(self.num_arms) 
+        self.total_rewards = 0 
+        self.epsilon = self.initial_epsilon
+        self.decay = self.initial_decay
+        self.decay_interval = self.initial_decay_interval
 
     # apply decay epsilon-greedy algorithm to select arm
     def select_arm(self):
