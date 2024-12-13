@@ -44,13 +44,14 @@ class SimulateRandom:
     
             # Print the stats for the last simulation 
             if x == (self.simulations-1):
-                # differentiate between total rewards and total per arm
-                print(f"\nFinal total rewards: {self.random_selection.total_rewards}")
-                print(f"Final total rewards per arm: {self.random_selection.total_per_arm}\n")
-                print(f"Total number of times each arm pulled: {self.random_selection.count}")
+                # Important information - used later for analysis 
                 
-                join_mean_rewards = ', '.join([f"{x:.2f}" for x in self.random_selection.mean]) # format each value in the array to string with 3f
-                print(f"Final estimated Mean of each arm: {join_mean_rewards}") 
+                print(f"\nFinal total rewards: {self.random_selection.total_rewards}")
+                #print(f"Final total rewards per arm: {self.random_selection.total_per_arm}\n")
+                #print(f"Total number of times each arm pulled: {self.random_selection.count}")
+                
+                #join_mean_rewards = ', '.join([f"{x:.2f}" for x in self.random_selection.mean]) # format each value in the array to string with 3f
+                #print(f"Final estimated Mean of each arm: {join_mean_rewards}") 
         
         return np.array(all_rewards), np.array(all_counts), np.array(all_means)
 

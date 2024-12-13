@@ -52,10 +52,10 @@ class SimulateUCB:
 
             # Final results for last simulation
             if x == (self.simulation - 1):
-                join_mean_rewards = ', '.join([f"{x:.2f}" for x in mean_rewards]) # format each value in the array to string with 2f
-                join_confidence_bound = ', '.join([f"{x:.3f}" for x in self.upper_confidence.ucb_value]) # format each value in the array to string with 3f
+                #join_mean_rewards = ', '.join([f"{x:.2f}" for x in mean_rewards]) # format each value in the array to string with 2f
+                #join_confidence_bound = ', '.join([f"{x:.3f}" for x in self.upper_confidence.ucb_value]) # format each value in the array to string with 3f
                 
-                #print(f"Final total rewards: {self.upper_confidence.total_rewards}")
+                print(f"Final total rewards: {self.upper_confidence.total_rewards}")
                 #print(f"Final total rewards per arm: {self.upper_confidence.total_per_arm}")
                 #print(f"Total number of times each arm pulled: {pulls_per_arm}")
                 #print(f"Final estimated Mean of each arm: {join_mean_rewards}\n") 
