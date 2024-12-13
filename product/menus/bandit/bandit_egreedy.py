@@ -21,7 +21,7 @@ class EpsilonGreedy:
         if np.random.rand() < self.epsilon:
             return np.random.randint(0, self.num_arms)
         
-        # exploitation: choose arm with the highest estimated mean value
+        # exploitation: choose arm with the highest estimated probability
         else:
             return np.argmax(self.mean)
         

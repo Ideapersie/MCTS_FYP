@@ -26,7 +26,7 @@ def plot_simulation_results(all_rewards, all_counts, all_means, algorithm_name):
     arms = [f"{i}" for i in range(all_rewards.shape[1])]
     plt.subplot(1, 3, 1)
     plt.bar(arms, avg_rewards, color='mediumseagreen')
-    plt.title(f"Average Total Rewards Per Arm ({algorithm_name})")
+    plt.title(f"Average Total Rewards per Arm ({algorithm_name})")
     
     # Axis labels 
     plt.xlabel("Arm Number", fontsize=12)
@@ -40,7 +40,7 @@ def plot_simulation_results(all_rewards, all_counts, all_means, algorithm_name):
     # Plot 2: Average Total Pulls Per Arm
     plt.subplot(1, 3, 2)
     plt.bar(arms, avg_counts, color='cornflowerblue')
-    plt.title(f"Average Pull Count Per Arm ({algorithm_name})")
+    plt.title(f"Average Pull Count per Arm ({algorithm_name})")
     
     # Axis labels 
     plt.xlabel("Arm Number", fontsize=12)
@@ -52,23 +52,32 @@ def plot_simulation_results(all_rewards, all_counts, all_means, algorithm_name):
     plt.xticks(ticks=np.arange(0, len(arms), 10), fontsize=10)
     plt.xlim(0, len(arms) - 0.5)
     
+    
     # Plot 3: Estimated Probability Mean Per Arm
     plt.subplot(1, 3, 3)
-    bars = plt.bar(arms, avg_means, color='goldenrod')
-    plt.title(f"Estimated Mean Values Per Arm ({algorithm_name})")
+    plt.bar(arms, avg_means, color='goldenrod')
+    plt.title(f"Estimated Probability per Arm ({algorithm_name})")
     
     # Axis labels 
     plt.xlabel("Arm Number", fontsize=12)
-    plt.ylabel("Average Estimated Mean", fontsize=12)
+    plt.ylabel("Average Estimated Probability", fontsize=12)
     
     # Adjust x-axis to show every 10th arm
     plt.xticks(ticks=np.arange(0, len(arms), 10), fontsize=10)
     plt.xlim(0, len(arms) - 0.5)
+    
     # set y limits and ticks to show difference in probability
     plt.ylim(0, 1)
     plt.yticks(np.arange(0,1.1,0.2))
     # Use grid to be able to compare estimated value with real probability value of each arm 
     plt.grid(color='darkgrey', linewidth=0.85)
+    
+    # Add dots on x = y line
+    x = np.linspace(0, len(arms), 6)  # Generate points every 20 arms
+    y = np.linspace(0, 1, 6)             
+    plt.scatter(x, y, color='red', label="x = y", s=20, zorder=2)  # zorder=2 so its over the gridlines
+
+    
     # Final Layout
     plt.tight_layout()
     plt.show()
