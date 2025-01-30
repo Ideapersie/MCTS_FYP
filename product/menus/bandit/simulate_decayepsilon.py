@@ -9,8 +9,8 @@ class SimulateDecayEpsilon:
         probabilities = np.arange(0.0,1.00,0.01)
         num_arms = len(probabilities)
         # Specific variables for decay strategy
-        epsilon = 0.96
-        decay = 0.94
+        epsilon = 0.95
+        decay = 0.90
         decay_interval = 100
 
         # initialise env bandit

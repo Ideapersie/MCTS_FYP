@@ -8,7 +8,7 @@ class SimulateEGreedy:
         # Probabilities from 0% to 99% win rate
         probabilities = np.arange(0.0,1.00,0.01)
         num_arms = len(probabilities)
-        epsilon = 0.5
+        epsilon = 0.6
 
         # initialise env bandit
         self.bandit = MultiArmedBanditEnv(probabilities)

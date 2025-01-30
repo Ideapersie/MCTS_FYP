@@ -9,7 +9,7 @@ class SimulateUCB:
         # Probabilities from 0% to 99% win rate
         probabilities = np.arange(0.0,1.00,0.01)
         num_arms = len(probabilities)
-        temperature = 0.4 # balance between exploration and exploitation 
+        temperature = 0.49 # balance between exploration and exploitation 
         
         # No. of iterations per simulation 
         self.iterations = 1000

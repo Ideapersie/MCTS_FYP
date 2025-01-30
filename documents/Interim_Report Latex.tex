@@ -1,0 +1,521 @@
+\documentclass[]{final_report}
+
+\usepackage{graphicx}
+\usepackage{hyperref}
+
+
+%%%%%%%%%%%%%%%%%%%%%%
+%%% Input project details
+\def\studentname{Tharit Mohamed Hussain Khan}
+\def\reportyear{2024}
+\def\projecttitle{Game Playing with Monte-Carlo Tree Search}
+\def\supervisorname{Magnus Wahlstrom}
+\def\degree{BSc (Hons) in Computer Science}
+\def\fullOrHalfUnit{Full Unit} % indicate if you are doing the project as a Full Unit or Half Unit
+\def\finalOrInterim{Interim Report} % indicate if this document is your Final Report or Interim Report
+
+\begin{document}
+
+\maketitle
+
+%%%%%%%%%%%%%%%%%%%%%%
+%%% Declaration
+
+\chapter*{Declaration}
+
+This report has been prepared on the basis of my own work. Where other published and unpublished source materials have been used, these have been acknowledged.
+
+\vskip3em
+
+Word Count: 4949
+
+\vskip3em
+
+Student Name: \studentname
+
+\vskip3em
+
+Date of Submission: 13/12/2024
+
+\vskip3em
+
+Signature: Tharit
+
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%
+%%% Table of Contents
+\tableofcontents\pdfbookmark[0]{Table of Contents}{toc}\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%
+%%% Your Abstract here
+
+\begin{abstract}
+
+
+Monte-Carlo Tree Search is a revolutionary search algorithm allowing AI to finally surpass Humans in the field of Go. After watching a documentary on AlphaGo, I wanted to understand what made MCTs so unique and special therefore, in this project, through the experimentation of the Multi-Armed Bandit Problem I will be testing and comparing UCB to different naive strategies. Improving my understanding of the tradeoff between exploration vs exploitation while being able to analyse and experiment with various variables including the Epsilon Variable. Afterwards, with my own implementation of the game of Go written in the language Python, I will be using the knowledge gained to create a bot implementing the MCTs as its search algorithm and therefore enabling users to play against it to learn the game of Go, alongside a Player vs Player mode where the users can play with their friends and enjoy Go together. 
+
+\end{abstract}
+
+%%%%%%%%%%%%%%%%%%%%%%
+%%% Introduction
+\chapter{Introduction}
+
+
+\section{Aims & Objectives}
+
+This project is about Game Playing with Monte-Carlo Tree Search (MCTS) , a newly developed heuristic search method for game trees which mainly focuses on simulating rollouts to improve path chosen rather than exhaustive search trees using reward evaluations such as Alpha-Pruning. 
+
+The purpose of this project is to understand why MCTs is very unique therefore used in the game of Go separating it from other search algorithms, through the Multi-Armed Bandit problem I will get a better understanding between the tradeoff of exploration vs exploitation, especially the UCB score which is the formula used in the selection step of MCTs. With this knowledge, I will then implement the game of Go using Python and further apply the MCTs to an AI therefore anyone can play against this AI and test themselves or play against another player whether its their friends for entertainment. 
+
+\section{Motivation for the project}
+
+My main inspiration for this project was a documentary I watched in 2020 about AlphaGo which is the first AI to earn the title of 9 dan professional ranking, the highest ranking in Competitive Go [9].  Watching the documentary for the first time, the capabilities of AI amazed me since GO is a such a complex game compared to other board games like checkers or even Chess with the possible board configurations up to $10^{170}$ different variations [10]. The use of Deep Neural Networks trained by a combination between human professional games and self-played games through reinforcement learning incorporated with the Monte-Carlo Tree Search allowed AlphaGo to defeat the “best” Go Champion Lee Sedol in 2016 with an astonishing 4-1 score in a best of 7 [5], furthermore achieving a 99.8\% win rate against other Go Programs [7]. While watching this documentary, I was intrigued by how the incorporation of miscellaneous fields of Machine Learning and Search algorithms could lead to such an innovative AI, further implementation of these techniques were used to create a general-purpose reinforcement learning algorithm used by another AI developed by DeepMind named AlphaZero [11]. AlphaZero is able to achieve superhuman performance on multiple games including Go and Chess through self-play with no prior domain knowledge besides the game rules, this is very fascinating to me therefore leading me to this project. As soon as I saw MCTS in the Project list I knew this is the project I would like to research about since I would like to learn about the algorithm which had a breakthrough in the board game world, allowing new records to be broken with the hope of being able to take it to the next step and incorporate Machine Learning with this algorithm creating my own version of “AlphaGo”. 
+\newpage
+\section{Techonology choices}
+
+Through reading various research papers and articles, I stumbled upon a book called “Deep Learning and the Game of Go” which is written by the team who created AlphaGo, containing a lot of important information required for this project, it allowed me to have a much better understanding about the structure of the AI and what is required to create this myself including the game of Go. Python is a programming language I am similar with and also the language most Go Implementations are written in therefore I decided to use Python for this Project, which is also beneficial for graphical representations using Matplotlib and Numpy (this will be used for the Bandit Problem Solver). 
+
+
+
+
+
+\chapter{Background theory}
+
+\section{MCTS}
+
+MCTs is a best-first search method that does not require a positional evaluation function
+in contrast to Alpha-pruning search however it is based on score-based explorations of the
+search space. With results from past explorations, the MCTs updates a score called the UCB score or the upper-confidence bound which then progressively becomes better at estimating the next most promising move [4]. In total there are 4 steps to the MCTs algorithm: (1) the selection step which we traverse the tree and select a node which is not part of the tree (2) the expansion step in which a new node is added to the tree next is (3) the simulation step where the game is played in self-play until the end of the game where there is an outcome whether winning, losing or drawing depending on the game and lastly, (4) backpropagation step, this is where the result from the simulation step
+updates the score through the previously traversed nodes[4] therefore potentially affecting
+the next selection step outcome and this cycle will continue until the game ends consequently leading to a more accurate UCB score after every iteration of the search method. 
+
+\section{Selection step}
+
+The most important step is the Selection step since this affects the nodes chosen to be
+traversed therefore resulting in various simulated game outcomes. The main difficulty for this
+step is finding the balance between exploitation and exploration, exploitation refers to the
+simulation of the moves with the highest estimated winning percentage[6] while exploration
+favours the lesser explored moves to get a more accurate evaluation of the branch in the
+hope of finding a ‘better’ move or branch.[4]
+
+\section{UCB vs naive strategies}
+
+Further understanding of the tradeoff between exploitation and exploration will be analyzed through solving and analysing the multi-armed bandit problem. In this project, 4 different strategies will be tested to find the best results for the bandit problem and emphasise how the UCB score used in MCTs is different or better than other naive strategies. 
+
+\section{Multi-Armed bandit problem}
+
+The Multi-armed bandit problem is a classic problem demonstrating the exploration vs exploitation dilemma, the problem introduces the player to various slot machines each with unknown probabilities and the player has to figure out the best strategy to obtain the most amount of rewards in the long-term. Numerous strategies are applied to this problem however they are separated into 3 main types: No exploration, Exploration at random and Exploration with evaluation policies.[12] Multiple strategies have been tested however there isn’t a single paper containing multiple with distinct result comparison therefore in this project, we will be comparing 4 different strategies: Random Selection, Epsilon-greedy, Decay Epsilon-greedy and the Upper-confidence bound (UCB) score.  
+
+In this implementation,  the slot machines will be starting with 10 arms in total ranging from arm 0 to arm 9 with probabilities increasing from 0\% to 90\% chance of winning in increments of 10\% ex. arm 2 = 20\%, arm 7 = 70\% chance of winning therefore the arm number corresponds to the win percentage multiplied by 10\%. These slot machines give a reward of 1 whenever won and each strategy will run 1000 iterations each resulting in a more reliable and consistent outcome.  This is then increased after basic understanding of each algorithm to 100 arms ranging from arm 0 to arm 99 following the same probability trend of starting at 0\% to 99\% chance of winning with 1\% increase per arm, allowing easy observation of results while excluding the 100\% arm since this would lead to inaccurate results. 
+
+Throughout analysis and aggregation of results, 3 graphs will be displayed when each algorithm is experimented. Starting with the green graph on the leftmost, ‘Average Total Rewards Per Arm’ this graph illustrates whether each arm is acting as expected, the graph should normally be linear since each arms corresponds to their respective probability chance. The middle blue graph, ‘Average Pull Count Per Arm’ which is very crucial in determining how each algorithm tackles the tradeoff  between exploitation vs exploration while maintaining a high total reward which is displayed above the blue graph. The right yellow graph is the ‘Estimated Probability Per Arm’ which is the average win rate of each arm for example, if an arm got rewards for 3 out of the 5 pulls then the estimated probability of that arm would be 60\% or 0.6 in this case. Combining all these 3 graphs, thorough analysis can be made on how each algorithm acts and how changing a variable such as the Epsilon value could change the results for each graph . The main focus will be the total rewards while maintaining a good estimation of each arms therefore red dots are placed on the yellow graph for every 20 arms to determine the accuracy of estimation for each algorithm, the more linear the gradient is, the more accurate the estimations are. 
+
+\subsection{First Strategy - Random Selection}
+
+As the name suggests, this strategy will be selecting the slot machines at random as seen in the image below. 
+
+\begin{figure}[H]
+     \centering
+     \includegraphics[width=0.8\linewidth]{Random - code.png}
+     \caption{Random selection}
+     \label{fig:enter-label}
+ \end{figure} 
+
+
+This method decides which arm to select next, and throughout this experiment I will be explaining how each arms are selected in their respective algorithms. However, in random selection the arms are selected randomly with the use of the np.random module. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{Random - 10 arms.png}
+    \caption{10 arms}
+    \label{fig:enter-label}
+\end{figure}
+
+Initially each bandit problem had 10 arms with 10\% probability of winning corresponding to the arm number. As shown above, the average pull count per arm is almost equal throughout every arm which is expected therefore leading to a very accurate estimated mean value per arm. The Third graph (estimated mean) is also very accurate with an almost linear gradient however the total rewards is significantly lower due to the randomness in exploration and no exploitation in higher probability arms. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{Random - 100arms.png}
+    \caption{100 arms}
+    \label{fig:enter-label}
+\end{figure}
+
+In this figure, the arms’ amount has been increased from 10 to 100 arms. This increase is more impactful to other strategies and will display a better view on why the tradeoff between exploration and exploitation is not a simple concept and requires a lot of experimenting with variables and strategies. However, the number of simulations have been reduced from 100 to 10 since the runtime taken to compile a graph with 100 simulations requires an extended amount of time and may result in a system crash with insufficient computational power therefore 10 simulations of 1000 iterations each will be the results used onwards. 
+
+As shown above, the results are more varied than using 10 arms which is the purpose of increasing the number of arms similar to simulating the move possibilities each search algorithm would have to decide from, since in a 19x19 Go Board there’s 360 possibilities for each move which increases exponentially after several moves therefore affecting how the selection strategies decides between exploration and exploitation. The red dots on the right most graph is to give an estimate of how well the strategy is estimating the probability of each arm, with the linear line being the aim, since each arms were pulled relatively equal amount of times, the estimated probability is quite accurate. Through this experiment I understood that, the more number of pulls, the better estimated probability since there’s more data to be used for estimation resulting in higher accuracy estimations. 
+
+\subsection{Second Strategy - Epsilon Greedy}
+
+The Epsilon Greedy algorithm is an algorithm which takes the best estimated action most of the all time (exploitation) while having random exploration with the frequency of the explorations depending on the Epsilon Variable. Once the variable is set, the random action (exploration) happens with probability $\epsilon$ and majority of the time with probability (1 - $\epsilon$), the best estimated action is taken. [12]
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{E Greedy - code.png}
+    \caption{Epsilon greedy code}
+    \label{fig:enter-label}
+\end{figure}
+
+This is the code used to select the next arm, using numpy modules made this implementation simpler and efficient to use. The arms will be randomly selected if the number generated is less than the epsilon value chosen, else the arm with the highest estimated probability value will be chosen . The estimated probabillity value for each arm is updated after every pull depending on the results of the current pull and the amount of total pulls, enabling the arm with the current highest estimated probability to be chosen if the random number is larger than the epsilon value (probability of 1 - $\epsilon$)
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{Epsilon - 0.6.png}
+    \caption{Epsilon = 0.6}
+    \label{fig:enter-label}
+\end{figure}
+
+The graph above shows results for algorithm using the Epsilon value of 0.6 which is yielding high total rewards and has a high number of pull count towards the right side, the main drawback for this strategy is that, finding the right epsilon value is very important while also being inconsistent since some simulations, the epsilon might randomly choose arm 50 to start and keep pulling from that arm until its not got a reward resulting in slightly inaccurate estimated probability per arm as illustrated on the orange graph.
+
+\subsection{Third strategy - Decay Epsilon Greedy}
+
+There are 2 main differences between this strategy and the previous one which are the decay variable and the decay intervals. Decay is another variable used to decrease the value of Epsilon over a certain amount of intervals, this will be shown in the code below for better understanding. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{Decay Epsilon - code.png}
+    \caption{Decay\_epsilon Code}
+    \label{fig:enter-label}
+\end{figure}
+
+The decay interval could be set depending on number of iterations, in this experiment it is set to every 100 intervals, then the epsilon value will be multiplied by the decay variable which will then reduce the epsilon value for the rest of the simulation. For example, the epsilon is 0.9 leading to high exploration, this can be decreased by the decay value of 0.8 therefore the epsilon value is 0.72 after 100 iterations. This strategy is more beneficial since after each arm has been pulled a certain amount of times, the strategy will have done enough exploration to have a better estimation for the probabilities of each arm therefore able to reduce the amount of exploration and focus on exploitation while having some exploration in case there are better options. This conversion from exploration to exploitation varies on the decay value and how frequent the intervals are and results will be shown below. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{decay eppsilon 0.9.png}
+    \caption{epsilon = 0.95, decay = 0.9}
+    \label{fig:enter-label}
+\end{figure}
+
+
+The focus on exploitation after exploration leads to a higher total reward while maintaining a reasonable precision for estimating the probability of each arm. The values used for each variable is 0.95 for epsilon and 0.9 for the decay at every 100 iteration intervals, compared to the Epsilon-Greedy the value of Epsilon here is much larger and this is to promote exploration in earlier pulls therefore as the amount of pulls increases, the strategy focuses more on exploitation and results in a higher yeild reward. This strategy also works very well in higher amount of arms yielding good results however the main drawbacks are the number of pulls of arm on the right side of the graph, it is almost similar to the left side which is the cause of only choosing the best resulting arm.
+\newpage
+\subsection{Fourth strategy - UCB Score}
+
+The UCB or the Upper Confidence Bound score is the formula used in MCTs during the selection step and focuses on exploitation while exploring the next best alternatives rather than random exploration used in earlier strategies.[6] The formula includes 4 different variables: 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{UCB score - code.png}
+    \caption{UCB code}
+    \label{fig:enter-label}
+\end{figure}
+
+This strategy starts by pulling every arm atleast once to have a good starting place for the formula where every arm will have a chance to be explored then the Confidence bound is calculated using the total number of pulls  and the number of pulls per arm, this is to weigh the amount of pulls per arm and compare it to the results obtained through these pulls, this bound score will then be multiplied with the ‘temperature’ variable which is similar to the Epsilon value where the higher the temperature, more exploration. Finally, added to the estimated probability of each arm or total rewards per arm depending on the game. 
+
+This leads to every arms having an UCB score where the highest UCB value arm will be pulled, with the use of the temperature, exploration can occur more often since the temperature variable limits the amount of pulls per arm leading to exploration after a certain degree of exploitation 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{UCB - 0.49.png}
+    \caption{UCB score = 0.49}
+    \label{fig:enter-label}
+\end{figure}
+
+
+As shown above, the strategy leads to the highest total rewards while also having a distinct graph structure to previous strategies, this is due to the UCB score prioritizing the next best alternative moves rather than random exploration leading to a curved graph. The better the results, the higher the chance of exploration therefore leading to a much more accurate estimation of probabilities, the main exchange will be accuracy of estimation for arms with lower probabilities however, this exchange is not significant since these moves will not benefit the game or the UCB score and result in a wasted exploration. 
+
+The UCB score used here is 0.49 to give a chance of other higher probability arms a chance of exploration while still maintaining the target of highest total rewards, this concept will be very crucial while applying to the game of Go due to the amount of move possibilities, the search algorithm will only be able to playout so many different moves therefore with the addition of the UCB score , the search algorithm can focus on moves with a higher chance of winning and maintaining efficiency with the computational resources required. 
+
+\chapter{Why GO?}
+
+Through experimentation with the bandit problem, the use of UCB score in the MCTs become clear why it is very useful, the use of the formula created a scoring system for every move leading to exploration of only the next best alternatives moves and focusing on the exploitation of estimated best results which leads to higher accuracy for the estimation of those moves. With the combination of the playout step where the results are obtained through expanding the selected node and simulating the game with self-play until an outcome is obtained therefore updating the UCB score each turn makes this tree search algorithm a perfect fit for the game of Go. Majority of board games have a limited amount of move possibilities therefore they are able to be brute-forced by the use of exhaustive search such as Alpha Pruning used in Chess, simply cannot be applied to the game of Go due to its search space of $10^{170}$ compared to $10^{40}$  of chess, the current computational limitations does not allow for a full search of the game of Go. Furthermore, the heuristic evaluation function used in Alpha-pruning is less effective in Go due to its rewarding system, the evaluation policy rewards capturing the stones which is the main idea of winning GO, but in reality the ‘threat’ of capturing stones and marking out territorial areas is more important since throughout the game,[4] major territories won’t be established yet and only until the last dozen turns will the prior moves form into these large areas revealing the nuances of the previous moves therefore, the positional evaluation policy of Alpha Pruning is not as effective in GO as it would be in other board games such as Chess.  
+
+This is why MCTs is a suitable search algorithm for the game of Go with the addition of Deep Neural Networks and reinforcement learning allowing it to become better than professional players. Therefore, in this project the MCTs will be applied to the game of Go creating another mode of Player vs AI. 
+
+\section{Go Rules}
+
+Go, one of the world’s oldest board games originated in China around 4000 years ago and is now popular worldwide, especially in East Asia. Go is traditionally played on a 19x19 wooden board forming 361 intersections with 181 black and 180 white stones, with alternative sizes of 9x9 and 13x13 boards. 
+
+Players take turns placing each stone on the intersections of any 2 lines then the goal is to conquer as much territory as possible, these territories are formed by completely surrounding vacant points with your stones. These stones are ‘connected’ whenever they are horizontally or vertically adjacent, however, they can be captured whenever completely enclosed by the opponent’s stones, in Go terms this will be called as groups with no ‘liberties’, liberties are empty point connected to any point of groups and once the group has no liberties while being surrounded by the opponent stones, their stones will be captured which will remove those stones from the board. 
+
+There are 2 main violation rules in Go, the self-capture and the ko rule. The self-capture is when your own group of stones have 1 liberty left therefore whenever filling the liberty will results in the capture of those stones, the player can’t place a stone to fill their own liberties resulting in their own capture of stones. This is due to many reasons and will be implemented in the Go Implementation, secondly is the Ko rule stating that, with the capturing of a stone the board cannot return to the previous state else the move is invalid and will not be allowed to played. This is to avoid infinite loops of capturing the same stones over and over again [6].
+
+Finally, a crucial aspect of Go is the scoring, each player’s scores will depends on the empty points remaining in their own territories and stones between each territories are called neutral resulting in nothing for both players. After those points have been counted, the captured opponent stones will also be added to your score resulting in the final score, the player with the most points wins, however, there is another important rule where the white player score is added with a variable called ‘komi’. Due to the black player starting first, the white player is at a disadvantage therefore a rule is created to give white player more points as a way to balance the game with the standard Komi value being 6.5 [6]. 
+
+The game of Go also has a ranking system and this will be used to determine the strength of the AI. The traditional GO ranks ranges from 25 kyu (Complete beginner)  to professional 9 dan (World’s strongest players). The ranking system separates between the amateur players and the professional players: kyu ranges from 25 to 1 with 1 being the highest, this is done to be able to determine the number of stones for handicap purposes easily. For example, if a player who is 5 kyu plays against an 8 kyu player, the player with 8 kyu gets three handicap stones to leverage the player’s strength. Furthermore, the amateur system extends past 1 kyu to dan as well, ranging from 1 as the lowest and 7 dan as the highest: Players with 7 dan ranking are top amateur players and marginally close to professional strength since the next ranking enters the professional dan ordering from 1 to 9 [4].
+
+\section{GO implementation}
+
+The implementation of Go is written in Python due to its strong support for AI and machine learning, while provide a wide array of useful libraries such as Numpy which will be used in this project and Matplotlib alongside with Pygame which can be used for the games interface. In this implementation, the game will be split into 3 main files: goplayer.py, goboard.py, player\_vs\_player.py.
+
+Firstly, [goplayer.py] contains 2 classes, Player and Point class which will be used regularly throughout the project. The Player class is an enumeration where the black player is represented as 1 and white as 2 therefore, in later implementations the identification of current and next player is efficient and easy to understand. The Point class presents the board positions for each stone points using tuples, alongside with the neighbour function which is crucial is determining the adjacent stones.
+
+[goboard.py] is where the majority of the code functionality is, containing a set of classes handling the game states, rules and scoring which are combined together and used in player\_vs\_player.py
+
+The Move class is a simple class containing all the player’s action available in the game which are placing a stone, passing turn and resigning, after placing multiple stones, groups of connected stones of the same colour or a “string” could be created which is covered in the GoString class. 
+
+The main method is the merged\_with method shown below:
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{goboard.py merged with.png}
+    \caption{merged\_with method}
+    \label{fig:enter-label}
+\end{figure}
+
+Making sure the colours of the stones are the same, the method results in 2 different stones connected together creating a string furthermore combining the amount of liberties since if they are adjacent and connected, the liberties convert from stone liberties into a string liberty therefore to capture this, the whole string needs to be captured rather than a single point. 
+
+Next is the board class where all the mechanics of placing a stone, board representation and territory calculation is included. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{goboard.py string.png}
+    \caption{string representation}
+    \label{fig:enter-label}
+\end{figure}
+
+In combination with the Player class, the visual representation of board including using a ‘X’ for black stones and ‘O’ for whites stones with ‘.’ as an empty point. The rows and columns of the board is also dynamic therefore any board size can be implemented, in this project we will be focusing on 9x9 board with the rows from 1-9 and columns A-I. 
+
+The place\_stone method is very crucial for this method since it places the stone while calculating the surrounding liberties, including if its adjacent to opponent’s stones or same coloured stones formed a string of stones. Furthermore, if the liberty is reduced to 0 due to placing stone, this signifies capturing a stone and the captured stones has to be removed using the .liberties value which is shown below
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{goboard.py placing stone.png}
+    \caption{place\_stone method}
+    \label{fig:enter-label}
+\end{figure}
+
+The most challenging and complex part of this code implementation is the calculate\_territory method, with the challenge of determining the borders between each group while adding up the empty points within the groups, with the current implementation most game scenarios are functioning well however some scenario with straight borders and big areas of the board being empty has to be further tested and improved in a latter stage.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{calcualte.png}
+    \caption{Calculate\_territory method}
+    \label{fig:enter-label}
+\end{figure}
+Current implementation will iterate over all the points in each territory and determining the border colour to add the amount of empty points to their respective scorings 
+
+\section{GO gameplay}
+
+Lastly, the player\_vs\_player.py which contains all the previously defined methods and classes creating a visual representation of the board in CLI and allowing the players to play against each other. The player will be prompted with a welcome screen and then the screen will wait for the player input.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{pvp_input.png}
+    \caption{Go Main Menu }
+    \label{fig:enter-label}
+\end{figure}
+
+With the conditions shown above, the player input will determine what happens next and all these are set to help players understand what is wrong with the inputs incase they do not understand or know their mistakes. The game of Go starts input with column first represented by letters by rows which are by the numbers. Once the game is done, both players can enter pass and the game will end calculating the final score shown below however if the player resigns then there are no scoring and the opponent will automatically win. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{pvp_final state.png}
+    \caption{final state}
+    \label{fig:enter-label}
+\end{figure}
+
+The figure above shows one of the final states of the board resulting in the black player winning and the white player barely losing even with the addition of 6.5 by komi. 
+
+\chapter{Software engineering}
+
+\section{Testing - how did I use testing}
+
+Testing has been done using unittest which is a Python unit testing framework, based on Erich Gamma's JUnit and Kent Beck's Smalltalk testing framework [13]. This module allows for efficient testing of each method with the aim of having a 100\% coverage for all the method in the project, currently at 92\% for [goboard.py], 100\% for [goplayer.py] and 49\% for player\_vs\_player.py. The use of testing here can detect errors or bugs with each method and has been very useful especially for functions such as capturing stones, ko rules and especially calculating territories. These tests has been able to help me improve each method and make it correct while efficient. 
+
+\section{Code Quality}
+
+The Coding Quality mainly includes good project structure following use of the structure provided in the lecture, with the addition of comments throughout the classes allowing anyone to read and understand the code better. Furthermore, allowing myself to understand the purpose of each functionality once I return to revisit an old class and especially while fixing bugs and errors. The comments were kept short and concise to avoid clutter and information overload for the reader. 
+
+\section{Reflection on project plan}
+
+Looking back at the project plan, I have released that the project plan was a well structured plan however too ambitious especially in combination with 3 other modules including assignments for each one. I am glad I took the time to experiment with the bandit problem and gained a detailed understanding of how the UCB score functions and the comparison with other naive strategies further understanding why this formula is used in MCTs and also a preferable formula to use for the game of Go. 
+
+\subsection{Milestones achieved}
+
+- Understood MCTS 
+
+- Understanding the tradeoff between exploration vs exploitation
+
+- Compared UCB score with naive strategies such as E-greedy and Decay Epsilon
+
+- Implement Go using Python
+
+- Functional Go Player vs Player mode
+
+\subsection{Plan for next term}
+
+With the project plan timescale being to crunched, I will be planning to finalize the scoring of game throughout the winter terms with research and preparation for creating a GUI for the game since this is a field I am not well-versed in. Once the term starts, I will start with the implement of this GUI while creating a new game mode of AI vs Player, the first few week will be trying easier algorithm such as random moves and alpha-pruning to compare which MCTs is used in Go and how it is better. In the latter stages of the term, I will be improving the UCB score in the MCTs algorithm once it has been implemented into the AI and analyze the best values for this variable. 
+
+
+\chapter{Appendixes}
+
+\section{Report Diary}
+
+
+\textbf{12/12/2024}
+
+Due to changes to the bandit problem, I decided to add red dots instead of statistical labels to avoid clutter while providing a visual method of comparing the accuracy of how well each algorithm estimates the mean probability of each arm since the more linear the models, the better the estimation. Furthermore, finalised the calculate\_territory method to avoid neutral points be mistaken as black points especially at the start of the games with no points or no defined territories yet. 
+
+\textbf{11/12/2024}
+
+Increased the number of arms from 10 arms to 99 arms in the bandit problems since this allows for better understanding between the tradeoff of exploration vs exploitation since the more number of possible moves, the harder it is to get the best results. Hence now arm 0 starts at 0\% and increases by 1\% per arm until arm 99, with this the simulations will be reduced from 100 to 10 due to lack of computational power and graph compiling times. Due to the no. of arms changed, experimentation and change in variable values was required especially the epsilon variables. 
+  
+\textbf{09/12/2024}
+
+Added the calculate\_territory method while calculates the territories of each player and where there are neutral territory which does not contribute to the final scoring, this is included in the final\_score function where the territory are counted at the end and will be displayed in the CLI also printing who the winner is (player with the most territory), this still requires further testing since territory is inaccurately scoring the neutral territories as black territories.
+
+\textbf{08/12/2024}
+
+Using Matplotlib and the average results gathered, I decided to make 3 graphs with the first graph on the left being the average rewards per arm then the average pull count per arm then estimated mean probablities per arm with the total rewards of each algorithm displayed at the top. The most important variable is the average pull per arm since this determines which algorithm prioritises the total rewards while also explores other arms efficiently, with careful variable testing, the UCB score is best for this method since it only prioritises the arms with higher rewards unlike e-greedy where the lower arms are randomly pulled. 
+  
+\textbf{07/12/2024}
+
+For the visual representation in the presentation, I decided to revisit the bandit problem and created matplotlib graphs for each simulated to illustrate the difference in each algorithms for the bandit problem. For a reliable and accurate results, I implemented a way to gather average results from 100 simulation of each algorithm where each simulation is a 1000 iterations each. Next I will be finalizing the values gather and also display these values in a graph. Furthermore, I am finalizing the presentation and will be using the graph displayed by MatPlotlib.
+\newline
+\newline
+  
+\textbf{06/12/2024}
+
+New file to incorporate all the previous classes into a player\_vs\_player method where a new game starts once called, the players inputs plays representing stones on the board and prints an "invalid move" if the move is invalid such as the ko rule or the rows are larger than board size. The player can also pass turn or resign by typing in "pass" and "resign" respectively however I will be implementing a scoring method to calculate the territories next and further testing required. 
+  
+\textbf{05/12/2024}
+
+Had the third meeting with my supervisor, shown him my progress so far with the outlines to my presentation and reports, Got feedback on what I could include in my reports such as A plan for next term and also explanation for the research and experimentation I have done. He also suggested to fully complete the PVP mode then focus on creating a GUI in the next term to make a completed early deliverable on time. 
+  
+\textbf{04/12/2024}
+
+New str method which will represent the go board in CLI using x and o as black and white stones and columns will be defined with letters from A to I, rows are defined with numbers from 1 to 9. However, testing this method has been a challenge since I would have to convery the board into a string while keeping the same format and also find a way to compare the values rather than instances. 
+  
+\textbf{03/12/2024}
+
+Implemented another special rule called the Ko Rule which is when then board can't return to the previous state after capturing a stone since this could end in an infinite loop of capturing the same points over and over again, this Rule is implemented by comparing next move with the previous state of the board. While testing, the comparing between board states was an issue since it was comparing instances instead of values therefore I had to make my own eq method, lastly combined both previous rules into validmove which determines if the next move played is a valid move, if not an "invalid move" prompt will appear. 
+  
+\textbf{01/12/2024}
+Implemented a selfcapture method which is a rule in go where the player can't place stone if it results in its own stones being captured, this prevents certain moves from the game therefore it is required and requires copying the state of the board to compare number of liberties to a point. Furthermore, testing all the gameover function implemented earlier including the selfcapture method
+  
+\textbf{30/11/2024}
+
+New class of Gostate which will be storing the board positions, next player, previous game states(will be used in the Ko Rule) and the last move played. Also including function like starting a new game including the variable values initialised when the game is starting such as the starting player will be the Player with black stones, another function is the isover to state that the game ends when both player passes or either resigns.
+  
+\textbf{29/11/2024}
+
+Completed the Board class with the addition of removestring method since this is used to remove strings with no liberties left when the stones are placed, also added a function to merge strings if they are connected to same coloured stones. Furthermore, improved these methods through testing and making sure each method is functioning as expected. Will be starting the GoState class next which will contain method such as starting a new game. 
+
+\textbf{26/11/2024}
+
+Implemented the Board class which allows specifying the size of the board and the main size used in this project will be 9x9 since it is much more computational viable and easier for 
+the MCTS algorithm to be implemented and understood. This class includes a placestone method which is very crucial since it places the specified stone on the point while determining 
+the liberties surrounding that point which will be used in the capturing method later on. Also included the method to retrieves the player's colour and string connected to a certain stone.
+  
+\textbf{24/11/2024}
+
+Started with the Player class and move class including functions such as playing moves, passing turn and resigning while the Player class has 2 players, black or white and a neighbour function determining the neighbours of each point. This is tested using unittest and this will be used throughout the project.
+  
+\textbf{23/11/2024} 
+
+After understanding the implementation of the GO board in Python and applying a random algorithm, I decided to create a new branch to implement those files again with proper testing and coverage tests to make sure the codes will be efficient and follow coding standards, starting with the Player files and possible move functions. Next will be the implementation of the GO board and I will continue this until I implement a basic algorithm and enable player vs player game in CLI then work on a GUI for the game. 
+
+\textbf{15/11/2024}
+
+I Added 2 new files, containing functions which will help determine if a point is an eye therefore helping to end the game of GO since without this function, the AI might self-capture itself but filling the eye which will lead to a loss. Furthermore, I have been continuing to understand and research about implementing algorithms into the game of GO using Python and Next I will be starting with an AI which plays random moves then further implement other algorithms from there on. 
+
+\textbf{12/11/2024}
+
+Since the last entry, I have been constantly implementing the game of Go using Python, recently I have added the Ko and Self-capture rules which are illegal moves in most international rulesets for Go, currently there are 4 different classes specifying Go moving options, a Go string containing each groups of same coloured Go, Board and GameState class. Next, I will be implementing how to end the game of Go including many conditions to check for while ending the game of Go.   
+
+\textbf{07/11/2024}
+Had the second meeting with My Supervisor to catch up on my progress. I demonstrated my findings so far on the bandit problem solver on different algorithms and asked about the best way to illustrate this, my Supervisor recommended to show it in a graph form therefore it can easily be determined which algorithms yield the best results with a good predicted on the estimated probability of each arm, my Supervisor also suggested building my own GUI for the GO game and also look into Parallelism while running the MCTs for the GO game to be able to reduce the search tree. Next I will continue implementing GO using Python. 
+
+\textbf{06/11/2024}
+
+Increased the number of arms for the bandit problem on each algorithm and further optimizing it and analysing the difference the number of arms affecting the constant values of each algorithm since for the Epsilon algorithms, the epsilon value had to be increased from 0.12 to around 0.35 to advocate for the increase in number of arms and promote exploration since it was too focused on exploitation. Further improved UCB algorithm and merged with Main branch to start working on a new branch (test-go-game), which will start the implementation of the GO board game using Python, first in CLI and further along the line as a GUI. Next I will be continuing this implementation and solidify the rules of Go in this branch making sure its playable and efficient. 
+
+\textbf{01/11/2024}
+
+Tested UCB algorithm with increased numbers of total pulls analysing whether it will results in a better average estimated mean value of each arm, which it does until a certain point alongside increasing the number of arms from 3 to 10 and analysing the difference in average rewards. Furthermore, implemented the 'temperature' variable in the UCB algorithm which is used to balance the exploration and exploitation. Started with 1.5 which was suggested in a book for GO however this was too high for the 10 arm bandit problem therefore currently the best found value is around 0.8, not resulting in the best rewards however it is more consistent and gives a better estimate of each arms's probabilities.  
+
+\textbf{28/10/2024}
+
+Improved the decay epsilon-greedy algorithm and implemented the UCB algorithm, using the confidence bound score to determine the next arm selected. Next I will be including a 
+'temperature' variable or the exploration score to determine the balance between exploitation and exploration, further also increasing the number of arms in the problem to 
+estimate the efficiency of the algorithm and different number of exploration options.  
+
+\textbf{24/10/2024}
+
+Added 3 different algorithms for the Bandit problem, Random selection, epsilon-greedy and decay epsilon-greedy algorithm. Displaying total numbers of pull and mean rewards per arm,
+allowing to track the efficiency of each algorithm (will be illustrated in a latter stage). Next I will be experimenting with the UCB algorithm and analysing which algorithm is more
+efficient.  
+
+\textbf{22/10/2024}
+
+Made a simple CLI for the main menu with options leading to a page where the bandit problems will be experimented and analysed, and another page for the Command-Line GO game.Will continue researching the algorithm and constantly keep testing it in the respective files, starting with a simple bandit problem with naive strategies.  
+  
+\textbf{18/10/2024}
+
+Understanding the formulas of each algorithms and will be comparing between naive and non-naive strategies, will plan to implement a GUI to show these results later on as per my supervisor recommendations.
+Once I fully grasp these formulas and how they work, I will implement each one into Python therefore showing statistical results between each algorithm and compare it to UCB.   
+  
+\textbf{15/10/2024}
+
+Doing research on the Multi-Armed Bandit problem and understanding the UCB algorithm, asked my supervisor about the Bandit problem early deliverables.  
+Next I will be implementing the Bandit problem into Python trying out different selection algorithms and comparing it to the UCB algorithm.  
+
+\newline
+
+\textbf{12/10/2024}
+
+Finalised and submitted the Project Plan yesterday, I have been continuing research on MCTs and gained a lot of knowledge therefore next week I will start
+extending my research on Bandit Problems to understand the trade-off between exploration and exploitation and the UCB score.  
+
+\textbf{08/10/2024}
+
+Read more research papers and the book which taught me new knowledge about AI and MCTs therefore I can improve the abstract section of the project plan.
+Furthermore, finalising the timeline of the project and next I will be continuing research while determining about the possible risks and mitigations.  
+
+\textbf{03/10/2024}
+
+Attended my supervisor meeting and improved my project plan especially the timeline and how I should structure each week.
+Next step will be to continue research especially a book I came across explaining how to make an AI for the game of GO.  
+
+
+\subsection{Link to the video demonstration}
+
+\href{https://www.youtube.com/watch?v=d2ulAzf_Xuc}{\textbf{Link to demo}: https://www.youtube.com/watch?v=d2ulAzf_Xuc}
+
+
+%%%% ADD YOUR BIBLIOGRAPHY HERE
+\newpage
+\chapter{Bibliography}
+
+[1] Bergemann, Dirk, and Juuso Valimaki. ”Bandit problems.” (2006).\newline
+
+[2] Britannica, The Editors of Encyclopaedia. ”go”. Encyclopedia Britannica, 24 Jun. 2024,
+https://www.britannica.com/topic/go-game. Accessed 9 October 2024.\newline
+
+[3] Cant, Richard, Julian Churchill, and David Al-Dabass. ”Using hard and soft artificial intelligence algorithms to simulate human go playing techniques.” International Journal
+of Simulation 2.1 (2001): 31-49.\newline
+
+[4] Chaslot, Guillaume Maurice Jean-Bernard Chaslot. ”Monte-carlo tree search.” (2010).\newline
+
+[5] Moyer, Christopher. “How Google’s AlphaGo Beat a Go World Champion.”
+The Atlantic, 28 Mar. 2016, [www.theatlantic.com/technology/archive/2016/03/]
+(http://www.theatlantic.com/technology/archive/2016/03/)
+the-invisible-opponent/475611/.\newline
+
+[6] Pumperla, Max, and Kevin Ferguson. Deep learning and the game of Go. Ch.4.5. Shelter
+Island, NY, USA: Manning Publications Company, 2019.\newline
+
+[7] Silver, David, et al. ”Mastering the game of Go with deep neural networks and tree
+search.” nature 529.7587 (2016): 484-489\newline
+
+[8] Gelly, Sylvain, and David Silver. “Monte-Carlo Tree Search and Rapid Action Value Estimation in Computer Go.” *Artificial Intelligence*, vol. 175, no. 11, July 2011, pp. 1856–1875, https://doi.org/10.1016/j.artint.2011.03.007.\newline
+
+[9] AlphaGo Movie. “AlphaGo Movie.” *AlphaGo Movie*, 2014, www.alphagomovie.com/screenings. Accessed 12 Dec. 2024.\newline
+
+[10] Google Deepmind. “AlphaGo.” *Google DeepMind*, 26 Sept. 2024,deepmind.google/research/breakthroughs/alphago/.\newline
+
+[11] Silver, David, et al. “A General Reinforcement Learning Algorithm That Masters Chess, Shogi, and Go through Self-Play.” *Science*, vol. 362, no. 6419, 6 Dec. 2018, pp. 1140–1144, https://doi.org/10.1126/science.aar6404.
+\newline
+
+[12] Weng, Lilian. “The Multi-Armed Bandit Problem and Its Solutions.” *Lilianweng.github.io*, 23 Jan. 2018, lilianweng.github.io/posts/2018-01-23-multi-armed-bandit/#upper-confidence-bounds.
+\newline
+
+[13] “Python Unit Testing Framework.” *Sourceforge.net*, 2024, pyunit.sourceforge.net/pyunit.html. Accessed 13 Dec. 2024.
+
+\label{endpage}
+
+
+
+\end{document}

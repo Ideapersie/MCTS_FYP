@@ -23,13 +23,11 @@ class UpperConfidenceBound:
         for arm in range(self.num_arms):
             if self.count[arm] == 0:
                 return arm # return one which has not been pulled yet
-         
         
         # calculating the upper confidence bound, higher temperature = more exploration 
         for arm in range(self.num_arms):
             confidence_bound = math.sqrt(2* math.log(sum(self.count))/self.count[arm])
             self.ucb_value[arm] = self.mean[arm] + self.temperature * confidence_bound
-
 
         # select arm with highest UCB value 
         return np.argmax(self.ucb_value)
