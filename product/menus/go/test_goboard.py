@@ -84,12 +84,9 @@ class TestBoard(unittest.TestCase):
         self.assertEqual(self.board.num_cols, 9)
         
        
-    def test_str(self):
-        # White stone at bottom left 
-        self.board.place_stone(Player.white, Point(1,1))
-        
+    def test_str_empty(self):
+        # Test empty board
         expected_str = (
-            
             "9 . . . . . . . . .\n"
             "8 . . . . . . . . .\n"
             "7 . . . . . . . . .\n"
@@ -98,7 +95,42 @@ class TestBoard(unittest.TestCase):
             "4 . . . . . . . . .\n"
             "3 . . . . . . . . .\n"
             "2 . . . . . . . . .\n"
-            "1 . . . . . . . .\n"
+            "1 . . . . . . . . .\n"
+            "  A B C D E F G H I "
+        )
+        self.assertEqual(expected_str.strip(), str(self.board).strip())
+
+    def test_str_black_stone(self):
+        # Test board with one black stone
+        self.board.place_stone(Player.black, Point(1,1))
+        
+        expected_str = (
+            "9 . . . . . . . . .\n"
+            "8 . . . . . . . . .\n"
+            "7 . . . . . . . . .\n"
+            "6 . . . . . . . . .\n"
+            "5 . . . . . . . . .\n"
+            "4 . . . . . . . . .\n"
+            "3 . . . . . . . . .\n"
+            "2 . . . . . . . . .\n"
+            "1 X . . . . . . . .\n"
+            "  A B C D E F G H I "
+        )
+        self.assertEqual(expected_str.strip(), str(self.board).strip())
+
+    def test_str_both_stones(self):
+        # Test board with one white stone
+        self.board.place_stone(Player.white, Point(2, 2))
+        expected_str = (
+            "9 . . . . . . . . .\n"
+            "8 . . . . . . . . .\n"
+            "7 . . . . . . . . .\n"
+            "6 . . . . . . . . .\n"
+            "5 . . . . . . . . .\n"
+            "4 . . . . . . . . .\n"
+            "3 . . . . . . . . .\n"
+            "2 . O . . . . . . .\n"
+            "1 X . . . . . . . .\n"
             "  A B C D E F G H I "
         )
         self.assertEqual(expected_str.strip(), str(self.board).strip())
@@ -460,6 +492,33 @@ class TestGoState(unittest.TestCase):
         cornercap_move = Move.play(Point(1,2))
         # False due to self-capture
         self.assertFalse(play6.valid_move(cornercap_move))
+        
+    def test_final_score(self):
+        moves = [
+            Move.play(Point(1, 3)), Move.play(Point(1, 5)),
+            Move.play(Point(2, 3)), Move.play(Point(2, 5)),
+            Move.play(Point(3, 3)), Move.play(Point(3, 5)),
+            Move.play(Point(4, 3)), Move.play(Point(4, 5)),
+            Move.play(Point(5, 3)), Move.play(Point(5, 5)),
+            Move.play(Point(6, 3)), Move.play(Point(6, 5)),
+            Move.play(Point(7, 3)), Move.play(Point(7, 5)),
+            Move.play(Point(8, 3)), Move.play(Point(8, 5)),
+            Move.play(Point(9, 3)), Move.play(Point(9, 5)),
+        ]
+
+        # Play moves
+        for move in moves:
+            self.game = self.game.play_move(move)
+        
+        # Calculate the final score
+        score = self.game.final_score(komi=6.5)
+        
+        print(f"\n"+str(self.game.board))
+
+        # Check the scores
+        self.assertGreater(score["White"], score["Black"])
+        self.assertEqual(score["White"], 36)
+        self.assertEqual(score["Black"], 18)
         
         
 if __name__ == '__main__':

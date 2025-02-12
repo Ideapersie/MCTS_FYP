@@ -131,7 +131,7 @@ class Board():
                     continue
                 elif neighbour_string is not string:
                     neighbour_string.add_liberty(stone)
-            self._grid[stone] = None
+            del self._grid[stone]
         
     # Placing a stone on the board & manages liberties of neighbouring stones    
     def place_stone(self, player, point):

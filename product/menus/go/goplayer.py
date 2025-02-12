@@ -20,3 +20,11 @@ class Point(namedtuple('Point', 'row col')):
             Point(self.row, self.col + 1), # above
             Point(self.row, self.col - 1), # below
         ]
+    '''
+    # __eq__ method to compare two points
+    def __eq__(self, other):
+        return self.row == other.row and self.col == other.col
+    
+    def __hash__(self):
+        return hash((self.row, self.col))
+    '''
