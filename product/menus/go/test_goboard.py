@@ -495,15 +495,15 @@ class TestGoState(unittest.TestCase):
         
     def test_final_score(self):
         moves = [
-            Move.play(Point(1, 3)), Move.play(Point(1, 5)),
-            Move.play(Point(2, 3)), Move.play(Point(2, 5)),
-            Move.play(Point(3, 3)), Move.play(Point(3, 5)),
-            Move.play(Point(4, 3)), Move.play(Point(4, 5)),
-            Move.play(Point(5, 3)), Move.play(Point(5, 5)),
-            Move.play(Point(6, 3)), Move.play(Point(6, 5)),
-            Move.play(Point(7, 3)), Move.play(Point(7, 5)),
-            Move.play(Point(8, 3)), Move.play(Point(8, 5)),
-            Move.play(Point(9, 3)), Move.play(Point(9, 5)),
+            Move.play(Point(1, 3)), Move.play(Point(1, 6)),
+            Move.play(Point(2, 3)), Move.play(Point(2, 6)),
+            Move.play(Point(3, 3)), Move.play(Point(3, 6)),
+            Move.play(Point(4, 3)), Move.play(Point(4, 6)),
+            Move.play(Point(5, 3)), Move.play(Point(5, 6)),
+            Move.play(Point(6, 3)), Move.play(Point(6, 6)),
+            Move.play(Point(7, 3)), Move.play(Point(7, 6)),
+            Move.play(Point(8, 3)), Move.play(Point(8, 6)),
+            Move.play(Point(9, 3)), Move.play(Point(9, 6)),
         ]
 
         # Play moves
@@ -511,14 +511,14 @@ class TestGoState(unittest.TestCase):
             self.game = self.game.play_move(move)
         
         # Calculate the final score
-        score = self.game.final_score(komi=6.5)
+        score = self.game.final_score()
         
         print(f"\n"+str(self.game.board))
 
         # Check the scores
         self.assertGreater(score["White"], score["Black"])
-        self.assertEqual(score["White"], 36)
         self.assertEqual(score["Black"], 18)
+        self.assertEqual(score["White"], 33.5) # 27 + 6.5 for komi 
         
         
 if __name__ == '__main__':
