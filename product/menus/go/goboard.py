@@ -259,39 +259,67 @@ class Board():
                             neutral_territory += 1
                     
         return black_territory, white_territory, neutral_territory
+    
     """
+    def fill_territory(self, start_point, visited):
+        queue = [start_point]
+        territory_owner = set() 
+        
+        while queue:
+            point = queue.pop()
+            
+            if point in visited: 
+                continue
+            
+            visited.add(point)
+            player = self.get_player(point)
+            
+            if player is not None: # Point is occupied
+                territory_owner.add(player)
+            else: # if empty then continue exploring
+                for neighbour in point.neighbours():
+                    if neighbour not in visited: # had not been visited
+                        queue.append(neighbour)
+        
+        # Owned by one player 
+        if len(territory_owner) == 1:
+            return territory_owner.pop()
+        # Neutral territory
+        return None       
+            
+    
     def calculate_final_score(self, komi=6.5):
         black_territory = 0
         white_territory = 0
         black_stones = 0 
         white_stones = 0
+        visited = set() 
         
         for row in range(1, self.num_rows +1):
             for col in range(1, self.num_cols+1):
                 point = Point(row, col)
                 player = self.get_player(point)
                 
+                if point in visited:
+                    continue
+                
                 if player == Player.black:
                     black_stones += 1
                 elif player == Player.white:
                     white_stones += 1
                 else: # Empty point
-                    adjacent_colours = set()
-                    for neighbour in point.neighbours():
-                        if self.in_grid(neighbour):
-                            adjacent_colours.add(self.get_player(neighbour))
-                            
-                if len(adjacent_colours) == 1:
-                    if Player.black in adjacent_colours:
-                        black_territory += 1
-                    elif Player.white in adjacent_colours:
-                        white_territory += 1
+                    territory_owner = self.fill_territory(point, visited)
+                    if territory_owner == Player.black:
+                        black_territory += len(visited)
+                    elif territory_owner == Player.white:
+                        white_territory += len(visited)
+                        
                         
         black_score = black_territory + black_stones
         white_score = white_territory + white_stones + komi
         
-        print(f"Black territory:{black_territory}, White: {white_territory}")
-        print(f"Black stones:{black_stones}, White: {white_stones}")
+        #print(f"Black territory:{black_territory}, White: {white_territory}")
+        #print(f"Black stones:{black_stones}, White: {white_stones}")
         
         return black_score, white_score 
                     
