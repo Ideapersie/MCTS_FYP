@@ -15,8 +15,8 @@ class GoMoves:
         print(self.game.board)
 
     def player_input(self):
-        player_input = input("\nEnter your move : ")
-        player_input = player_input.strip().upper()
+        # To avoid capitalization or spacing issues
+        player_input = input("\nEnter your move : ").strip().upper()
         
         if player_input == "PASS":
             return Move.pass_turn()
@@ -25,7 +25,7 @@ class GoMoves:
         elif player_input == "":
             print("\nEmpty move, please input the move")
         elif not player_input[1:].isdigit():
-            print("Invalid move, please move is not an integer!") 
+            print("Invalid move, move is not an integer!") 
         elif int(player_input[1:]) > self.board_size:
             print("Invalid move, input is larger than board size")
         else:
