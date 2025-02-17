@@ -179,7 +179,7 @@ class Board():
             place_string_other.remove_liberty(point)
             if place_string_other.num_liberties == 0:
                 self._remove_string(place_string_other)
-    """     
+ 
     # For explored region used for calculate_territory method  
     def explore_region(self, start, visited):
         # Stack stores explored points 
@@ -259,96 +259,6 @@ class Board():
                             neutral_territory += 1
                     
         return black_territory, white_territory, neutral_territory
-    
-    """
-    def fill_territory(self, start_point, visited):
-        queue = [start_point]
-        territory_owner = set()
-        current_area = set()
-        boundary_points = set()  # Track outer boundary points
-        
-        while queue:
-            point = queue.pop()
-
-            if point in visited:
-                continue
-            
-            visited.add(point)
-            current_area.add(point)
-            player = self.get_player(point)
-
-            if player is not None:  # Point is occupied
-                continue  # Stones are not part of territory
-            
-            # Explore neighbors
-            for neighbour in point.neighbours():
-                if neighbour not in visited:
-                    if self.is_on_grid(neighbour):
-                        neighbor_player = self.get_player(neighbour)
-                        if neighbor_player is None:
-                            queue.append(neighbour)  # Continue flood fill
-                        else:
-                            boundary_points.add(neighbour)  # Track boundary stone
-
-        # Check the boundary points to determine ownership
-        boundary_stones = set()
-        for boundary in boundary_points:
-            boundary_stones.add(self.get_player(boundary))
-        
-        # Owned by one player if all boundary stones are the same color
-        if len(boundary_stones) == 1:
-            return len(current_area)
-        
-        # Neutral territory
-        return 0  # Return 0 for neutral territory
-
-    def calculate_final_score(self, komi=6.5):
-        black_territory = 0
-        white_territory = 0
-        black_stones = 0 
-        white_stones = 0
-        visited = set() 
-        
-        for row in range(1, self.num_rows + 1):
-            for col in range(1, self.num_cols + 1):
-                point = Point(row, col)
-                player = self.get_player(point)
-                
-                if point in visited:
-                    continue
-                
-                visited.add(point)
-                
-                if player == Player.black:
-                    black_stones += 1
-                elif player == Player.white:
-                    white_stones += 1
-                else:  # Empty point
-                    area = self.fill_territory(point, visited)
-                    if area and area > 0:
-                        # Territory is determined by boundary check in fill_territory
-                        boundary_stones = set()
-                        for neighbour in point.neighbours():
-                            if self.is_on_grid(neighbour):
-                                neighbor_player = self.get_player(neighbour)
-                                if neighbor_player is not None:
-                                    boundary_stones.add(neighbor_player)
-
-                        if len(boundary_stones) == 1:
-                            owner = boundary_stones.pop()
-                            if owner == Player.black:
-                                black_territory += area
-                            elif owner == Player.white:
-                                white_territory += area
-
-        black_score = black_territory + black_stones
-        white_score = white_territory + white_stones + komi
-        
-        print(f"Black territory: {black_territory}, White territory: {white_territory}")
-        print(f"Black stones: {black_stones}, White stones: {white_stones}")
-        
-        return black_score, white_score
-
                     
       
     # To compare board states, especially for the Ko rule          
@@ -481,8 +391,8 @@ class GoState():
         return False 
     
     # Calculates the final score, adding komi
-    def final_score(self):
-        """
+    def final_score(self, komi=6.5):
+
         black_territory, white_territory, _ = self.board.calculate_territory()
         
         black_score = black_territory + self.captured[Player.black]
@@ -490,10 +400,7 @@ class GoState():
         # Add 6.5 komi for the white player
         white_score = white_territory + self.captured[Player.white] + komi
         
-        return {"Black": black_score, "White": white_score}
-        """
-        black_score = self.board.calculate_final_score()[0] + self.captured[Player.black]
-        white_score = self.board.calculate_final_score()[1] + self.captured[Player.white]
+        print(f"black:{black_territory}, white:{white_territory}")
         
         return {"Black": black_score, "White": white_score}
     
