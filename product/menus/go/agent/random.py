@@ -2,7 +2,7 @@ import random
 from menus.go.agent.base import Agent
 from menus.go.goplayer import Point
 from menus.go.agent.point_eye import is_point_eye
-from menus.go.goboard import Move
+from menus.go.goboard import Move, GoState
 
 
 class RandomBot(Agent):
@@ -13,11 +13,11 @@ class RandomBot(Agent):
         
         for r in range(1, current_game.board.num_rows + 1):
             for c in range(1, current_game.board.num_cols + 1):
-                moves = Point(row=r, col=c)
-                if current_game.is_valid_move(moves) and \
-                    not is_point_eye(current_game.board, moves, current_game.next_player):
-                    moves.append(moves)
+                candidate_move = Point(row=r, col=c)
+                if current_game.valid_move(Move.play(candidate_move)) and not is_point_eye(current_game.board, candidate_move, current_game.next_player):
+                    moves.append(candidate_move)
                     
         if not moves:
-            return Point.pass_turn()
-        return Move.play(random.choice(moves))
+            return Move.pass_turn()
+        chosen_move = random.choice(moves)
+        return Move.play(chosen_move)

@@ -1,5 +1,4 @@
-from go.goplayer import Point,Player
-from go.goboard import Board
+from menus.go.goplayer import Point
 
 def is_point_eye(board, point, colour):
     # Check if point is empty
@@ -8,7 +7,7 @@ def is_point_eye(board, point, colour):
     
     # Check if all surrounding points are of the same colour
     for neighbour in point.neighbours():
-        if board.in_grid(neighbour):
+        if board.in_grid(neighbour) and board.get_player(neighbour) is not None:
             if board.get_player(neighbour).value != colour.value:
                 return False
         
