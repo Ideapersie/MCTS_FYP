@@ -255,6 +255,7 @@ class Board():
                             black_territory += 1
                         elif white_border and not black_border:
                             white_territory += 1
+                            print(f"white territory:{point}")
                         else:
                             neutral_territory += 1
                     

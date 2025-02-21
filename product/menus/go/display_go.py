@@ -18,7 +18,7 @@ def display_go():
             PlayerVsPlayer()
         elif user_input == '2':
             PlayerVsBot()
-        elif user_input == '3' or '4':
+        elif user_input == '3' or user_input == '4':
             print("Work in Progress, please select another option")
         elif user_input == '5':
             print("Returning to main menu....")

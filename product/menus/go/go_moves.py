@@ -28,6 +28,8 @@ class GoMoves:
             print("Invalid move, move is not an integer!") 
         elif int(player_input[1:]) > self.board_size:
             print("Invalid move, input is larger than board size")
+        elif int(player_input[1:]) < 1:
+            print("Invalid move, input is smaller than board size")
         else:
             col, row = player_input[0], player_input[1:]
             # Upper-case therefore the ASCII value is the same
