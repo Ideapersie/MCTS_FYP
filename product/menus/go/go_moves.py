@@ -22,6 +22,7 @@ class GoMoves:
             return Move.pass_turn()
         elif player_input == "RESIGN":
             return Move.resign()
+        # Conditions to satisfy for input to be valid
         elif player_input == "":
             print("\nEmpty move, please input the move")
         elif not player_input[1:].isdigit():

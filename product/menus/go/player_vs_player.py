@@ -41,6 +41,7 @@ class PlayerVsPlayer(GoMoves):
         
         scores = self.game.final_score()
         
+        # If player resigns, other player wins immediately
         if self.game.last_move.is_resign:
             next_player = str(self.game.next_player).split('.', 1)
             print(f"\n{next_player[1]} wins by resignation\n")

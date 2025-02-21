@@ -38,7 +38,7 @@ class PlayerVsBot(GoMoves):
             else:
                 print(f"\n{current_player[1]}'s turn: \n")
                 self.print_board()
-                
+                # Passes turn when player passes 
                 if self.game.last_move.is_pass:
                     bot_move = Move.pass_turn()
                 else:
@@ -57,6 +57,7 @@ class PlayerVsBot(GoMoves):
         
         scores = self.game.final_score()
         
+        # If player resigns, other player wins immediately
         if self.game.last_move.is_resign:
             next_player = str(self.game.next_player).split('.', 1)
             print(f"\n{next_player[1]} wins by resignation\n")
