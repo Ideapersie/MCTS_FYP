@@ -29,8 +29,6 @@ class PlayerVsBot(GoMoves):
                 while move is None or not self.game.valid_move(move):
                     if self.game.next_player == Player.black:
                         move = self.player_input()
-                    else:
-                        move = self.bot.select_move(self.game)
                         
                     if move and not self.game.valid_move(move):
                         print("Invalid move! Please try again")
@@ -41,8 +39,11 @@ class PlayerVsBot(GoMoves):
                 print(f"\n{current_player[1]}'s turn: \n")
                 self.print_board()
                 
-                bot_move = self.bot.select_move(self.game)
-                self.game = self.game.play_move(bot_move)
+                if self.game.last_move.is_pass:
+                    bot_move = Move.pass_turn()
+                else:
+                    bot_move = self.bot.select_move(self.game)
+                self.game = self.game.play_move(bot_move) # fix print statement 
                 print(f"\nBot played: {bot_move}")
                 
         # Display results
