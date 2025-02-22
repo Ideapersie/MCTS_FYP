@@ -493,6 +493,29 @@ class TestGoState(unittest.TestCase):
         # False due to self-capture
         self.assertFalse(play6.valid_move(cornercap_move))
         
+    def test_legal_moves(self):
+        # Test using previous testcase to assure self capture moves are not in legal moves 
+        black_move1 = Move.play(Point(1,1))
+        white_move1 = Move.play(Point(2,1))
+        black_move2 = Move.play(Point(4,3))
+        white_move2 = Move.play(Point(2,2))
+        black_move3 = Move.play(Point(4,4))
+        white_move3 = Move.play(Point(1,3))
+        
+        play1 = self.game.play_move(black_move1)
+        play2 = play1.play_move(white_move1)
+        play3 = play2.play_move(black_move2)
+        play4 = play3.play_move(white_move2)
+        play5 = play4.play_move(black_move3)
+        play6 = play5.play_move(white_move3)
+        
+        # Valid move before self-capture
+        self.assertIn(white_move3.point, play5.legal_moves())
+        
+        # This leads to a self-capture move therefore should not be in legal moves
+        notlegal_move = Move.play(Point(1,2))
+        self.assertNotIn(notlegal_move.point, play6.legal_moves())
+        
     def test_final_score(self):
         moves = [
             Move.play(Point(1, 3)), Move.play(Point(1, 6)),

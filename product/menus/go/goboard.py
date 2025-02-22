@@ -392,6 +392,17 @@ class GoState():
         # Else, move is invalid 
         return False 
     
+    # Returns a list of all legal moves in current game state 
+    def legal_moves(self):
+        moves = []
+        for row in range(1, self.board.num_rows + 1):
+            for col in range(1, self.board.num_cols + 1):
+                point = Point(row, col)
+                move = Move.play(point)
+                if self.valid_move(move):
+                    moves.append(point)
+        return moves
+    
     # Calculates the final score, adding komi
     def final_score(self, komi=6.5):
 
