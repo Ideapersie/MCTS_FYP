@@ -1,4 +1,4 @@
-from go.goboard import Player
+from go.goboard import Player, GoState, Move
 import random
 
 class MCTsNode(object):
@@ -17,7 +17,7 @@ class MCTsNode(object):
     
     # No legal moves left, can't search the tree further
     def search_over(self):
-        return self.game_state.is_over()
+        return self.game_state.game_over()
     
     # Returns the rollout outcome winrate as percentage 
     def rollout_winrate(self, player):
@@ -27,11 +27,12 @@ class MCTsNode(object):
             return (self.wins[player] / self.num_rollouts) * 100 
         
     # Defining the expansion step of the MCTS algorithm
-    def add_random_child(self):
+    def random_child(self):
         # Randomly select a move from the list of unvisited moves
         random_move = random.randint(0, len(self.unvisited_moves) - 1)
         move = self.unvisited_moves.pop(random_move) 
-        next_state = self.game_state.apply_move(move)
+        move = Move.play(move)
+        next_state = self.game_state.play_move(move)
         child_node = MCTsNode(next_state, self, move)
         self.children.append(child_node)
         return child_node
