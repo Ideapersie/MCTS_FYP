@@ -253,6 +253,7 @@ class Board():
                     if self.get_player(point) is None: 
                         if black_border and not white_border:
                             black_territory += 1
+                            print(f"black territory:{point}")
                         elif white_border and not black_border:
                             white_territory += 1
                             print(f"white territory:{point}")

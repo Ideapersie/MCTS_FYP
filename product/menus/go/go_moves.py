@@ -17,6 +17,10 @@ class GoMoves:
     def player_input(self):
         # To avoid capitalization or spacing issues
         player_input = input("\nEnter your move : ").strip().upper()
+        col, row = player_input[0], player_input[1:]
+        # Upper-case therefore the ASCII value is the same
+        # Ord converts to ASCII value of the column letter
+        convert_col = ord(col) - ord('A') + 1 
         
         if player_input == "PASS":
             return Move.pass_turn()
@@ -27,14 +31,9 @@ class GoMoves:
             print("\nEmpty move, please input the move")
         elif not player_input[1:].isdigit():
             print("Invalid move, move is not an integer!") 
-        elif int(player_input[1:]) > self.board_size:
+        elif convert_col > self.board_size or int(player_input[1:]) > self.board_size:
             print("Invalid move, input is larger than board size")
         elif int(player_input[1:]) < 1:
             print("Invalid move, input is smaller than board size")
         else:
-            col, row = player_input[0], player_input[1:]
-            # Upper-case therefore the ASCII value is the same
-            # Ord converts to ASCII value of the column letter
-            convert_col = ord(col) - ord('A') + 1 
-            
             return Move.play(Point(int(row), convert_col))
