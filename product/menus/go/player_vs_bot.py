@@ -44,7 +44,7 @@ class PlayerVsBot(GoMoves):
                 else:
                     bot_move = self.bot.select_move(self.game)
                 self.game = self.game.play_move(bot_move) # fix print statement 
-                print(f"\nBot played: {bot_move}")
+                print(f"\nBot played: {bot_move.point}")
                 
         # Display results
         self.end_PvBgame()
