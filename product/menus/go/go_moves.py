@@ -17,6 +17,12 @@ class GoMoves:
     def player_input(self):
         # To avoid capitalization or spacing issues
         player_input = input("\nEnter your move : ").strip().upper()
+        
+        # Check before converting to row and column
+        if not player_input:
+            print("\nEmpty move, please input the move")
+            return None
+        
         col, row = player_input[0], player_input[1:]
         # Upper-case therefore the ASCII value is the same
         # Ord converts to ASCII value of the column letter
@@ -27,8 +33,6 @@ class GoMoves:
         elif player_input == "RESIGN":
             return Move.resign()
         # Conditions to satisfy for input to be valid
-        elif player_input == "":
-            print("\nEmpty move, please input the move")
         elif not player_input[1:].isdigit():
             print("Invalid move, move is not an integer!") 
         elif convert_col > self.board_size or int(player_input[1:]) > self.board_size:
