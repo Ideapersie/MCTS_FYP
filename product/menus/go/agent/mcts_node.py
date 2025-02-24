@@ -1,4 +1,4 @@
-from go.goboard import Player, GoState, Move
+from go.goboard import Player, Move
 import random
 
 class MCTsNode(object):
@@ -19,12 +19,12 @@ class MCTsNode(object):
     def search_over(self):
         return self.game_state.game_over()
     
-    # Returns the rollout outcome winrate as percentage 
+    # Returns the rollout outcome winrate as float 
     def rollout_winrate(self, player):
         if self.num_rollouts == 0:
             return 0
         else:
-            return (self.wins[player] / self.num_rollouts) * 100 
+            return (self.wins[player] / self.num_rollouts) 
         
     # Defining the expansion step of the MCTS algorithm
     def random_child(self):

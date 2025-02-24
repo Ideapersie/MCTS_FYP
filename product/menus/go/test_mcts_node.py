@@ -32,3 +32,6 @@ class TestMctsNode(unittest.TestCase):
         self.assertEqual(len(self.new_node.unvisited_moves), 80)
         self.assertNotIn(self.new_node.children[0].move.point, self.new_node.unvisited_moves)
         
+if __name__ == "__main__":
+    unittest.main()
+        
