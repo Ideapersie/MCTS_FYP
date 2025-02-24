@@ -31,3 +31,4 @@ class TestMctsNode(unittest.TestCase):
         # Remove the move from unvisited moves
         self.assertEqual(len(self.new_node.unvisited_moves), 80)
         self.assertNotIn(self.new_node.children[0].move.point, self.new_node.unvisited_moves)
+        

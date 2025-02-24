@@ -1,5 +1,6 @@
 from menus.go.agent.base import Agent
 from menus.go.agent.mcts_node import MCTsNode
+import math
 
 
 class MCTsAgent(Agent):
@@ -27,5 +28,11 @@ class MCTsAgent(Agent):
                 # Keep updating until the root node is reached
                 node = node.parent
                 
+    def ucb_score(parent_rollouts, child_rollouts, winrate, temperature):
+        ucb_score = winrate + temperature * math.sqrt(math.log(parent_rollouts) / child_rollouts)
+        return ucb_score
+                
     
+            
+        
         
