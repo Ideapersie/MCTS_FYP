@@ -1,13 +1,15 @@
 from menus.go.agent.base import Agent
 from menus.go.agent.mcts_node import MCTsNode
-import math
+from menus.go.goboard import Move
+import math, random
 
 
 class MCTsAgent(Agent):
     # Temperature controls the exploration-exploitation tradeoff, 
-    def __init__(self, temperature, total_rollouts):
+    def __init__(self, temperature, total_rollouts, num_rounds=100):
         self.temperature = temperature
         self.rollouts = total_rollouts
+        self.num_rounds = num_rounds
     
     def select_move(self, game_state):
         # Initialising the root node 
@@ -32,6 +34,36 @@ class MCTsAgent(Agent):
                 node.update_rollout(winner)
                 # Keep updating until the root node is reached
                 node = node.parent
+                
+        # Select the best move based on the number of rollouts
+        best_move = None
+        highest_winrate = -1
+        
+        # Find the child node with the highest winrate
+        for child in root.children:
+            child_winrate = child.rollout_winrate(game_state.next_player)
+            if child_winrate > highest_winrate:
+                highest_winrate = child_winrate
+                best_move = child.move.point
+        return best_move
+    
+    # Simulate a random game and returns the winner
+    def simulate_random_game(self, game_state):
+        simulate_state = game_state
+        # Play until the game is over
+        while not simulate_state.game_over():
+            possible_moves = simulate_state.legal_moves()
+            # Break if no possible moves left
+            if not possible_moves:
+                break
+            
+            print(f"Possible moves: {possible_moves}")
+            
+            random_move = random.choice(possible_moves)
+            random_move = Move.play(random_move)
+            simulate_state = simulate_state.play_move(random_move)
+            
+        return simulate_state.next_player
                 
     def ucb_score(total_rollouts, child_rollouts, winrate, temperature):
         ucb_score = winrate + temperature * math.sqrt(math.log(total_rollouts) / child_rollouts)

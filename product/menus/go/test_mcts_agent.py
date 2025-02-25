@@ -8,7 +8,7 @@ class TestMctsAgent(unittest.TestCase):
     def setUp(self):
         self.game_state = GoState.new_game(9)
         self.new_node = MCTsNode(self.game_state)
-        self.agent = MCTsAgent(temperature=1.4, total_rollouts=100)
+        self.agent = MCTsAgent(temperature=1.4, total_rollouts=100, num_rounds=5)
         self.total_rollouts = 100
         
         # Used as a test case for ucb_score method
@@ -63,6 +63,12 @@ class TestMctsAgent(unittest.TestCase):
         
         selected_child = self.agent.select_child(self.new_node)
         self.assertEqual(selected_child, self.child3)
+        
+    # Test if the selected move is in the list of legal moves
+    def test_select_move_first_move(self):
+        selected_move = self.agent.select_move(self.game_state)
+        self.assertIn(selected_move, self.game_state.legal_moves())
+        print(selected_move)
         
 if __name__ == "__main__":
     unittest.main()
