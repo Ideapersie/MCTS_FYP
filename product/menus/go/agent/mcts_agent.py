@@ -1,6 +1,6 @@
 from menus.go.agent.base import Agent
 from menus.go.agent.mcts_node import MCTsNode
-from menus.go.goboard import Move
+from menus.go.goboard import Move, Player, GoState
 import math, random
 
 
@@ -45,6 +45,7 @@ class MCTsAgent(Agent):
             if child_winrate > highest_winrate:
                 highest_winrate = child_winrate
                 best_move = child.move.point
+                
         return best_move
     
     # Simulate a random game and returns the winner
@@ -63,7 +64,12 @@ class MCTsAgent(Agent):
             random_move = Move.play(random_move)
             simulate_state = simulate_state.play_move(random_move)
             
-        return simulate_state.next_player
+        # Compare score to determine the winner
+        black_score, white_score = simulate_state.final_score()
+        if black_score > white_score:
+            return Player.black
+        else:
+            return Player.white
                 
     def ucb_score(total_rollouts, child_rollouts, winrate, temperature):
         ucb_score = winrate + temperature * math.sqrt(math.log(total_rollouts) / child_rollouts)

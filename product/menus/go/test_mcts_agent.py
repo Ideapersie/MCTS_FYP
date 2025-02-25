@@ -64,11 +64,24 @@ class TestMctsAgent(unittest.TestCase):
         selected_child = self.agent.select_child(self.new_node)
         self.assertEqual(selected_child, self.child3)
         
+    # Test whether the game results in a win for either player
+    def test_simulate_random_game(self):
+        winner = self.agent.simulate_random_game(self.game_state)
+        self.assertIn(winner, [Player.black, Player.white])
+        
     # Test if the selected move is in the list of legal moves
     def test_select_move_first_move(self):
         selected_move = self.agent.select_move(self.game_state)
         self.assertIn(selected_move, self.game_state.legal_moves())
         print(selected_move)
+        
+    def test_select_move_apply_move(self):
+        selected_move = self.agent.select_move(self.game_state)
+        # Apply the move to the game state
+        next_move = Move.play(selected_move)
+        next_state = self.game_state.play_move(next_move)
+        
+        self.assertNotEqual(self.game_state, next_state)
         
 if __name__ == "__main__":
     unittest.main()
