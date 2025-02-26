@@ -9,6 +9,7 @@ class MCTsNode(object):
         self.children = []
         self.wins = {Player.black: 0, Player.white: 0}
         self.num_rollouts = 0
+        self.total_rollouts = 0
         self.unvisited_moves = game_state.legal_moves()
 
     # If there are legal moves left, we can add a child
@@ -41,3 +42,9 @@ class MCTsNode(object):
     def update_rollout(self, winner):
         self.num_rollouts += 1
         self.wins[winner] += 1
+        
+        # Update the total rollouts until the root node
+        node = self 
+        while node is not None:
+            node.total_rollouts += 1
+            node = node.parent

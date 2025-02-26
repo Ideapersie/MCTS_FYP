@@ -6,9 +6,8 @@ import math, random
 
 class MCTsAgent(Agent):
     # Temperature controls the exploration-exploitation tradeoff, 
-    def __init__(self, temperature, total_rollouts, num_rounds=100):
+    def __init__(self, temperature, num_rounds=100):
         self.temperature = temperature
-        self.rollouts = total_rollouts
         self.num_rounds = num_rounds
     
     def select_move(self, game_state):
@@ -46,7 +45,7 @@ class MCTsAgent(Agent):
                 highest_winrate = child_winrate
                 best_move = child.move.point
                 
-        return best_move
+        return Move.play(best_move)
     
     # Simulate a random game and returns the winner
     def simulate_random_game(self, game_state):
@@ -78,10 +77,7 @@ class MCTsAgent(Agent):
     # Select the child node with the highest UCB1 value
     def select_child(self, node):
         # no. of rollouts in total 
-        total_rollouts = 0 
-        
-        for child in node.children:
-            total_rollouts += child.num_rollouts
+        total_rollouts = node.total_rollouts
         
         # Assign -1 so the first child is always selected 
         highest_score = -1

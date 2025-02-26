@@ -8,7 +8,7 @@ class TestMctsAgent(unittest.TestCase):
     def setUp(self):
         self.game_state = GoState.new_game(9)
         self.new_node = MCTsNode(self.game_state)
-        self.agent = MCTsAgent(temperature=1.4, total_rollouts=100, num_rounds=5)
+        self.agent = MCTsAgent(temperature=1.4, num_rounds=5)
         self.total_rollouts = 100
         
         # Used as a test case for ucb_score method
@@ -60,7 +60,11 @@ class TestMctsAgent(unittest.TestCase):
     def test_select_child(self):
         
         self.new_node.children = [self.child1, self.child2, self.child3]
+        self.new_node.total_rollouts = 0
+        for child in self.new_node.children:
+            self.new_node.total_rollouts += child.num_rollouts
         
+        print(f"Total rollouts: {self.new_node.total_rollouts}")
         selected_child = self.agent.select_child(self.new_node)
         self.assertEqual(selected_child, self.child3)
         
@@ -72,14 +76,12 @@ class TestMctsAgent(unittest.TestCase):
     # Test if the selected move is in the list of legal moves
     def test_select_move_first_move(self):
         selected_move = self.agent.select_move(self.game_state)
-        self.assertIn(selected_move, self.game_state.legal_moves())
-        print(selected_move)
+        self.assertIn(selected_move.point, self.game_state.legal_moves())
         
     def test_select_move_apply_move(self):
         selected_move = self.agent.select_move(self.game_state)
         # Apply the move to the game state
-        next_move = Move.play(selected_move)
-        next_state = self.game_state.play_move(next_move)
+        next_state = self.game_state.play_move(selected_move)
         
         self.assertNotEqual(self.game_state, next_state)
         
