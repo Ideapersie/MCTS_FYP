@@ -6,7 +6,7 @@ import math, random
 
 class MCTsAgent(Agent):
     # Temperature controls the exploration-exploitation tradeoff, 
-    def __init__(self, temperature, num_rounds=100):
+    def __init__(self, temperature, num_rounds):
         self.temperature = temperature
         self.num_rounds = num_rounds
     

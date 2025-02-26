@@ -43,7 +43,8 @@ class PlayerVsBot(GoMoves):
                     bot_move = Move.pass_turn()
                 else:
                     bot_move = self.bot.select_move(self.game)
-                self.game = self.game.play_move(bot_move) # fix print statement 
+                self.game = self.game.play_move(bot_move) 
+                # fix print statement 
                 print(f"\nBot played: {bot_move.point}")
                 
         # Display results

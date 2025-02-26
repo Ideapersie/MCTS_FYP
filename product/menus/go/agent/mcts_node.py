@@ -1,4 +1,4 @@
-from go.goboard import Player, Move
+from menus.go.goboard import Player, Move
 import random
 
 class MCTsNode(object):
