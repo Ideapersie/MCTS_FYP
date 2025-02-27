@@ -19,9 +19,18 @@ class MCTsAgent(Agent):
         # Set number of iterations
         for _ in range(self.num_rounds):
             node = root 
+            
+            # DEBUG: Check if root is None
+            print(f"DEBUG: Root initialized -> {root}")
+            
             # Selection step: traverse tree until leaf node is reached
             while (not node.add_child()) and not node.search_over():
                 node = self.select_child(node)
+                
+                # DEBUG: Check if node becomes None
+                if node is None:
+                    print("ERROR: node is None after selection step!")
+                    return None
                 
             # Expansion step: adds new child node to the tree 
             if node.add_child():
@@ -63,7 +72,7 @@ class MCTsAgent(Agent):
             formatted_moves = []
             for move in possible_moves:
                 formatted_moves.append(f"{chr(move.col + ord('A') - 1)}{(move.row)}")
-            print(f"Possible moves: {', '.join(formatted_moves)}")
+            #print(f"Possible moves: {', '.join(formatted_moves)}")
             
             random_move = random.choice(possible_moves)
             random_move = Move.play(random_move)

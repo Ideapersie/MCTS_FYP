@@ -253,10 +253,10 @@ class Board():
                     if self.get_player(point) is None: 
                         if black_border and not white_border:
                             black_territory += 1
-                            print(f"black territory:{point}")
+                            #print(f"black territory:{point}")
                         elif white_border and not black_border:
                             white_territory += 1
-                            print(f"white territory:{point}")
+                            #print(f"white territory:{point}")
                         else:
                             neutral_territory += 1
                     
@@ -413,7 +413,7 @@ class GoState():
         # Add 6.5 komi for the white player
         white_score = white_territory + self.captured[Player.white] + komi
         
-        print(f"black:{black_territory}, white:{white_territory}")
+        #print(f"black:{black_territory}, white:{white_territory}")
         
         return {"Black": black_score, "White": white_score}
     
