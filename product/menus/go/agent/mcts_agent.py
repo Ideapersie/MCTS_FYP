@@ -1,5 +1,6 @@
 from menus.go.agent.base import Agent
 from menus.go.agent.mcts_node import MCTsNode
+from menus.go.go_moves import GoMoves
 from menus.go.goboard import Move, Player, GoState
 import math, random
 
@@ -9,6 +10,7 @@ class MCTsAgent(Agent):
     def __init__(self, temperature, num_rounds):
         self.temperature = temperature
         self.num_rounds = num_rounds
+        self.go_moves = GoMoves()
     
     def select_move(self, game_state):
         # Initialising the root node 
@@ -57,7 +59,11 @@ class MCTsAgent(Agent):
             if not possible_moves:
                 break
             
-            print(f"Possible moves: {possible_moves}")
+            # Format the possible moves for display
+            formatted_moves = []
+            for move in possible_moves:
+                formatted_moves.append(f"{chr(move.col + ord('A') - 1)}{(move.row)}")
+            print(f"Possible moves: {', '.join(formatted_moves)}")
             
             random_move = random.choice(possible_moves)
             random_move = Move.play(random_move)

@@ -14,6 +14,10 @@ class GoMoves:
     def print_board(self):
         print(self.game.board)
 
+    # Helper function to print the move in the format 'A1'
+    def print_move(self, move):
+        return f"{chr(move.point.col + ord('A') - 1)}{(move.point.row)}"
+
     def player_input(self):
         # To avoid capitalization or spacing issues
         player_input = input("\nEnter your move : ").strip().upper()
