@@ -45,7 +45,7 @@ class PlayerVsBot(GoMoves):
                     bot_move = self.bot.select_move(self.game)
                 self.game = self.game.play_move(bot_move) 
                 # fix print statement 
-                print(f"\nBot played: {bot_move.point}")
+                print(f"\nBot played: {self.print_move(bot_move)}")
                 
         # Display results
         self.end_PvBgame()
@@ -61,7 +61,7 @@ class PlayerVsBot(GoMoves):
         # If player resigns, other player wins immediately
         if self.game.last_move.is_resign:
             next_player = str(self.game.next_player).split('.', 1)
-            print(f"\n{next_player[1]} wins by resignation\n")
+            print(f"\n{next_player[1]} wins by resignation")
             
         else:
             print(f"Final Score: Black {scores['Black']} - White {scores['White']}")

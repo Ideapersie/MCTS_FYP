@@ -16,6 +16,8 @@ class GoMoves:
 
     # Helper function to print the move in the format 'A1'
     def print_move(self, move):
+        if not move.is_play:
+            return move
         return f"{chr(move.point.col + ord('A') - 1)}{(move.point.row)}"
 
     def player_input(self):
