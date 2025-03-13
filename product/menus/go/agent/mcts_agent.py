@@ -11,17 +11,18 @@ class MCTsAgent(Agent):
         self.temperature = temperature
         self.num_rounds = num_rounds
         self.go_moves = GoMoves()
+            
     
     def select_move(self, game_state):
         # Initialising the root node 
         root = MCTsNode(game_state)
         
+        # Debug to check root initialization
+        print(f"DEBUG: Root initialized -> Move: {root.move}, Rollouts: {root.num_rollouts}, Children: {len(root.children)}")
+        
         # Set number of iterations
         for _ in range(self.num_rounds):
             node = root 
-            
-            # DEBUG: Check if root is None
-            print(f"DEBUG: Root initialized -> {root}")
             
             # Selection step: traverse tree until leaf node is reached
             while (not node.add_child()) and not node.search_over():
