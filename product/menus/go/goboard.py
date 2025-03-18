@@ -194,17 +194,31 @@ class Board():
             # Skip if point has been visited 
             if point in visited:
                 continue
+            
             # If not, mark point as visited 
             visited.add(point)
             
+            # Get player colour at point
+            player = self.get_player(point)
+            
             # If point is empty, add it to territory
-            if self.get_player(point) is None:
+            if player is None:
                 territory.add(point)
                 
-                for neighbours in point.neighbours():
-                    if self.in_grid(neighbours):
-                        stack.append(neighbours)
-            # If point occupied = border of the region 
+                for neighbour in point.neighbours():
+                    # If neighbour is out of bounds, skip it
+                    if not self.in_grid(neighbour):
+                        continue 
+                    
+                    neighbour_player = self.get_player(neighbour)
+                        
+                    # If neighbour is empty and not visited, add to the exploration stack
+                    if neighbour_player is None and neighbour not in visited:
+                        stack.append(neighbour)
+                    # If point occupied = border of the region 
+                    elif neighbour_player is not None:
+                        borders.add(neighbour)
+            # If point is occupied, it is a border point
             else:
                 borders.add(point)
                 
@@ -232,33 +246,37 @@ class Board():
                 # Explore region and gather the territory and borders of each point 
                 territory, borders = self.explore_region(point, visited)
                 
-                # Checking if certain region is surrounded by ONLY black or white stones
+                # For debugging purposes
+                print(f"territory:{territory}, borders:{borders}")
+                
+                # Assume the borders are all black or all white
                 black_border = True
                 white_border = True
                 
-                # Loop over border points
+                # Loop over border points to determine if all borders are one color
                 for border in borders:
                     player = self.get_player(border)
+                    # If border is one colour, then it cant be the other
                     if player == Player.black:
-                        white_border = False
+                        white_border = False  
                     elif player == Player.white:
-                        black_border = False
+                        black_border = False  
                     else:
+                        # neutral border
                         black_border = False
                         white_border = False
-                       
-                # Iterate over points in each territory       
-                for point in territory:
-                    # Empty points inside the border
-                    if self.get_player(point) is None: 
-                        if black_border and not white_border:
-                            black_territory += 1
-                            #print(f"black territory:{point}")
-                        elif white_border and not black_border:
-                            white_territory += 1
-                            #print(f"white territory:{point}")
-                        else:
-                            neutral_territory += 1
+                
+                # Count the territory based on border colors
+                territory_size = len(territory)
+                
+                # All borders are black stones
+                if black_border and not white_border:
+                    black_territory += territory_size
+                elif white_border and not black_border:
+                    white_territory += territory_size
+                else:
+                    # Mixed borders are neutral 
+                    neutral_territory += territory_size
                     
         return black_territory, white_territory, neutral_territory
                     
@@ -412,8 +430,6 @@ class GoState():
         
         # Add 6.5 komi for the white player
         white_score = white_territory + self.captured[Player.white] + komi
-        
-        #print(f"black:{black_territory}, white:{white_territory}")
         
         return {"Black": black_score, "White": white_score}
     
