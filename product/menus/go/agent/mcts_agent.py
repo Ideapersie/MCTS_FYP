@@ -17,9 +17,6 @@ class MCTsAgent(Agent):
         # Initialising the root node 
         root = MCTsNode(game_state)
         
-        # Debug to check root initialization
-        print(f"DEBUG: Root initialized -> Move: {root.move}, Rollouts: {root.num_rollouts}, Children: {len(root.children)}")
-        
         # Set number of iterations
         for _ in range(self.num_rounds):
             node = root 
@@ -45,7 +42,8 @@ class MCTsAgent(Agent):
                 node.update_rollout(winner)
                 # Keep updating until the root node is reached
                 node = node.parent
-                
+            
+            
         # Select the best move based on the number of rollouts
         best_move = None
         highest_winrate = -1
@@ -53,9 +51,16 @@ class MCTsAgent(Agent):
         # Find the child node with the highest winrate
         for child in root.children:
             child_winrate = child.rollout_winrate(game_state.next_player)
+            
+            # DEBUG: Check the winrate of each child node
+            print(f"Move: {child.move.point}, Win rate: {child_winrate:.2%}, Visits: {child.num_rollouts}")
+            
             if child_winrate > highest_winrate:
                 highest_winrate = child_winrate
                 best_move = child.move.point
+                
+        # DEBUG: Check the winrate of best node
+        print(f"DEBUG: Best move -> {best_move}, Winrate: {highest_winrate}")
                 
         return Move.play(best_move)
     
@@ -105,7 +110,7 @@ class MCTsAgent(Agent):
                                             child.rollout_winrate(node.game_state.next_player), self.temperature)
             
             # UCB score per move used for analysis and testing
-            print(f"Possible move: {child.move.point}, UCB score: {ucb_score}")
+            #print(f"Possible move: {child.move.point}, UCB score: {ucb_score:.2f}")
             
             if ucb_score > highest_score:
                 highest_score = ucb_score

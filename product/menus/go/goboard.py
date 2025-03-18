@@ -247,7 +247,7 @@ class Board():
                 territory, borders = self.explore_region(point, visited)
                 
                 # For debugging purposes
-                print(f"territory:{territory}, borders:{borders}")
+                #print(f"territory:{territory}, borders:{borders}")
                 
                 # Assume the borders are all black or all white
                 black_border = True
