@@ -121,6 +121,22 @@ class TestFastBoard(unittest.TestCase):
         self.assertEqual(self.board.grid[3, 3], 0)
         self.assertEqual(self.board.grid[4, 3], 0)
     
+    def test_fast_move(self):
+        # Place black stone
+        point = Point(3, 3)
+        self.state.fast_play_move(point)
+        
+        # Check if the stone is placed by black player first 
+        self.assertEqual(self.board.grid[3, 3], 1)
+        self.assertEqual(self.state.next_player, Player.white)
+        self.assertEqual(self.state.last_move.point, point)
+        
+        # # Check if the stone is placed by white player next 
+        point = Point(4, 4)
+        self.state.fast_play_move(point)
+        self.assertEqual(self.board.grid[4, 4], 2)
+        self.assertEqual(self.state.next_player, Player.black)
+        self.assertEqual(self.state.last_move.point, point)
 
 if __name__ == '__main__':
     unittest.main()
