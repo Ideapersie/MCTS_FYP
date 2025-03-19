@@ -95,3 +95,89 @@ class FastBoard:
             
         # No liberties found
         return True
+    
+# Faster game state implementation for MCTs simulations
+class FastGoState:
+    def __init__(self, board_size, original_state=None):
+        if original_state:
+            self.board = FastBoard(board_size, board_size, original_state.board)
+            self.next_player = original_state.next_player
+            self.captures = original_state.captured.copy()
+        else:
+            self.board = FastBoard(board_size, board_size)
+            self.next_player = Player.black
+            self.captures = {Player.black: 0, Player.white: 0}
+            
+        self.last_move = None
+    
+    # Handle the capture and update capture score
+    def handle_captures(self, point):
+        player_num = 1 if self.next_player == Player.black else 2
+        opponent_num = 3 - player_num
+        # Track the number of captures
+        total_captures = 0 
+        
+        # Check adjacent points for potential captures
+        for adj_row, adj_col in [(point.row-1, point.col), (point.row+1, point.col), 
+                                 (point.row, point.col-1), (point.row, point.col+1)]:
+            
+            # Skip if outside the board
+            if not (1 <= adj_row <= self.board.num_rows and 1 <= adj_col <= self.board.num_cols):
+                continue
+            
+            # Skip if not opponent stone
+            if self.board.grid[adj_row, adj_col] != opponent_num:
+                continue
+            
+            # Check for captures and update the total captures
+            is_captured, num_captured = self.check_and_remove_group(adj_row, adj_col)
+            if is_captured:
+                total_captures += num_captured
+                
+        return total_captures
+        
+        
+    # Check for captures and remove the captured stones
+    def check_and_remove_group(self, row, col):
+        """
+        Returns (is_captured, num_captured) 
+        """
+        stone_colour = self.board.grid[row, col]
+        if stone_colour == 0:
+            return False, 0
+        
+        # Use BFS to find connected group, checking liberties 
+        group = set()
+        group.add((row, col))
+        queue = [(row, col)]
+        has_liberties = False
+        
+        # Keep searching for connected stones
+        while queue:
+            # Get the current point
+            cur_row, cur_col = queue.pop(0)
+            
+            # Check adjacent points
+            for adj_row, adj_col in [(cur_row-1, cur_col), (cur_row+1, cur_col), 
+                                     (cur_row, cur_col-1), (cur_row, cur_col+1)]:
+                
+                # Skip if outside the board
+                if not (1 <= adj_row <= self.board.num_rows and 1 <= adj_col <= self.board.num_cols):
+                    continue
+                
+                # Finding a liberty
+                if self.board.grid[adj_row, adj_col] == 0:
+                    has_liberties = True
+                # Continue searching for connected stones
+                elif self.board.grid[adj_row, adj_col] == stone_colour and (adj_row, adj_col) not in group:
+                    group.add((adj_row, adj_col))
+                    queue.append((adj_row, adj_col))
+                    
+        if not has_liberties:
+            # Remove the captured group
+            for captured_row, captured_col in group:
+                self.board.grid[captured_row, captured_col] = 0
+            return True, len(group)
+        
+        return False, 0
+        
