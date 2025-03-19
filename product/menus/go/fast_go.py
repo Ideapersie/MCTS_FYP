@@ -23,6 +23,57 @@ class FastBoard:
                     elif player == Player.white:
                         self.grid[row,col] = 2
          
-    
+    def fast_self_capture(self, point, player):
+        # Converting enum values to grid values 
+        player_num = 1 if player == Player.black else 2
+        opponenet_num = 3 - player_num
+        
+        row, col = point.row, point.col
+
+        # Check adjacent points for opponent stones
+        adjacent_points = [
+            (row-1, col), # up 
+            (row+1, col), # down
+            (row, col-1), # left
+            (row, col+1)  # right
+        ]
+        
+        # If adjacent positions is empty, not a self capture 
+        for adj_row, adj_col in adjacent_points:
+            if (1 <= adj_row <= self.num_rows and 
+                1 <= adj_col <= self.num_cols and 
+                self.grid[adj_row, adj_col] == 0):
+                # Has liberties, not a self capture
+                return False
                 
+    
+        # Check if the stone capture any opponent stones
+        for adj_row, adj_col in adjacent_points:
+            # Skip if outside board
+            if not (1 <= adj_row <= self.num_rows and 1 <= adj_col <= self.num_cols):
+                continue
+            
+            # Check if adjecent point is an opponent stone and would be captured
+            if self.grid[adj_row, adj_col] == opponenet_num and \
+                self.has_no_liberties_except(adj_row, adj_col, row, col):
+                # Capture the stone, therefore not a self capture
+                return False
+        # no liberties found and no captures -> self capture
+        return True 
                         
+    def has_no_liberties_except(self, stone_row, stone_col, except_row, except_col):
+        # Check if the stone has any liberties except the exception point
+        for adj_row, adj_col in [(stone_row-1, stone_col), (stone_row+1, stone_col), 
+                                 (stone_row, stone_col-1), (stone_row, stone_col+1)]:
+            # skip if outside the board
+            if not (1 <= adj_row <= self.num_rows and 1 <= adj_col <= self.num_cols):
+                continue
+            # skip the except points
+            if adj_row == except_row and adj_col == except_col:
+                continue
+            # if the adjacent point is empty, the stone has liberties
+            if self.grid[adj_row, adj_col] == 0:
+                return False
+            
+        # No liberties found
+        return True
