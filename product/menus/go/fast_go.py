@@ -1,4 +1,5 @@
 from menus.go.goplayer import Player,Point
+from menus.go.go_moves import Move
 import numpy as np
 import copy 
 
@@ -109,6 +110,24 @@ class FastGoState:
             self.captures = {Player.black: 0, Player.white: 0}
             
         self.last_move = None
+        
+    # Faster and more efficient play move implementation
+    def fast_play_move(self, point):
+        player_num = 1 if self.next_player == Player.black else 2 
+        
+        # Place stone on board 
+        row, col = point.row, point.col
+        self.board.grid[row, col] = player_num
+        
+        # Handle captures
+        captures = self.handle_captures(point)
+        self.captures[self.next_player] += captures
+        
+        # Update the next player and last move
+        self.next_player = Player.white if self.next_player == Player.black else Player.black
+        self.last_move = Move.play(point)
+        
+        return self
     
     # Handle the capture and update capture score
     def handle_captures(self, point):
