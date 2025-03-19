@@ -76,7 +76,7 @@ class MCTsAgent(Agent):
         
         for _ in range(max_moves):
             # Stop if game over 
-            if sim_state.game_over():
+            if sim_state.fast_game_over():
                 break
             
             # Get faster legal moves

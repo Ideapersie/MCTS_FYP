@@ -110,22 +110,46 @@ class FastGoState:
             self.captures = {Player.black: 0, Player.white: 0}
             
         self.last_move = None
+        # Track if previous move is a pass
+        self.previous_pass = False
+        # Track if a player has resigned 
+        self.is_resigned = False
         
     # Faster and more efficient play move implementation
-    def fast_play_move(self, point):
+    def fast_play_move(self, move):
+        
+        # Handling resignation 
+        if move.is_resign:
+            self.is_resigned = True
+            self.last_move = move 
+            return self
+        
+        # Handling pass
+        if move.is_pass:
+            # Track if previous move is also a pass
+            self.previous_pass = (self.last_move and self.last_move.is_pass)
+            self.last_move = move
+            self.next_player = Player.white if self.next_player == Player.black else Player.black
+            
+            return self
+        
+        # Reset status of pass move 
+        self.previous_pass = False
+        
+        # Array values
         player_num = 1 if self.next_player == Player.black else 2 
         
         # Place stone on board 
-        row, col = point.row, point.col
+        row, col = move.point.row, move.point.col
         self.board.grid[row, col] = player_num
         
         # Handle captures
-        captures = self.handle_captures(point)
+        captures = self.handle_captures(move.point)
         self.captures[self.next_player] += captures
         
         # Update the next player and last move
         self.next_player = Player.white if self.next_player == Player.black else Player.black
-        self.last_move = Move.play(point)
+        self.last_move = move
         
         return self
     
@@ -198,4 +222,18 @@ class FastGoState:
             return True, len(group)
         
         return False, 0
+    
+    # Moves signifying the game is over 
+    def fast_game_over(self):
         
+        if self.last_move is None:
+            return False 
+        # If player resigns, the game is over 
+        if self.is_resigned: 
+            return True
+        # if both player passes, the game is over 
+        if self.last_move.is_pass and self.previous_pass:
+            return True
+        
+        # else game continues 
+        return False
