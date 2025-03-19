@@ -48,6 +48,19 @@ class TestFastBoard(unittest.TestCase):
         self.board.grid[3, 2] = 2
         self.board.grid[3, 4] = 2
         self.assertTrue(self.board.has_no_liberties_except(3, 3, 3, 4))
+        
+    # Empty board should have 81 legal moves for 9x9 board 
+    def test_legal_moves_empty_board(self):
+        moves = self.board.fast_legal_moves(Player.black)
+        self.assertEqual(len(moves), 81)
+        
+    # Test for one move on the board
+    def test_legal_moves_one_moves(self):
+        self.board.grid[3, 3] = 1
+        moves = self.board.fast_legal_moves(Player.white)
+        self.assertEqual(len(moves), 80)
+        self.assertTrue(Point(3, 3) not in moves)
+        
 
 if __name__ == '__main__':
     unittest.main()
