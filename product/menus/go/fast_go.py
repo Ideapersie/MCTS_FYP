@@ -130,9 +130,8 @@ class FastGoState:
                 continue
             
             # Check for captures and update the total captures
-            is_captured, num_captured = self.check_and_remove_group(adj_row, adj_col)
-            if is_captured:
-                total_captures += num_captured
+            _, num_captured = self.check_and_remove_group(adj_row, adj_col)
+            total_captures += num_captured
                 
         return total_captures
         

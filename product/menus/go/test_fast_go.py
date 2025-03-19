@@ -1,10 +1,12 @@
 import unittest
 from menus.go.goplayer import Player, Point
-from menus.go.fast_go import FastBoard
+from menus.go.fast_go import FastBoard, FastGoState
 
 class TestFastBoard(unittest.TestCase):
     def setUp(self):
         self.board = FastBoard(9, 9)
+        self.state = FastGoState(9)
+        self.state.board = self.board
 
     def test_initial_board_empty(self):
         for row in range(1, 10):
@@ -61,6 +63,64 @@ class TestFastBoard(unittest.TestCase):
         self.assertEqual(len(moves), 80)
         self.assertTrue(Point(3, 3) not in moves)
         
+    # Test for no captures
+    def test_handle_captures_no_captures(self):
+        # Set up board with no captures
+        self.state.board.grid[3, 3] = 1  
+        self.state.board.grid[2, 3] = 2
+        # Should have no captures 
+        captures = self.state.handle_captures(Point(3, 3))
+        self.assertEqual(captures, 0)
+        
+        # [3,3] should still be a black stone
+        self.assertEqual(self.board.grid[3, 3], 1)
+        
+        
+    # Test for capturing a single stone
+    def test_handle_captures_single_stone(self):
+        # Set up board with black stone surrounded by white stones
+        self.state.board.grid[3, 3] = 1  
+        self.state.board.grid[2, 3] = 2  
+        self.state.board.grid[4, 3] = 2  
+        self.state.board.grid[3, 2] = 2  
+        
+        # Set next_player to white (the capturing player)
+        self.state.next_player = Player.white
+        # Place the capturing stone
+        self.state.board.grid[3, 4] = 2 
+        
+        # Check if the black stone is captured
+        captures = self.state.handle_captures(Point(3, 4))  # Right side
+        # Check if the black stone is removed
+        self.assertEqual(captures, 1)
+        self.assertEqual(self.board.grid[3, 3], 0)
+
+    # Test for capturing multiple stones
+    def test_handle_captures_multiple_stones(self):
+        # Black stones
+        self.state.board.grid[3, 3] = 1
+        self.state.board.grid[4, 3] = 1
+        # White stones
+        self.state.board.grid[2, 3] = 2
+        self.state.board.grid[3, 2] = 2
+        self.state.board.grid[3, 4] = 2
+        self.state.board.grid[4, 2] = 2
+        self.state.board.grid[4, 4] = 2
+        
+        # Set next_player to white (the capturing player)
+        self.state.next_player = Player.white
+        # Place the capturing stone
+        self.state.board.grid[5, 3] = 2 
+        
+        # Check if the black stone is captured
+        captures = self.state.handle_captures(Point(3, 3))  
+        captures += self.state.handle_captures(Point(4, 3))  
+        
+        # Check if the black stone is removed
+        self.assertEqual(captures, 2)
+        self.assertEqual(self.board.grid[3, 3], 0)
+        self.assertEqual(self.board.grid[4, 3], 0)
+    
 
 if __name__ == '__main__':
     unittest.main()
