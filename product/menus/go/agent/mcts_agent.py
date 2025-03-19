@@ -84,12 +84,11 @@ class MCTsAgent(Agent):
             
             if not possible_moves:
                 # if no legal moves then pass 
-                sim_state.last_move = Move.pass_turn()
-                sim_state.next_player = sim_state.next_player.other
+                sim_state.fast_play_move(Move.pass_turn())
                 continue
             
             # Choose random move and play it 
-            random_move = random.choice(possible_moves)
+            random_move = Move.play(random.choice(possible_moves))
             sim_state.fast_play_move(random_move)
         
         # Quick scoring without territory calculation
@@ -124,8 +123,8 @@ class MCTsAgent(Agent):
         """
     # Quick evaluation of the game state, only compares the score
     def quick_eval(self, sim_state):
-        black_stones = np.sum(sim_state.grid == 1)
-        white_stones = np.sum(sim_state.grid == 2)
+        black_stones = np.sum(sim_state.board.grid == 1)
+        white_stones = np.sum(sim_state.board.grid == 2)
         
         # Combine number of stones and captures
         black_scores = black_stones + sim_state.captures[Player.black]
