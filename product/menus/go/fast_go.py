@@ -23,6 +23,24 @@ class FastBoard:
                     elif player == Player.white:
                         self.grid[row,col] = 2
          
+    # Legal moves for simulation rollouts               
+    def fast_legal_moves(self, next_player):
+        moves = []
+        for row in range(1, self.num_rows+1):
+            for col in range(1, self.num_cols+1):
+                # Skip occupied points
+                if self.grid[row, col] != 0:
+                    continue
+                
+                point = Point(row, col)
+                
+                # Skip if self capture
+                if self.fast_self_capture(point, next_player):
+                    continue
+                # Add the legal move
+                moves.append(point)
+        return moves
+         
     def fast_self_capture(self, point, player):
         # Converting enum values to grid values 
         player_num = 1 if player == Player.black else 2
