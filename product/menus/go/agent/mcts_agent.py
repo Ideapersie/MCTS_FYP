@@ -1,5 +1,6 @@
 from menus.go.agent.base import Agent
 from menus.go.agent.mcts_node import MCTsNode
+from menus.go.fast_go import FastGoState
 from menus.go.go_moves import GoMoves
 from menus.go.goboard import Move, Player, GoState
 import math, random
@@ -66,6 +67,35 @@ class MCTsAgent(Agent):
     
     # Simulate a random game and returns the winner
     def simulate_random_game(self, game_state):
+        # Convert game state to fast simulation
+        sim_state = FastGoState(game_state.board.num_rows, game_state)
+        
+        # Play until the game is over
+        max_moves = game_state.board.num_rows * game_state.board.num_cols
+        
+        for _ in range(max_moves):
+            # Stop if game over 
+            if sim_state.game_over():
+                break
+            
+            # Get faster legal moves
+            possible_moves = sim_state.board.fast_legal_moves(sim_state.next_player)
+            
+            if not possible_moves:
+                # if no legal moves then pass 
+                sim_state.last_move = Move.pass_turn()
+                sim_state.next_player = sim_state.next_player.other
+                continue
+            
+            # Choose random move and play it 
+            random_move = random.choice(possible_moves)
+            sim_state.fast_play_move(random_move)
+        
+        # Quick scoring without territory calculation
+        return self.quick_eval(sim_state)
+        
+        
+        """
         simulate_state = game_state
         # Play until the game is over
         while not simulate_state.game_over():
@@ -90,6 +120,7 @@ class MCTsAgent(Agent):
             return Player.black
         else:
             return Player.white
+        """
                 
     def ucb_score(total_rollouts, child_rollouts, winrate, temperature):
         ucb_score = winrate + temperature * math.sqrt(math.log(total_rollouts) / child_rollouts)
