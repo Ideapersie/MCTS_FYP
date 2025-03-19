@@ -1,3 +1,4 @@
+import numpy as np
 from menus.go.agent.base import Agent
 from menus.go.agent.mcts_node import MCTsNode
 from menus.go.fast_go import FastGoState
@@ -93,7 +94,7 @@ class MCTsAgent(Agent):
         
         # Quick scoring without territory calculation
         return self.quick_eval(sim_state)
-        
+
         
         """
         simulate_state = game_state
@@ -121,6 +122,17 @@ class MCTsAgent(Agent):
         else:
             return Player.white
         """
+    # Quick evaluation of the game state, only compares the score
+    def quick_eval(self, sim_state):
+        black_stones = np.sum(sim_state.grid == 1)
+        white_stones = np.sum(sim_state.grid == 2)
+        
+        # Combine number of stones and captures
+        black_scores = black_stones + sim_state.captures[Player.black]
+        white_scores = white_stones + sim_state.captures[Player.white] + 6.5 # Add komi for white player
+        
+        # Return the winner based on the score
+        return Player.black if black_scores > white_scores else Player.white
                 
     def ucb_score(total_rollouts, child_rollouts, winrate, temperature):
         ucb_score = winrate + temperature * math.sqrt(math.log(total_rollouts) / child_rollouts)
