@@ -122,6 +122,7 @@ class FastGoState:
         if move.is_resign:
             self.is_resigned = True
             self.last_move = move 
+            
             return self
         
         # Handling pass

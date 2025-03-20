@@ -1,4 +1,5 @@
 import unittest
+from menus.go.goboard import Move
 from menus.go.goplayer import Player, Point
 from menus.go.fast_go import FastBoard, FastGoState
 
@@ -124,7 +125,7 @@ class TestFastBoard(unittest.TestCase):
     def test_fast_move(self):
         # Place black stone
         point = Point(3, 3)
-        self.state.fast_play_move(point)
+        self.state.fast_play_move(Move.play(point))
         
         # Check if the stone is placed by black player first 
         self.assertEqual(self.board.grid[3, 3], 1)
@@ -133,10 +134,47 @@ class TestFastBoard(unittest.TestCase):
         
         # # Check if the stone is placed by white player next 
         point = Point(4, 4)
-        self.state.fast_play_move(point)
+        self.state.fast_play_move(Move.play(point))
         self.assertEqual(self.board.grid[4, 4], 2)
         self.assertEqual(self.state.next_player, Player.black)
         self.assertEqual(self.state.last_move.point, point)
+        
+    # Test for pass move
+    def test_fast_pass_move(self):
+        # Place black stone
+        point = Point(3, 3)
+        self.state.fast_play_move(Move.play(point))
+        
+        # Pass move
+        self.state.fast_play_move(Move.pass_turn())
+        self.assertEqual(self.state.next_player, Player.black)
+        self.assertTrue(self.state.last_move.is_pass)
+        
+    def test_fast_two_pass_moves(self):
+        # Place black stone
+        point = Point(3, 3)
+        self.state.fast_play_move(Move.play(point))
+        
+        # 2 Pass moves
+        self.state.fast_play_move(Move.pass_turn())
+        self.state.fast_play_move(Move.pass_turn())
+        # Check if game is over
+        self.assertTrue(self.state.last_move.is_pass)
+        self.assertTrue(self.state.previous_pass)
+        self.assertTrue(self.state.fast_game_over())
+        
+    # Test for resignation
+    def test_fast_resign(self):
+        # Place black stone 
+        # Place black stone
+        point = Point(3, 3)
+        self.state.fast_play_move(Move.play(point))
+        
+        # Resign move
+        self.state.fast_play_move(Move.resign())
+        
+        self.assertTrue(self.state.is_resigned)
+        self.assertTrue(self.state.fast_game_over())
 
 if __name__ == '__main__':
     unittest.main()
