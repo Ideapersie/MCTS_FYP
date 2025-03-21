@@ -1,16 +1,17 @@
 from menus.go.goboard import Player, Move
-import random
+from menus.go.fast_go import FastGoState, FastBoard
+import random,copy
 
 class MCTsNode(object):
     def __init__(self, game_state, parent=None, move=None):
-        self.game_state = game_state
+        self.game_state = FastGoState(game_state.board.num_rows, game_state)
         self.parent = parent
         self.move = move
         self.children = []
         self.wins = {Player.black: 0, Player.white: 0}
         self.num_rollouts = 0
         self.total_rollouts = 0
-        self.unvisited_moves = game_state.legal_moves()
+        self.unvisited_moves = self.game_state.board.fast_legal_moves(game_state.next_player)
 
     # If there are legal moves left, we can add a child
     def add_child(self):
@@ -18,7 +19,7 @@ class MCTsNode(object):
     
     # No legal moves left, can't search the tree further
     def search_over(self):
-        return self.game_state.game_over()
+        return self.game_state.fast_game_over()
     
     # Returns the rollout outcome winrate as float 
     def rollout_winrate(self, player):
@@ -29,11 +30,15 @@ class MCTsNode(object):
         
     # Defining the expansion step of the MCTS algorithm
     def random_child(self):
-        # Randomly select a move from the list of unvisited moves
+        # select random move from unvisited moves
         random_move = random.randint(0, len(self.unvisited_moves) - 1)
-        move = self.unvisited_moves.pop(random_move) 
-        move = Move.play(move)
-        next_state = self.game_state.play_move(move)
+        point = self.unvisited_moves.pop(random_move) 
+        move = Move.play(point)
+        
+        # Create a deep copy of the game state to ensure node independence
+        next_state = copy.deepcopy(self.game_state)
+        next_state.fast_play_move(move)
+        
         child_node = MCTsNode(next_state, self, move)
         self.children.append(child_node)
         return child_node
