@@ -65,6 +65,9 @@ class Board():
         # Dynamically generate column labels based on the number of columns
         col_labels = []
         for i in range(self.num_cols):
+            # Add this condition to skip I, as it is not used in Go
+            if i == 8:
+                i += 1
             # Convert each unicode index to letter 
             col_label = chr(ord('A')+ i)
             col_labels.append(col_label)
