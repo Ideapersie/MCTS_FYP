@@ -14,15 +14,20 @@ class FastBoard:
         
         # if original board is provided, copy the board state
         if original_board:
-            for row in range(1, num_rows+1):
-                for col in range(1, num_cols+1):
-                    point = Point(row, col)
-                    player = original_board.get_player(point)
-                    # Use black: 1 and white: 2 to represent players
-                    if player == Player.black:
-                        self.grid[row,col] = 1
-                    elif player == Player.white:
-                        self.grid[row,col] = 2
+            # Copying fast board
+            if hasattr(original_board, 'grid'):
+                self.grid = copy.copy(original_board.grid)
+            # Copying regular board 
+            else:
+                for row in range(1, num_rows+1):
+                    for col in range(1, num_cols+1):
+                        point = Point(row, col)
+                        player = original_board.get_player(point)
+                        # Use black: 1 and white: 2 to represent players
+                        if player == Player.black:
+                            self.grid[row,col] = 1
+                        elif player == Player.white:
+                            self.grid[row,col] = 2
          
     # Legal moves for simulation rollouts               
     def fast_legal_moves(self, next_player):
@@ -103,11 +108,11 @@ class FastGoState:
         if original_state:
             self.board = FastBoard(board_size, board_size, original_state.board)
             self.next_player = original_state.next_player
-            self.captures = original_state.captured.copy()
+            self.captured = original_state.captured.copy()
         else:
             self.board = FastBoard(board_size, board_size)
             self.next_player = Player.black
-            self.captures = {Player.black: 0, Player.white: 0}
+            self.captured = {Player.black: 0, Player.white: 0}
             
         self.last_move = None
         # Track if previous move is a pass
@@ -146,7 +151,7 @@ class FastGoState:
         
         # Handle captures
         captures = self.handle_captures(move.point)
-        self.captures[self.next_player] += captures
+        self.captured[self.next_player] += captures
         
         # Update the next player and last move
         self.next_player = Player.white if self.next_player == Player.black else Player.black
