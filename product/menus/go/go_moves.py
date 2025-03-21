@@ -16,9 +16,17 @@ class GoMoves:
 
     # Helper function to print the move in the format 'A1'
     def print_move(self, move):
-        if not move.is_play:
-            return move
-        return f"{chr(move.point.col + ord('A') - 1)}{(move.point.row)}"
+        if move.is_pass:
+            return "PASS"
+        elif move.is_resign:
+            return "RESIGN"
+        
+        # Skip I column since it is not used in Go
+        col = move.point.col
+        if col >= 9:
+            col += 1
+        
+        return f"{chr(col+ ord('A') - 1)}{(move.point.row)}"
 
     def player_input(self):
         # To avoid capitalization or spacing issues
@@ -30,9 +38,12 @@ class GoMoves:
             return None
         
         col, row = player_input[0], player_input[1:]
-        # Upper-case therefore the ASCII value is the same
         # Ord converts to ASCII value of the column letter
         convert_col = ord(col) - ord('A') + 1 
+        
+        # Skip I column since it is not used in Go
+        if col > 'I':
+            convert_col -= 1
         
         if player_input == "PASS":
             return Move.pass_turn()
@@ -45,5 +56,8 @@ class GoMoves:
             print("Invalid move, input is larger than board size")
         elif int(player_input[1:]) < 1:
             print("Invalid move, input is smaller than board size")
+        # Dont allow I column to be used in Go
+        elif col == 'I':
+            print("Invalid move, I column is not used in Go, Please us A-H or J")
         else:
             return Move.play(Point(int(row), convert_col))
