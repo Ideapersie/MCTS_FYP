@@ -19,7 +19,11 @@ class MCTsAgent(Agent):
     def select_move(self, game_state):
         # Initialising the root node 
         root = MCTsNode(game_state)
-        """
+        
+        # Expand root node to analyse moves in parallel
+        while root.add_child():
+            root.random_child()
+
         # Prepare move for parallel processing 
         num_processes = mp.cpu_count()
         rollouts_per_process = self.num_rounds // num_processes 
@@ -30,9 +34,29 @@ class MCTsAgent(Agent):
                 self.run_batch_simulation,
                 [(root, rollouts_per_process, i) for i in range(num_processes)]
             )
+            
+        # Combine results dictionary
+        combined_results = {}
+        for result in rollout_result:
+            # Combine results from each process
+            for move_point, wins in result.items():
+                # Create dictionary for each move point
+                if move_point not in combined_results:
+                    combined_results[move_point] = {Player.black: 0, Player.white: 0}
+                combined_results[move_point][Player.black] += wins[Player.black]
+                combined_results[move_point][Player.white] += wins[Player.white]     
+                
+        # Update the root node with the combined results
+        for child in root.children:
+            point = child.move.point
+            # Update the wins for each child node
+            if point in combined_results:
+                child.wins[Player.black] += combined_results[point][Player.black]
+                child.wins[Player.white] += combined_results[point][Player.white]
+                # Update the number of rollouts
+                child.num_rollouts += combined_results[point][Player.black] + \
+                    combined_results[point][Player.white]
         """
-        
-        
         # Set number of iterations
         for _ in range(self.num_rounds):
             node = root 
@@ -53,6 +77,7 @@ class MCTsAgent(Agent):
                 node.update_rollout(winner)
                 # Keep updating until the root node is reached
                 node = node.parent
+        """
             
             
         # Select the best move based on the number of rollouts
@@ -104,13 +129,13 @@ class MCTsAgent(Agent):
         return self.quick_eval(sim_state)
 
     # Running a batch simulation for parallel processing
-    def run_batch_simulation(self, root_node, num_simulation, batch_no):
-       win_count = {}
+    def run_batch_simulation(self, node, num_simulation, batch_no):
+        win_count = {}
        
-       # Local random num generator 
-       local_random =  random.Random(batch_no) 
+        # Local random num generator 
+        local_random =  random.Random(batch_no) 
        
-       for _ in range(num_simulation):
+        for _ in range(num_simulation):
            # Selection step: traverse tree until leaf node is reached
             while (not node.add_child()) and not node.search_over():
                 node = self.select_child(node)
@@ -121,6 +146,12 @@ class MCTsAgent(Agent):
                 
             # Simulation step: simulate a random game from the new child node
             winner = self.simulate_random_game(node.game_state)
+            
+            # Backpropagation step: update the node statistics
+            while node is not None:
+                node.update_rollout(winner)
+                # Keep updating until the root node is reached
+                node = node.parent
             
             move = node.move.point
             
