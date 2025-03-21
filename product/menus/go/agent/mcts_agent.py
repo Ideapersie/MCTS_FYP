@@ -32,7 +32,7 @@ class MCTsAgent(Agent):
         with mp.Pool(processes=num_processes) as pool:
             rollout_result = pool.starmap(
                 self.run_batch_simulation,
-                [(root, rollouts_per_process, i) for i in range(num_processes)]
+                [(root.game_state, rollouts_per_process, i) for i in range(num_processes)]
             )
             
         # Combine results dictionary
@@ -96,7 +96,7 @@ class MCTsAgent(Agent):
                 best_move = child.move.point
                 
         # DEBUG: Check the winrate of best node
-        print(f"DEBUG: Best move -> {best_move}, Winrate: {highest_winrate}")
+        print(f"DEBUG: Best move -> {best_move}, Winrate: {highest_winrate:.2%}")
                 
         return Move.play(best_move)
     
@@ -129,13 +129,17 @@ class MCTsAgent(Agent):
         return self.quick_eval(sim_state)
 
     # Running a batch simulation for parallel processing
-    def run_batch_simulation(self, node, num_simulation, batch_no):
+    def run_batch_simulation(self, game_state, num_simulation, batch_no):
         win_count = {}
        
         # Local random num generator 
         local_random =  random.Random(batch_no) 
        
         for _ in range(num_simulation):
+            
+            # Create new node for each simulation
+            node = MCTsNode(game_state)
+            
            # Selection step: traverse tree until leaf node is reached
             while (not node.add_child()) and not node.search_over():
                 node = self.select_child(node)
@@ -144,21 +148,16 @@ class MCTsAgent(Agent):
             if node.add_child():
                 node = node.random_child()
                 
+            # Store selected move before simulation
+            sel_move = node.move.point
+                
             # Simulation step: simulate a random game from the new child node
             winner = self.simulate_random_game(node.game_state)
             
-            # Backpropagation step: update the node statistics
-            while node is not None:
-                node.update_rollout(winner)
-                # Keep updating until the root node is reached
-                node = node.parent
-            
-            move = node.move.point
-            
             # Add number of wins depending on the move 
-            if move not in win_count:
-                win_count[move] = {Player.black: 0, Player.white: 0}
-            win_count[move][winner] += 1 
+            if sel_move not in win_count:
+                win_count[sel_move] = {Player.black: 0, Player.white: 0}
+            win_count[sel_move][winner] += 1 
            
         return win_count
     
@@ -168,8 +167,8 @@ class MCTsAgent(Agent):
         white_stones = np.sum(sim_state.board.grid == 2)
         
         # Combine number of stones and captures
-        black_scores = black_stones + sim_state.captures[Player.black]
-        white_scores = white_stones + sim_state.captures[Player.white] + 6.5 # Add komi for white player
+        black_scores = black_stones + sim_state.captured[Player.black]
+        white_scores = white_stones + sim_state.captured[Player.white] + 6.5 # Add komi for white player
         
         # Return the winner based on the score
         return Player.black if black_scores > white_scores else Player.white
