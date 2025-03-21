@@ -5,6 +5,7 @@ from menus.go.fast_go import FastGoState
 from menus.go.go_moves import GoMoves
 from menus.go.goboard import Move, Player, GoState
 import math, random
+import multiprocessing as mp
 
 
 class MCTsAgent(Agent):
@@ -18,6 +19,19 @@ class MCTsAgent(Agent):
     def select_move(self, game_state):
         # Initialising the root node 
         root = MCTsNode(game_state)
+        """
+        # Prepare move for parallel processing 
+        num_processes = mp.cpu_count()
+        rollouts_per_process = self.num_rounds // num_processes 
+        
+        # Create pool which runs parallel simulations 
+        with mp.Pool(processes=num_processes) as pool:
+            rollout_result = pool.starmap(
+                self.run_batch_simulation,
+                [(root, rollouts_per_process, i) for i in range(num_processes)]
+            )
+        """
+        
         
         # Set number of iterations
         for _ in range(self.num_rounds):
@@ -26,11 +40,6 @@ class MCTsAgent(Agent):
             # Selection step: traverse tree until leaf node is reached
             while (not node.add_child()) and not node.search_over():
                 node = self.select_child(node)
-                
-                # DEBUG: Check if node becomes None
-                if node is None:
-                    print("ERROR: node is None after selection step!")
-                    return None
                 
             # Expansion step: adds new child node to the tree 
             if node.add_child():
@@ -94,33 +103,34 @@ class MCTsAgent(Agent):
         # Quick scoring without territory calculation
         return self.quick_eval(sim_state)
 
-        
-        """
-        simulate_state = game_state
-        # Play until the game is over
-        while not simulate_state.game_over():
-            possible_moves = simulate_state.legal_moves()
-            # Break if no possible moves left
-            if not possible_moves:
-                break
+    # Running a batch simulation for parallel processing
+    def run_batch_simulation(self, root_node, num_simulation, batch_no):
+       win_count = {}
+       
+       # Local random num generator 
+       local_random =  random.Random(batch_no) 
+       
+       for _ in range(num_simulation):
+           # Selection step: traverse tree until leaf node is reached
+            while (not node.add_child()) and not node.search_over():
+                node = self.select_child(node)
+                
+            # Expansion step: adds new child node to the tree 
+            if node.add_child():
+                node = node.random_child()
+                
+            # Simulation step: simulate a random game from the new child node
+            winner = self.simulate_random_game(node.game_state)
             
-            # Format the possible moves for display
-            formatted_moves = []
-            for move in possible_moves:
-                formatted_moves.append(f"{chr(move.col + ord('A') - 1)}{(move.row)}")
-            #print(f"Possible moves: {', '.join(formatted_moves)}")
+            move = node.move.point
             
-            random_move = random.choice(possible_moves)
-            random_move = Move.play(random_move)
-            simulate_state = simulate_state.play_move(random_move)
-            
-        # Compare score to determine the winner
-        black_score, white_score = simulate_state.final_score()
-        if black_score > white_score:
-            return Player.black
-        else:
-            return Player.white
-        """
+            # Add number of wins depending on the move 
+            if move not in win_count:
+                win_count[move] = {Player.black: 0, Player.white: 0}
+            win_count[move][winner] += 1 
+           
+        return win_count
+    
     # Quick evaluation of the game state, only compares the score
     def quick_eval(self, sim_state):
         black_stones = np.sum(sim_state.board.grid == 1)

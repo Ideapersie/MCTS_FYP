@@ -353,7 +353,6 @@ class GoState():
     
     # Moves signifying the game is over 
     def game_over(self):
-        
         if self.last_move is None:
             return False 
         # If player resigns, the game is over 
