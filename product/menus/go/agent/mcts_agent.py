@@ -4,7 +4,7 @@ from menus.go.agent.mcts_node import MCTsNode
 from menus.go.fast_go import FastGoState
 from menus.go.go_moves import GoMoves
 from menus.go.goboard import Move, Player, GoState
-import math, random
+import math, random, time
 import multiprocessing as mp
 
 
@@ -19,6 +19,9 @@ class MCTsAgent(Agent):
     def select_move(self, game_state):
         # Initialising the root node 
         root = MCTsNode(game_state)
+        
+        # Compute the time taken for the move
+        start_time = time.time()
         
         # Expand root node to analyse moves in parallel
         while root.add_child():
@@ -94,9 +97,12 @@ class MCTsAgent(Agent):
             if child_winrate > highest_winrate:
                 highest_winrate = child_winrate
                 best_move = child.move.point
+        
+        # Compute the time taken for the move
+        end_time = time.time()
                 
         # DEBUG: Check the winrate of best node
-        print(f"DEBUG: Best move -> {best_move}, Winrate: {highest_winrate:.2%}")
+        print(f"DEBUG: Best move -> {best_move}, Winrate: {highest_winrate:.2%}, Time Taken: {end_time - start_time:.2f}")
                 
         return Move.play(best_move)
     
