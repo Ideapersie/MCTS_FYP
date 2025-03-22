@@ -1,5 +1,8 @@
 # FYP Diary 
 
+**08/03/2025**
+Conducting further research into the extensions of the MCTS algorithm firstly I will start optimizing the computational time required for each move enabling the algorithm to calculate more than 10000 rollouts within seconds, furthermore, I will add multiprocessing allowing the rollouts to be run in batch simulations and updating the rollouts accordingly, extending this by adding passing and resignation thresholds for the simulations and potentially adding opening moves to strengthen the start of every simulated game rollouts.  
+
 **27/02/2025**
 Made a new mode for player to play against the MCTs agent to see how the strength compares to the random agent however due to the inefficiency of the current MCTs implementation it takes too long to play against the engine with more than 10 rollouts which is unfeasible to make a good bot, therefore I will create new method to improve this later on. Further, I added a bot vs bot mode for the MCTs agent which will be used for paramater analysis later on in the project.  
 
