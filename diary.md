@@ -1,5 +1,8 @@
 # FYP Diary 
 
+**21/02/2025**
+Added a function where the bot will also pass turn when the player passes turn, this allows the game to enter the final scoring stage since when the player passes, it signals that the game state is nearing the end and no significant moves can really be made therefore it is better to both pass and counts the score to determine the winner.  
+
 **18/02/2025**
 Creating a bot where it selects random Valid moves, where it doesnt fill its own eyes and randomly selects legal moves, added a new mode to the Go menu to for player to play against this random bot however the bot strength is very weak and the computational time per move is rather slow. 
 
