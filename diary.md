@@ -1,5 +1,8 @@
 # FYP Diary 
 
+**13/03/2025**
+Add print statements to debug the errors ending the simulations, where the simulations end with None since there are no remaning childs which can be added. Furthermore, I am trying to implement a new approach for the calculating territory method.  
+
 **08/03/2025**
 Conducting further research into the extensions of the MCTS algorithm firstly I will start optimizing the computational time required for each move enabling the algorithm to calculate more than 10000 rollouts within seconds, furthermore, I will add multiprocessing allowing the rollouts to be run in batch simulations and updating the rollouts accordingly, extending this by adding passing and resignation thresholds for the simulations and potentially adding opening moves to strengthen the start of every simulated game rollouts.  
 
