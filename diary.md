@@ -1,5 +1,8 @@
 # FYP Diary 
 
+**12/02/2025**
+Due to the issues with calculating the territories, both in calcualate_territory and final_scoring, I have created test cases to determine where the error is and what should be changed since currently I know the issue is to do with the borders but not specifically what the scoring classifies it as.
+
 **15/01/2025** 
 Started continuing my research on MCTs and reading the Deep Learning and the Game of GO book, expanding my understanding on the MCTs algorithm and implementation using Python, this implementation uses dictionary which I will follow first then improve by using Numpy Array for computational efficiency. Further researching what GUI library I should use.  
 
