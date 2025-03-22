@@ -1,5 +1,8 @@
 # FYP Diary 
 
+**17/02/2025**
+Tried a new flood_fill method which is similar to DFS but will be expanding differently, however the same issues still arise therefore I will return to this method at a later stage, refactored player_input into a class therefore it call be reused for any type of game either between players or bots.  
+
 **13/02/2025**
 Trying new calculate_territory function since the old one seeems to be counting the borders of each side as either neutral or the opposing colour leading to white having no points even with large areas, therefore this implementation will could the adjacent points where its stored in a set and count the amount of territories inside the adjacent points.  
 
