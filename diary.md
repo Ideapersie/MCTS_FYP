@@ -1,5 +1,8 @@
 # FYP Diary 
 
+**25/02/2025**
+I used the UCB algorithm to determine the best next move for the selection step using information from previous rollouts, choosing the child with the highest winrate alongside other variables including the 'temperature' variable which is a variable balancing between exploration and exploitation, also improved the simulation step by creating a method to play the game until the game_over where there are no legal_moves left.  
+
 **23/02/2025**
 MCTsAgent class where all 4 steps of the MCTs algorithm will be implemented, firstly the select_move method which includes the selection, expansion, simulation, and backpropagation step, where the simulation and expansion steps are currently random and will be improved later for more optimal outcomes such as better simulation games, batch simulations, choices of opening moves and more. 
 
