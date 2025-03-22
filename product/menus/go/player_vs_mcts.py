@@ -7,7 +7,7 @@ class PlayerVsMcts(GoMoves):
     def __init__(self, board_size=9):
         self.board_size = board_size
         self.game = GoState.new_game(board_size)
-        self.bot = MCTsAgent(temperature=1.4, num_rounds=100000)
+        self.bot = MCTsAgent(temperature=1.4, num_rounds=10000)
         
         print(f"\nWelcome to Go! \
               \n\nYou can type 'pass' to pass a turn or 'resign' to forfeit the game. ")
@@ -44,7 +44,7 @@ class PlayerVsMcts(GoMoves):
                 else:
                     bot_move = self.bot.select_move(self.game)
                 self.game = self.game.play_move(bot_move) 
-                # fix print statement 
+                # Print bot's move with the format 'A1'
                 print(f"\nBot played: {self.print_move(bot_move)}")
                 
         # Display results

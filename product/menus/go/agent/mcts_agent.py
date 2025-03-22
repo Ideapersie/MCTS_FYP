@@ -59,28 +59,6 @@ class MCTsAgent(Agent):
                 # Update the number of rollouts
                 child.num_rollouts += combined_results[point][Player.black] + \
                     combined_results[point][Player.white]
-        """
-        # Set number of iterations
-        for _ in range(self.num_rounds):
-            node = root 
-            
-            # Selection step: traverse tree until leaf node is reached
-            while (not node.add_child()) and not node.search_over():
-                node = self.select_child(node)
-                
-            # Expansion step: adds new child node to the tree 
-            if node.add_child():
-                node = node.random_child()
-                
-            # Simulation step: simulate a random game from the new child node
-            winner = self.simulate_random_game(node.game_state)
-            
-            # Backpropagation step: update the node statistics
-            while node is not None:
-                node.update_rollout(winner)
-                # Keep updating until the root node is reached
-                node = node.parent
-        """
             
             
         # Select the best move based on the number of rollouts
@@ -92,7 +70,7 @@ class MCTsAgent(Agent):
             child_winrate = child.rollout_winrate(game_state.next_player)
             
             # DEBUG: Check the winrate of each child node
-            print(f"Move: {child.move.point}, Win rate: {child_winrate:.2%}, Visits: {child.num_rollouts}")
+            print(f"Move: {self.go_moves.print_move(child.move)}, Win rate: {child_winrate:.2%}, Visits: {child.num_rollouts}")
             
             if child_winrate > highest_winrate:
                 highest_winrate = child_winrate
@@ -102,9 +80,18 @@ class MCTsAgent(Agent):
         end_time = time.time()
                 
         # DEBUG: Check the winrate of best node
-        print(f"DEBUG: Best move -> {best_move}, Winrate: {highest_winrate:.2%}, Time Taken: {end_time - start_time:.2f}")
-                
-        return Move.play(best_move)
+        print(f"DEBUG: Best move -> {self.go_moves.print_move(best_move)}, Winrate: {highest_winrate:.2%}, Time Taken: {end_time - start_time:.2f}")
+        
+        # Threshold for resigning and passing move 
+        passing_threshold = 0.25 # Pass if winrate is below 25%
+        resignation_threshold = 0.1 # Resign if winrate is below 10%
+        
+        if highest_winrate < passing_threshold:
+            return Move.pass_turn()
+        elif highest_winrate < resignation_threshold:
+            return Move.resign()
+        else:    
+            return Move.play(best_move)
     
     # Simulate a random game and returns the winner
     def simulate_random_game(self, game_state):
