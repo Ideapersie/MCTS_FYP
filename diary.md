@@ -1,5 +1,8 @@
 # FYP Diary 
 
+**15/01/2025** 
+Started continuing my research on MCTs and reading the Deep Learning and the Game of GO book, expanding my understanding on the MCTs algorithm and implementation using Python, this implementation uses dictionary which I will follow first then improve by using Numpy Array for computational efficiency. Further researching what GUI library I should use.  
+
 **12/12/2024**
 Due to changes to the bandit problem, I decided to add red dots instead of statistical labels to avoid clutter while providing a visual method of comparing the accuracy of how well each algorithm estimates the mean probability of each arm since the more linear the models, the better the estimation. Furthermore, finalised the calculate_territory method to avoid neutral points be mistaken as black points especially at the start of the games with no points or no defined territories yet. 
 
