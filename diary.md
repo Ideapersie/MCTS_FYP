@@ -1,5 +1,8 @@
 # FYP Diary 
 
+**22/02/2025**
+New class called MCTsNode, defining the data structure for the MCTs tree containing information such as the game_state, parents and children of the current rollouts, furthermore randomizing the child for the expansion step and updating rollouts. Added new method called Legal_moves to only randomize from valid moves during the simulation steps. Next will create the class MCTsAgent where all the 4 steps of MCTs occurs.  
+
 **21/02/2025**
 Added a function where the bot will also pass turn when the player passes turn, this allows the game to enter the final scoring stage since when the player passes, it signals that the game state is nearing the end and no significant moves can really be made therefore it is better to both pass and counts the score to determine the winner.  
 
