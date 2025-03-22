@@ -1,5 +1,8 @@
 # FYP Diary 
 
+**18/02/2025**
+Creating a bot where it selects random Valid moves, where it doesnt fill its own eyes and randomly selects legal moves, added a new mode to the Go menu to for player to play against this random bot however the bot strength is very weak and the computational time per move is rather slow. 
+
 **17/02/2025**
 Tried a new flood_fill method which is similar to DFS but will be expanding differently, however the same issues still arise therefore I will return to this method at a later stage, refactored player_input into a class therefore it call be reused for any type of game either between players or bots.  
 
