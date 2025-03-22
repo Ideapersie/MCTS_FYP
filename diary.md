@@ -1,5 +1,8 @@
 # FYP Diary 
 
+**23/02/2025**
+MCTsAgent class where all 4 steps of the MCTs algorithm will be implemented, firstly the select_move method which includes the selection, expansion, simulation, and backpropagation step, where the simulation and expansion steps are currently random and will be improved later for more optimal outcomes such as better simulation games, batch simulations, choices of opening moves and more. 
+
 **22/02/2025**
 New class called MCTsNode, defining the data structure for the MCTs tree containing information such as the game_state, parents and children of the current rollouts, furthermore randomizing the child for the expansion step and updating rollouts. Added new method called Legal_moves to only randomize from valid moves during the simulation steps. Next will create the class MCTsAgent where all the 4 steps of MCTs occurs.  
 
