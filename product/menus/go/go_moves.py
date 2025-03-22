@@ -16,17 +16,24 @@ class GoMoves:
 
     # Helper function to print the move in the format 'A1'
     def print_move(self, move):
-        if move.is_pass:
+        
+        if hasattr(move, 'is_pass') and move.is_pass:
             return "PASS"
-        elif move.is_resign:
+        if hasattr(move, 'is_resign') and move.is_resign:
             return "RESIGN"
+    
+        # Take point from the move object or use move as point
+        if hasattr(move, 'point'):
+            point = move.point
+        else:
+            point = move
         
         # Skip I column since it is not used in Go
-        col = move.point.col
+        col = point.col
         if col >= 9:
             col += 1
         
-        return f"{chr(col+ ord('A') - 1)}{(move.point.row)}"
+        return f"{chr(col+ ord('A') - 1)}{(point.row)}"
 
     def player_input(self):
         # To avoid capitalization or spacing issues
