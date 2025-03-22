@@ -1,5 +1,8 @@
 # FYP Diary 
 
+**27/02/2025**
+Made a new mode for player to play against the MCTs agent to see how the strength compares to the random agent however due to the inefficiency of the current MCTs implementation it takes too long to play against the engine with more than 10 rollouts which is unfeasible to make a good bot, therefore I will create new method to improve this later on. Further, I added a bot vs bot mode for the MCTs agent which will be used for paramater analysis later on in the project.  
+
 **25/02/2025**
 I used the UCB algorithm to determine the best next move for the selection step using information from previous rollouts, choosing the child with the highest winrate alongside other variables including the 'temperature' variable which is a variable balancing between exploration and exploitation, also improved the simulation step by creating a method to play the game until the game_over where there are no legal_moves left.  
 
