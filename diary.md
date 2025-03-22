@@ -1,8 +1,85 @@
 # FYP Diary 
 
+**27/02/2025**
+Made a new mode for player to play against the MCTs agent to see how the strength compares to the random agent however due to the inefficiency of the current MCTs implementation it takes too long to play against the engine with more than 10 rollouts which is unfeasible to make a good bot, therefore I will create new method to improve this later on. Further, I added a bot vs bot mode for the MCTs agent which will be used for paramater analysis later on in the project.  
+
+**25/02/2025**
+I used the UCB algorithm to determine the best next move for the selection step using information from previous rollouts, choosing the child with the highest winrate alongside other variables including the 'temperature' variable which is a variable balancing between exploration and exploitation, also improved the simulation step by creating a method to play the game until the game_over where there are no legal_moves left.  
+
+**23/02/2025**
+MCTsAgent class where all 4 steps of the MCTs algorithm will be implemented, firstly the select_move method which includes the selection, expansion, simulation, and backpropagation step, where the simulation and expansion steps are currently random and will be improved later for more optimal outcomes such as better simulation games, batch simulations, choices of opening moves and more. 
+
+**22/02/2025**
+New class called MCTsNode, defining the data structure for the MCTs tree containing information such as the game_state, parents and children of the current rollouts, furthermore randomizing the child for the expansion step and updating rollouts. Added new method called Legal_moves to only randomize from valid moves during the simulation steps. Next will create the class MCTsAgent where all the 4 steps of MCTs occurs.  
+
+**21/02/2025**
+Added a function where the bot will also pass turn when the player passes turn, this allows the game to enter the final scoring stage since when the player passes, it signals that the game state is nearing the end and no significant moves can really be made therefore it is better to both pass and counts the score to determine the winner.  
+
+**18/02/2025**
+Creating a bot where it selects random Valid moves, where it doesnt fill its own eyes and randomly selects legal moves, added a new mode to the Go menu to for player to play against this random bot however the bot strength is very weak and the computational time per move is rather slow. 
+
+**17/02/2025**
+Tried a new flood_fill method which is similar to DFS but will be expanding differently, however the same issues still arise therefore I will return to this method at a later stage, refactored player_input into a class therefore it call be reused for any type of game either between players or bots.  
+
+**13/02/2025**
+Trying new calculate_territory function since the old one seeems to be counting the borders of each side as either neutral or the opposing colour leading to white having no points even with large areas, therefore this implementation will could the adjacent points where its stored in a set and count the amount of territories inside the adjacent points.  
+
+**12/02/2025**
+Due to the issues with calculating the territories, both in calcualate_territory and final_scoring, I have created test cases to determine where the error is and what should be changed since currently I know the issue is to do with the borders but not specifically what the scoring classifies it as.  
+
+**15/01/2025** 
+Started continuing my research on MCTs and reading the Deep Learning and the Game of GO book, expanding my understanding on the MCTs algorithm and implementation using Python, this implementation uses dictionary which I will follow first then improve by using Numpy Array for computational efficiency. Further researching what GUI library I should use.  
+
+**12/12/2024**
+Due to changes to the bandit problem, I decided to add red dots instead of statistical labels to avoid clutter while providing a visual method of comparing the accuracy of how well each algorithm estimates the mean probability of each arm since the more linear the models, the better the estimation. Furthermore, finalised the calculate_territory method to avoid neutral points be mistaken as black points especially at the start of the games with no points or no defined territories yet. 
+
+**11/12/2024**
+Increased the number of arms from 10 arms to 99 arms in the bandit problems since this allows for better understanding between the tradeoff of exploration vs exploitation since the more number of possible moves, the harder it is to get the best results. Hence now arm 0 starts at 0% and increases by 1% per arm until arm 99, with this the simulations will be reduced from 100 to 10 due to lack of computational power and graph compiling times. Due to the no. of arms changed, experimentation and change in variable values was required especially the epsilon variables. 
+
+  
+**09/12/2024**
+Added the calculate_territory method while calculates the territories of each player and where there are neutral territory which does not contribute to the final scoring, this is included in the final_score function where the territory are counted at the end and will be displayed in the CLI also printing who the winner is (player with the most territory), this still requires further testing since territory is inaccurately scoring the neutral territories as black territories.
+
+**08/12/2024**
+Using Matplotlib and the average results gathered, I decided to make 3 graphs with the first graph on the left being the average rewards per arm then the average pull count per arm then estimated mean probablities per arm with the total rewards of each algorithm displayed at the top. The most important variable is the average pull per arm since this determines which algorithm prioritises the total rewards while also explores other arms efficiently, with careful variable testing, the UCB score is best for this method since it only prioritises the arms with higher rewards unlike e-greedy where the lower arms are randomly pulled. 
+  
+**07/12/2024** 
+For the visual representation in the presentation, I decided to revisit the bandit problem and created matplotlib graphs for each simulated to illustrate the difference in each algorithms for the bandit problem. For a reliable and accurate results, I implemented a way to gather average results from 100 simulation of each algorithm where each simulation is a 1000 iterations each. Next I will be finalizing the values gather and also display these values in a graph. Furthermore, I am finalizing the presentation and will be using the graph displayed by MatPlotlib.
+  
+**06/12/2024**
+New file to incorporate all the previous classes into a player_vs_player method where a new game starts once called, the players inputs plays representing stones on the board and prints an "invalid move" if the move is invalid such as the ko rule or the rows are larger than board size. The player can also pass turn or resign by typing in "pass" and "resign" respectively however I will be implementing a scoring method to calculate the territories next and further testing required. 
+  
+**05/12/2024**
+Had the third meeting with my supervisor, shown him my progress so far with the outlines to my presentation and reports, Got feedback on what I could include in my reports such as A plan for next term and also explanation for the research and experimentation I have done. He also suggested to fully complete the PVP mode then focus on creating a GUI in the next term to make a completed early deliverable on time. 
+  
+**04/12/2024**
+New str method which will represent the go board in CLI using x and o as black and white stones and columns will be defined with letters from A to I, rows are defined with numbers from 1 to 9. However, testing this method has been a challenge since I would have to convery the board into a string while keeping the same format and also find a way to compare the values rather than instances. 
+  
+**03/12/2024**
+Implemented another special rule called the Ko Rule which is when then board can't return to the previous state after capturing a stone since this could end in an infinite loop of capturing the same points over and over again, this Rule is implemented by comparing next move with the previous state of the board. While testing, the comparing between board states was an issue since it was comparing instances instead of values therefore I had to make my own __eq__ method, lastly combined both previous rules into valid_move which determines if the next move played is a valid move, if not an "invalid move" prompt will appear. 
+  
+**01/12/2024**
+Implemented a self_capture method which is a rule in go where the player can't place stone if it results in its own stones being captured, this prevents certain moves from the game therefore it is required and requires copying the state of the board to compare number of liberties to a point. Furthermore, testing all the gameover function implemented earlier including the self_capture method
+  
+**30/11/2024**
+New class of Gostate which will be storing the board positions, next player, previous game states(will be used in the Ko Rule) and the last move played. Also including function like starting a new game including the variable values initialised when the game is starting such as the starting player will be the Player with black stones, another function is the is_over to state that the game ends when both player passes or either resigns.
+  
+**29/11/2024**
+Completed the Board class with the addition of remove_string method since this is used to remove strings with no liberties left when the stones are placed, also added a function to merge strings if they are connected to same coloured stones. Furthermore, improved these methods through testing and making sure each method is functioning as expected. Will be starting the GoState class next which will contain method such as starting a new game. 
+
+**26/11/2024**
+Implemented the Board class which allows specifying the size of the board and the main size used in this project will be 9x9 since it is much more computational viable and easier for 
+the MCTS algorithm to be implemented and understood. This class includes a place_stone method which is very crucial since it places the specified stone on the point while determining 
+the liberties surrounding that point which will be used in the capturing method later on. Also included the method to retrieves the player's colour and string connected to a certain stone.
+  
+**24/11/2024**
+Started with the Player class and move class including functions such as playing moves, passing turn and resigning while the Player class has 2 players, black or white and a neighbour function determining the neighbours of each point. This is tested using unittest and this will be used throughout the project.
+  
+**23/11/2024** 
+After understanding the implementation of the GO board in Python and applying a random algorithm, I decided to create a new branch to implement those files again with proper testing and coverage tests to make sure the codes will be efficient and follow coding standards, starting with the Player files and possible move functions. Next will be the implementation of the GO board and I will continue this until I implement a basic algorithm and enable player vs player game in CLI then work on a GUI for the game. 
+
 **15/11/2024**
 I Added 2 new files, containing functions which will help determine if a point is an eye therefore helping to end the game of GO since without this function, the AI might self-capture itself but filling the eye which will lead to a loss. Furthermore, I have been continuing to understand and research about implementing algorithms into the game of GO using Python and Next I will be starting with an AI which plays random moves then further implement other algorithms from there on. 
-
 
 **12/11/2024**
 Since the last entry, I have been constantly implementing the game of Go using Python, recently I have added the Ko and Self-capture rules which are illegal moves in most international rulesets for Go, currently there are 4 different classes specifying Go moving options, a Go string containing each groups of same coloured Go, Board and GameState class. Next, I will be implementing how to end the game of Go including many conditions to check for while ending the game of Go.   
