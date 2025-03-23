@@ -1,5 +1,8 @@
 # FYP Diary 
 
+**21/03/2025**
+To further improve the processing speed of the rollouts, I am implementating multiprocessing to be able to run multiple simulations in parallel using the multiprocessing library in Python, this allows bypassing the Global Interpreter lock and allows the code to be sent the multiple processors for simulatanoues simulations. The simulations will be ran in a new method called batch_simulations where the method will update the win_counts per move therefore the win_counts can be updated accordingly and at the same time.  
+
 **19/03/2025**
 I started the implementation of new classes to optimize the goboard for faster MCTs rollouts with the goal of achieving atleast 10000 rollouts within seconds to allow the MCTs algorithm to perform to its potential, this will be done by mainly changing the dictionary structure into Arrays and also refactoring any methods which uses DeepCopy. Firstly, A faster self-capture method using loop instead of DeepCopying the previous board state, allowing faster computation to be used in the new Legal_moves method. 
 Next is the Fast_play_move where the handling of captures and removal of captured stones are done by using sets to store the groups of stones, this new method is then used in the simulation step of the MCTs algorithm. Another extension is using the quick_eval method where instead of counting all the territory, we are counting the number of stones of the board since that means the player has more territory and less stones captured, further improving the computational time. Finally, implementing all these changes and receiving incomparable computational time compared to the previous implementations, with a difference more than 200x faster.
