@@ -1,5 +1,9 @@
 # FYP Diary 
 
+**19/03/2025**
+I started the implementation of new classes to optimize the goboard for faster MCTs rollouts with the goal of achieving atleast 10000 rollouts within seconds to allow the MCTs algorithm to perform to its potential, this will be done by mainly changing the dictionary structure into Arrays and also refactoring any methods which uses DeepCopy. Firstly, A faster self-capture method using loop instead of DeepCopying the previous board state, allowing faster computation to be used in the new Legal_moves method. 
+Next is the Fast_play_move where the handling of captures and removal of captured stones are done by using sets to store the groups of stones, this new method is then used in the simulation step of the MCTs algorithm. Another extension is using the quick_eval method where instead of counting all the territory, we are counting the number of stones of the board since that means the player has more territory and less stones captured, further improving the computational time. Finally, implementing all these changes and receiving incomparable computational time compared to the previous implementations, with a difference more than 200x faster.
+
 **18/03/2025**
 Implementing DFS where the stack explores and stores the connected empty points, however this implementation is different where the borders including the ones surrounding the board are assumed as both black and white until it is disprovened by one of the stones in the border being an opposing colour, if it is both colours then its neutral else its that colour's territory, this leads to the correct scoring of the final scoring. 
 
