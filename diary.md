@@ -1,5 +1,8 @@
 # FYP Diary 
 
+**18/03/2025**
+Implementing DFS where the stack explores and stores the connected empty points, however this implementation is different where the borders including the ones surrounding the board are assumed as both black and white until it is disprovened by one of the stones in the border being an opposing colour, if it is both colours then its neutral else its that colour's territory, this leads to the correct scoring of the final scoring. 
+
 **13/03/2025**
 Add print statements to debug the errors ending the simulations, where the simulations end with None since there are no remaning childs which can be added. Furthermore, I am trying to implement a new approach for the calculating territory method.  
 
