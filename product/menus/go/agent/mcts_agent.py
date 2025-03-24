@@ -82,10 +82,36 @@ class MCTsAgent(Agent):
         # DEBUG: Check the winrate of best node
         print(f"DEBUG: Best move -> {self.go_moves.print_move(best_move)}, Winrate: {highest_winrate:.2%}, Time Taken: {end_time - start_time:.2f}")
         
-        # Threshold for resigning and passing move 
-        passing_threshold = 0.25 # Pass if winrate is below 25%
+        board_grid = game_state.board.grid
+        # Count the number of empty points on the board
+        empty_points = np.sum(board_grid == 0)
+        
+        total_points = game_state.board.num_rows * game_state.board.num_cols
+        board_fullness = 1 - (empty_points / total_points)
+        
+        
+        # Threshold for resigning move 
         resignation_threshold = 0.1 # Resign if winrate is below 10%
         
+        # Dynamic threshold for passing move
+        base_threshold = 0.25
+        endgame_threshold = 0.40
+        
+        # Adjusting the passing threshold based on the board fullness
+        if board_fullness > 0.7:
+            passing_threshold = base_threshold + (board_fullness - 0.7) * (endgame_threshold - base_threshold) / 0.3
+        else:
+            passing_threshold = base_threshold
+            
+        # Debug information
+        print(f"Board fullness: {board_fullness:.2f}, Passing threshold: {passing_threshold:.2f}")
+    
+            
+        # If opponent passes, then pass as well
+        if game_state.last_move and game_state.last_move.is_pass:
+            return Move.pass_turn()
+        
+        # If winrate is below threshold, then pass or resign
         if highest_winrate < passing_threshold:
             return Move.pass_turn()
         elif highest_winrate < resignation_threshold:
