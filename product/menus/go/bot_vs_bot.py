@@ -10,8 +10,8 @@ class BotVsBot(GoMoves):
         self.game = GoState.new_game(board_size)
         # Two bots with different values to test strength 
         self.bot = {
-            Player.black: MCTsAgent(temperature=1.4, num_rounds=10000),
-            Player.white: MCTsAgent(temperature=1.4, num_rounds=10000)
+            Player.black: MCTsAgent(temperature=1.4, num_rounds=2500),
+            Player.white: MCTsAgent(temperature=1.4, num_rounds=5000)
         }
         
         print(f"\nWelcome to Go! \
@@ -21,15 +21,19 @@ class BotVsBot(GoMoves):
     
     def run_BvBgame(self):
         # Loop until the game is over
-        while not self.game.game_over():            
+        while not self.game.game_over():     
+            # Display current player's turn
+            current_player = str(self.game.next_player.other).split('.', 1)
+            print(f"\n{current_player[1]}'s player turn: ")       
             self.print_board()
             
             bot_move = self.bot[self.game.next_player].select_move(self.game)
             self.game = self.game.play_move(bot_move)
             
             # To format displaying only the Player's colour
-            current_player = str(self.game.next_player.other).split('.', 1)
             print(f"\n{current_player[1]}'s Player move: {self.print_move(bot_move)}")
+            
+            
             
         # Display results
         self.end_PvBgame()
