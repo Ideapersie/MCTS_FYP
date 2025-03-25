@@ -18,7 +18,7 @@ class PlayerVsBot(GoMoves):
         
         while not self.game.game_over():
             # since next_player is stored as Player.colour
-            current_player = str(self.game.next_player).split('.', 1)
+            current_player = str(self.game.next_player.other).split('.', 1)
 
             # Player's turn 
             if self.game.next_player == Player.black:
