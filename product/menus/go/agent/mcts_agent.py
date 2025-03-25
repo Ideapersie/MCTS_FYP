@@ -7,6 +7,8 @@ from menus.go.goboard import Move, Player, GoState
 import math, random, time
 import multiprocessing as mp
 
+from menus.go.goplayer import Point
+
 
 class MCTsAgent(Agent):
     # Temperature controls the exploration-exploitation tradeoff, 
@@ -14,9 +16,8 @@ class MCTsAgent(Agent):
         self.temperature = temperature
         self.num_rounds = num_rounds
         self.go_moves = GoMoves()
-        self.move_counter = 0
             
-    
+            
     def select_move(self, game_state):
         # Initialising the root node 
         root = MCTsNode(game_state)
@@ -84,12 +85,26 @@ class MCTsAgent(Agent):
         print(f"\n DEBUG: Best move -> {self.go_moves.print_move(best_move)}, Winrate: {highest_winrate:.2%}, \
               Time Taken: {end_time - start_time:.2f}")
         
-        self.move_counter += 1
+        board_size = game_state.board.num_rows
+        full_board = board_size * board_size
         
-        # Use move counter to detect endgame
-        total_moves = game_state.board.num_rows * game_state.board.num_cols * 0.8 # on average, about 80% of the board is filled
-        move_ratio = self.move_counter / total_moves
+        # Count all stones on the board
+        stone_count = 0
+        for row in range(1, board_size+1):
+            for col in range(1, board_size+1):
+                if game_state.board.get_player(Point(row=row, col=col)) is not None:
+                    stone_count += 1
+                    
+        # Count the captures for each player
+        captures = game_state.captured[Player.black] + game_state.captured[Player.white]
         
+        
+        # combine both to calculate total moves played
+        total_moves = stone_count + captures
+        expected_moves = full_board * 0.8 # When game ends, around 80% of the board is filled
+        
+        # Calculate the ratio of moves played
+        move_ratio = total_moves / expected_moves
         
         # Threshold for resigning move 
         resignation_threshold = 0.1 # Resign if winrate is below 10%
@@ -99,8 +114,8 @@ class MCTsAgent(Agent):
         endgame_threshold = 0.40
         
         # Adjusting the passing threshold based on the move ratio 
-        if move_ratio > 0.6: # After 60% of expected moves played
-            passing_threshold = base_threshold + (move_ratio - 0.7) * (endgame_threshold - base_threshold) / 0.3
+        if move_ratio > 0.7: # After 60% of expected moves played
+            passing_threshold = base_threshold + (move_ratio - 0.7) * (endgame_threshold - base_threshold) / 0.25
         else:
             passing_threshold = base_threshold
             

@@ -23,7 +23,8 @@ class BotVsBot(GoMoves):
         # Loop until the game is over
         while not self.game.game_over():     
             # Display current player's turn
-            current_player = str(self.game.next_player.other).split('.', 1)
+            current_player = str(self.game.next_player).split('.', 1)
+            
             print(f"\n{current_player[1]}'s player turn: ")       
             self.print_board()
             
