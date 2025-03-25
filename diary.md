@@ -1,5 +1,8 @@
 # FYP Diary 
 
+**24/03/2025**
+To improve the strength of the bots, I created a dynamic passing threshold where the bot would only pass if the winrate is below 25% ,however, this is unreasonable as the game further progresses since moves in the "endgame" usually would not have as much impact on the game. Therefore, by counting the total amount of stones played, I can estimate when the game is entering the endgame stage and therefore gradually increasing the passing threshold leading to the game to enter the scoring stage faster and more efficiently.  
+
 **21/03/2025**
 To further improve the processing speed of the rollouts, I am implementating multiprocessing to be able to run multiple simulations in parallel using the multiprocessing library in Python, this allows bypassing the Global Interpreter lock and allows the code to be sent the multiple processors for simulatanoues simulations. The simulations will be ran in a new method called batch_simulations where the method will update the win_counts per move therefore the win_counts can be updated accordingly and at the same time.  
 
