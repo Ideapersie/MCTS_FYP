@@ -14,6 +14,7 @@ class MCTsAgent(Agent):
         self.temperature = temperature
         self.num_rounds = num_rounds
         self.go_moves = GoMoves()
+        self.move_counter = 0
             
     
     def select_move(self, game_state):
@@ -80,14 +81,14 @@ class MCTsAgent(Agent):
         end_time = time.time()
                 
         # DEBUG: Check the winrate of best node
-        print(f"DEBUG: Best move -> {self.go_moves.print_move(best_move)}, Winrate: {highest_winrate:.2%}, Time Taken: {end_time - start_time:.2f}")
+        print(f"\n DEBUG: Best move -> {self.go_moves.print_move(best_move)}, Winrate: {highest_winrate:.2%}, \
+              Time Taken: {end_time - start_time:.2f}")
         
-        board_grid = game_state.board.grid
-        # Count the number of empty points on the board
-        empty_points = np.sum(board_grid == 0)
+        self.move_counter += 1
         
-        total_points = game_state.board.num_rows * game_state.board.num_cols
-        board_fullness = 1 - (empty_points / total_points)
+        # Use move counter to detect endgame
+        total_moves = game_state.board.num_rows * game_state.board.num_cols * 0.8 # on average, about 80% of the board is filled
+        move_ratio = self.move_counter / total_moves
         
         
         # Threshold for resigning move 
@@ -97,14 +98,14 @@ class MCTsAgent(Agent):
         base_threshold = 0.25
         endgame_threshold = 0.40
         
-        # Adjusting the passing threshold based on the board fullness
-        if board_fullness > 0.7:
-            passing_threshold = base_threshold + (board_fullness - 0.7) * (endgame_threshold - base_threshold) / 0.3
+        # Adjusting the passing threshold based on the move ratio 
+        if move_ratio > 0.6: # After 60% of expected moves played
+            passing_threshold = base_threshold + (move_ratio - 0.7) * (endgame_threshold - base_threshold) / 0.3
         else:
             passing_threshold = base_threshold
             
         # Debug information
-        print(f"Board fullness: {board_fullness:.2f}, Passing threshold: {passing_threshold:.2f}")
+        print(f"Moves ratio/81: {move_ratio:.2f}, Passing threshold: {passing_threshold:.2f}")
     
             
         # If opponent passes, then pass as well
@@ -112,7 +113,7 @@ class MCTsAgent(Agent):
             return Move.pass_turn()
         
         # If winrate is below threshold, then pass or resign
-        if highest_winrate < passing_threshold:
+        if highest_winrate < passing_threshold and move_ratio > 0.6:
             return Move.pass_turn()
         elif highest_winrate < resignation_threshold:
             return Move.resign()
