@@ -80,7 +80,7 @@ class GoBoardGUI(QWidget):
         for row in range(1, self.board_size+1):
             for col in range(1, self.board_size+1):
                 point = Point(row,col)
-                player = GoState.game_state.board.get_player(point)
+                player = self.game_state.board.get_player(point)
             
                 if player is not None:
                     x = grid_start + (row -1) * self.cell_size
@@ -100,7 +100,7 @@ class GoBoardGUI(QWidget):
             row, col = self.hover_point
             point = Point(row,col)
             
-            current_player = GoState.game_state.board.get_player(point)
+            current_player = self.game_state.board.get_player(point)
             
             # only hover for empty points
             if current_player is None:
@@ -204,6 +204,7 @@ class GoGameGUI(QMainWindow):
         
         # GO board widget
         self.board_widget = GoBoardGUI(board_size=self.board_size)
+        self.board_widget.stone_placed.connect(self.place_stone)
         
         # Game controls widget 
         controls_widget = QWidget()
@@ -293,6 +294,29 @@ class GoGameGUI(QMainWindow):
                 
             # Update UI after the bot has placed move
             self.update_ui()
+            
+    # Handle stone placement from board widget
+    def place_stone(self, row, col):
+        # Ignore if the game is over or it is the bot's turn next
+        if self.game_state.game_over():
+            return
+
+        if self.game_mode == "PVB" and self.game_state.next_player == Player.white:
+            return 
+        
+        # Create move 
+        point = Point(row, col)
+        move = Move.play(point)
+        
+        if self.game_state.valid_move(move):
+            self.game_state = self.game_state.play_move(move)
+            
+            # Check if game over after move played
+            if self.game_state.game_over():
+                self.game_over()
+        
+        # Update UI 
+        self.update_ui()
         
     # Handle UI when game is over     
     def game_over(self):
