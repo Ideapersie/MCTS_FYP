@@ -201,6 +201,25 @@ class GoGameGUI(QMainWindow):
         main_widget = QWidget()
         main_layout = QHBoxLayout(main_widget)
         
+        # GO board widget
+        self.board_widget = GoBoardGUI(board_size=self.board_size)
+        
+        # Game controls widget 
+        controls_widget = QWidget()
+        controls_layout = QVBoxLayout(controls_widget)
+        
+        # Game mode layout
+        mode_layout = QHBoxLayout
+        mode_label = QLabel("Game Mode: ")
+        
+        self.mode_box = QComboBox()
+        self.mode_box.addItems(["Player vs Player", "Player vs Bot"])
+        self.mode_box.currentTextChanged.connect(self.change_game_mode)
+        mode_layout.addWidget(mode_label)
+        mode_layout.addWidget(self.mode_box)
+        
+        
+        
     # Start a new game 
     def new_game(self):
         self.game_state = GoState.new_game(self.board_size)
@@ -210,7 +229,15 @@ class GoGameGUI(QMainWindow):
         if self.game_mode == "PVB":
             self.bot = MCTsAgent(temperature=1.4, num_rounds=5000)
         
-        
+    # Change between PVP & PVB 
+    def change_game_mode(self, mode_text):
+        if "Player VS Player" in mode_text:
+            self.game_mode = "PVP"
+        else:
+            self.game_mode = "PVB"
+            
+        # Start new game with selection game mode
+        self.new_game()
         
 if __name__ == "__main__":
     app = QApplication(sys.argv)
