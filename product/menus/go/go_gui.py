@@ -1,5 +1,5 @@
 from PySide6.QtCore import Qt, Signal, Slot, QTimer
-from PySide6.QtWidgets import QWidget, QGridLayout, QLabel, QMainWindow, QPushButton \
+from PySide6.QtWidgets import QWidget, QGridLayout, QMessageBox, QLabel, QMainWindow, QPushButton \
 , QApplication, QVBoxLayout, QHBoxLayout, QSpinBox, QComboBox, QSlider, QCheckBox, QGroupBox, QRadioButton, QButtonGroup
 from PySide6.QtGui import QPainter, QPen, QColor, QBrush
 
@@ -254,6 +254,42 @@ class GoGameGUI(QMainWindow):
             
             # Delay bot move to better visibility
             QTimer.singleShot(500, self.bots_move)
+            
+    def bots_move(self):
+        if self.bot and not self.game_state.game_over():
+            bot_move = self.bot.select_move(self.game_state)
+            self.game_state = self.game_state.play_move(bot_move)
+            
+            # check if game is over 
+            if self.game_state.game_over():
+                self.game_over()
+                
+            # Update UI after the bot has placed move
+            self.update_ui()
+        
+    # Handle UI when game is over     
+    def game_over(self):
+        self.update_ui()
+        
+        scores = self.game_state.final_score()
+        
+        # Game over messsage displaying the winner 
+        if self.game_state.last_move.is_resign:
+            if self.game_state.next_player == Player.black:
+                winner = "White"
+            else: 
+                winner = "Black"
+                
+            display = f"{winner} wins by resignation! "
+        
+        else:
+            if scores["Black"] > scores["White"]:
+                display = f"Black wins by {scores['Black'] - scores['White']:.1f} points!"
+            elif scores["White"] > scores["Black"]:
+                display = f"White wins by {scores['White'] - scores['Black']:.1f} points!"
+                
+        # Display game over message
+        QMessageBox.information(self, "Game Over", display)
         
         
     # Change between PVP & PVB 
