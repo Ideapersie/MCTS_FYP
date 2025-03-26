@@ -19,11 +19,13 @@ class GoGameGui(QWidget):
         self.board_size = board_size
         # Size of each cell in pixels 
         self.cell_size = 40
-        self.board_margin = 40 
+        self.board_margin = 40
+        # Extra margin for coordinates  
+        self.label_margin = 20
         self.stone_radius = int(self.cell_size * 0.4)
         
         # Set fixed size for the board 
-        board_pixels = (self.board_size - 1) * self.cell_size + 2 * self.board_margin
+        board_pixels = (self.board_size - 1) * self.cell_size + 2 * (self.board_margin + self.label_margin)
         self.setMinimumSize(board_pixels, board_pixels)
         self.setMaximumSize(board_pixels, board_pixels)
 
@@ -48,7 +50,7 @@ class GoGameGui(QWidget):
         painter.setPen(pen)
         
         # Gridlines positions
-        grid_start = self.board_margin
+        grid_start = self.board_margin + self.label_margin
         grid_end = grid_start + (self.board_size - 1) * self.cell_size
         
         # Drawing the horizontal and vertical lines 
@@ -72,6 +74,63 @@ class GoGameGui(QWidget):
             y = grid_start + col * self.cell_size
             painter.drawEllipse(x - 3.5, y - 3.5, 7, 7)
             
+        
+        # Draw points for the current board state     
+        for row in range(1, self.board_size+1):
+            for col in range(1, self.board_size+1):
+                point = Point(row,col)
+                player = self.game_state.board.get_player(point)
+            
+                if player is not None:
+                    x = grid_start + (row -1) * self.cell_size
+                    y = grid_start + (col -1) * self.cell_size
+                    
+                    if player == Player.black:
+                        painter.setBrush(Qt.GlobalColor.black)
+                    else:
+                        painter.setBrush(Qt.GlobalColor.white)
+                        
+                    painter.setPen(Qt.GlobalColor.black)
+                    painter.drawEllipse(x - self.stone_radius, y - self.stone_radius,
+                                        self.stone_radius * 2, self.stone_radius * 2)
+         
+        # Draw hover indicator for empty points
+        if self.hover_point is not None:
+            row, col = self.hover_point
+            point = Point(row,col)
+            
+            current_player = self.game_state.board.get_player(point)
+            
+            # only hover for empty points
+            if self.game_state.get_player(point) is None:
+                x = grid_start + (row -1) * self.cell_size
+                y = grid_start + (col -1) * self.cell_size
+                
+                # semi-transparent stones for hover effects 
+                if self.current_player == Player.black:
+                    painter.setBrush(QColor(0,0,0, 100))
+                else: 
+                    painter.setBrush(QColor(255, 255, 255, 100))
+                    
+                painter.setPen(Qt.PenStyle.NoPen)
+                painter.drawEllipse(x - self.stone_radius, y - self.stone_radius,
+                                        self.stone_radius * 2, self.stone_radius * 2)
+                
+            
+         
+    # Track mouse movement           
+    def mouseMoveEvent(self, event):
+        x = event.position().x() - (self.board_margin + self.label_margin)
+        y = event.position().y() - (self.board_margin + self.label_margin)
+        
+        col = round(y / self.cell_size) + 1
+        row = round(x/ self.cell_size) + 1
+        
+        # Update hover points if changed 
+        if self.hover_point != (row, col):
+            self.hover_point = (row,col)
+            self.update() # Repaint the hover
+                    
         
 if __name__ == "__main__":
     app = QApplication(sys.argv)
