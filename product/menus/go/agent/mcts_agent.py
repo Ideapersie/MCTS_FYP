@@ -120,7 +120,7 @@ class MCTsAgent(Agent):
             passing_threshold = base_threshold
             
         # Debug information
-        print(f"Moves ratio/81: {move_ratio:.2f}, Passing threshold: {passing_threshold:.2f}")
+        print(f"Moves ratio /81: {move_ratio:.2f}, Passing threshold: {passing_threshold:.2f}")
     
             
         # If opponent passes, then pass as well
