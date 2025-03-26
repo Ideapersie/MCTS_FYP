@@ -184,7 +184,7 @@ class GoGameGUI(QMainWindow):
         
         self.setWindowTitle("Go Game")
         self.board_size = 9 
-        self.game_mode = "PVP"
+        self.game_mode = "PVB"
         
         # Initialise game state 
         self.game_state = GoState.new_game(self.board_size)
@@ -219,7 +219,34 @@ class GoGameGUI(QMainWindow):
         mode_layout.addWidget(mode_label)
         mode_layout.addWidget(self.mode_box)
         
+        # Board size selection 
+        size_layout = QHBoxLayout()
         
+        # Player's turn 
+        self.status_label = QLabel("Black's turn")
+        self.status_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.status_label.setStyleSheet("font-size: 16px; font-weight: bold;")
+        
+        # Capture display 
+        self.capture_label = QLabel("Black: 0 White: 0")
+        self.capture_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        
+        # Add widgets to controls layout 
+        controls_layout.addLayout(mode_layout)
+        controls_layout.addLayout(size_layout)
+        controls_layout.addWidget(self.status_label)
+        controls_layout.addWidget(self.capture_label)
+        controls_layout.addStretch(1)
+        
+        # Add widgets to main layout
+        main_layout.addWidget(self.board_widget, 3) # 3:1 ratio to board controls 
+        main_layout.addWidget(controls_widget, 1)
+        
+        # Set main widget as central
+        self.setCentralWidget(main_widget)
+        
+        
+        self.resize(800,600)
         
     # Start a new game 
     def new_game(self):
@@ -232,7 +259,7 @@ class GoGameGUI(QMainWindow):
     
     # Update UI to display current game state    
     def update_ui(self):
-        self.board_widget.update_state(self.game_state, self.game_state.next_player)
+        self.board_widget.update_board(self.game_state, self.game_state.next_player)
         
         # Update game status 
         if self.game_state.next_player == Player.black:
@@ -244,8 +271,8 @@ class GoGameGUI(QMainWindow):
         
         # Update score
         if not self.game_state.game_over():
-            scores = self.game_state.captured
-            self.score_label.setText(f"Black: {scores[Player.black]} White: {scores[Player.white]}")
+            captures = self.game_state.captured
+            self.capture_label.setText(f"Black: {captures[Player.black]} White: {captures[Player.white]}")
             
         # If its the bot's turn, make bot move 
         if (self.game_mode == "PVB" and 
