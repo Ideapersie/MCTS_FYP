@@ -1,5 +1,5 @@
 from PySide6.QtCore import Qt, Signal, Slot
-from PySide6.QtWidgets import QWidget, QGridLayout, QLabel, QPushButton, QApplication, QVBoxLayout, QHBoxLayout, QSpinBox, QComboBox, QSlider, QCheckBox, QGroupBox, QRadioButton, QButtonGroup
+from PySide6.QtWidgets import QWidget, QGridLayout, QLabel, QMainWindow, QPushButton, QApplication, QVBoxLayout, QHBoxLayout, QSpinBox, QComboBox, QSlider, QCheckBox, QGroupBox, QRadioButton, QButtonGroup
 from PySide6.QtGui import QPainter, QPen, QColor, QBrush
 
 import sys
@@ -10,7 +10,7 @@ from menus.go.goplayer import Point
 from menus.go.agent.mcts_agent import MCTsAgent
 
 # Widget to display and interact with the Go board
-class GoGameGui(QWidget):
+class GoBoardGUI(QWidget):
     # Signal when a stone is placed 
     stone_placed = Signal(int,int)
     
@@ -79,7 +79,7 @@ class GoGameGui(QWidget):
         for row in range(1, self.board_size+1):
             for col in range(1, self.board_size+1):
                 point = Point(row,col)
-                player = self.game_state.board.get_player(point)
+                player = GoState.game_state.board.get_player(point)
             
                 if player is not None:
                     x = grid_start + (row -1) * self.cell_size
@@ -99,10 +99,10 @@ class GoGameGui(QWidget):
             row, col = self.hover_point
             point = Point(row,col)
             
-            current_player = self.game_state.board.get_player(point)
+            current_player = GoState.game_state.board.get_player(point)
             
             # only hover for empty points
-            if self.game_state.get_player(point) is None:
+            if current_player is None:
                 x = grid_start + (row -1) * self.cell_size
                 y = grid_start + (col -1) * self.cell_size
                 
@@ -167,10 +167,53 @@ class GoGameGui(QWidget):
             painter.drawText(
                 self.board.margin , y , 10, 10, 
                 Qt.AlignmentFlag.AlignVCenter, label
-            )            
+            )     
+    
+    # Update board with a new state        
+    def update_board(self, game_state, current_player=None):
+        self.game_state = game_state
+        if current_player is not None:
+            self.current_player = current_player
+        self.update()
+   
+# Main Window for the go game     
+class GoGameGUI(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        
+        self.setWindowTitle("Go Game")
+        self.board_size = 9 
+        self.game_mode = "PVP"
+        
+        # Initialise game state 
+        self.game_state = GoState.new_game(self.board_size)
+        self.bot = None
+        
+        # Set up the UI 
+        self.init_ui()
+        
+        # Start a new game 
+        self.new_game()
+        
+    # Setting up the user interface 
+    def init_ui(self):
+        # Main widget and layout 
+        main_widget = QWidget()
+        main_layout = QHBoxLayout(main_widget)
+        
+    # Start a new game 
+    def new_game(self):
+        self.game_state = GoState.new_game(self.board_size)
+        self.update_ui()
+        
+        # Initialise bot for PVB mode 
+        if self.game_mode == "PVB":
+            self.bot = MCTsAgent(temperature=1.4, num_rounds=5000)
+        
+        
         
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    window = GoGameGui()
+    window = GoGameGUI()
     window.show()
     sys.exit(app.exec()) 
