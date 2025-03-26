@@ -23,7 +23,7 @@ class GoBoardGUI(QWidget):
         self.board_margin = 40
         # Extra margin for coordinates  
         self.label_margin = 20
-        self.stone_radius = int(self.cell_size * 0.4)
+        self.stone_radius = int(self.cell_size * 0.2)
         
         # Set fixed size for the board 
         board_pixels = (self.board_size - 1) * self.cell_size + 2 * (self.board_margin + self.label_margin)
@@ -115,7 +115,7 @@ class GoBoardGUI(QWidget):
                     
                 painter.setPen(Qt.PenStyle.NoPen)
                 painter.drawEllipse(x - self.stone_radius, y - self.stone_radius,
-                                        self.stone_radius * 2, self.stone_radius * 2)
+                                        self.stone_radius * 2, self.stone_radius *2)
                 
              
     # Track mouse movement           
@@ -130,6 +130,14 @@ class GoBoardGUI(QWidget):
         if self.hover_point != (row, col):
             self.hover_point = (row,col)
             self.update() # Repaint the hover
+    
+    # Place stone when mouse release    
+    def mouseReleaseEvent(self, event):
+        if event.button() == Qt.MouseButton.LeftButton and self.hover_point is not None:
+            row, col = self.hover_point
+            # Check boundaries
+            if 1 <= row <= self.board_size and 1 <= col <= self.board_margin:
+                self.stone_placed.emit(row,  col)
     
     # Draw board labels, (A-J for columns, 1-9 for rows)
     def draw_board_labels(self, painter):
