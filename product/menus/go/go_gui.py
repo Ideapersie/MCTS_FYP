@@ -116,8 +116,7 @@ class GoGameGui(QWidget):
                 painter.drawEllipse(x - self.stone_radius, y - self.stone_radius,
                                         self.stone_radius * 2, self.stone_radius * 2)
                 
-            
-         
+             
     # Track mouse movement           
     def mouseMoveEvent(self, event):
         x = event.position().x() - (self.board_margin + self.label_margin)
@@ -130,7 +129,45 @@ class GoGameGui(QWidget):
         if self.hover_point != (row, col):
             self.hover_point = (row,col)
             self.update() # Repaint the hover
-                    
+    
+    # Draw board labels, (A-J for columns, 1-9 for rows)
+    def draw_board_labels(self, painter):
+        # set label font 
+        font = painter.font()
+        font.setPointSize(10)
+        painter.setFont(font)
+        
+        # Calculate grid boundaries including label margins
+        grid_start = self.board_margin + self.label_margin
+        grid_end = grid_start + (self.board_size - 1) * self.cell_size
+        
+        # Draw column labels (letters)
+        for col in range(self.board_size):
+            label = chr(ord('A') + col)
+            
+            # Skip I since it is not used in Go 
+            if ord(label) >= ord('I'):
+                label = chr(ord(label)+1)
+                
+            y = grid_start + col * self.cell_size
+            
+            # Bottom labels 
+            painter.drawText(
+                y , self.board.margin, 10, 10, 
+                Qt.AlignmentFlag.AlignCenter, label
+            )
+            
+        # Draw row labels (numbers)
+        for row in range(self.board_size):
+            label = row + 1 
+                            
+            x = grid_start + row * self.cell_size
+            
+            # Left labels 
+            painter.drawText(
+                self.board.margin , y , 10, 10, 
+                Qt.AlignmentFlag.AlignVCenter, label
+            )            
         
 if __name__ == "__main__":
     app = QApplication(sys.argv)
