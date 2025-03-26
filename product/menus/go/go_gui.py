@@ -1,5 +1,6 @@
-from PySide6.QtCore import Qt, Signal, Slot
-from PySide6.QtWidgets import QWidget, QGridLayout, QLabel, QMainWindow, QPushButton, QApplication, QVBoxLayout, QHBoxLayout, QSpinBox, QComboBox, QSlider, QCheckBox, QGroupBox, QRadioButton, QButtonGroup
+from PySide6.QtCore import Qt, Signal, Slot, QTimer
+from PySide6.QtWidgets import QWidget, QGridLayout, QLabel, QMainWindow, QPushButton \
+, QApplication, QVBoxLayout, QHBoxLayout, QSpinBox, QComboBox, QSlider, QCheckBox, QGroupBox, QRadioButton, QButtonGroup
 from PySide6.QtGui import QPainter, QPen, QColor, QBrush
 
 import sys
@@ -209,7 +210,7 @@ class GoGameGUI(QMainWindow):
         controls_layout = QVBoxLayout(controls_widget)
         
         # Game mode layout
-        mode_layout = QHBoxLayout
+        mode_layout = QHBoxLayout()
         mode_label = QLabel("Game Mode: ")
         
         self.mode_box = QComboBox()
@@ -228,6 +229,32 @@ class GoGameGUI(QMainWindow):
         # Initialise bot for PVB mode 
         if self.game_mode == "PVB":
             self.bot = MCTsAgent(temperature=1.4, num_rounds=5000)
+    
+    # Update UI to display current game state    
+    def update_ui(self):
+        self.board_widget.update_state(self.game_state, self.game_state.next_player)
+        
+        # Update game status 
+        if self.game_state.next_player == Player.black:
+            player_name = "Black"
+        else: 
+            player_name = "White"
+            
+        self.status_label.setText(f"{player_name}'s turn")
+        
+        # Update score
+        if not self.game_state.game_over():
+            scores = self.game_state.captured
+            self.score_label.setText(f"Black: {scores[Player.black]} White: {scores[Player.white]}")
+            
+        # If its the bot's turn, make bot move 
+        if (self.game_mode == "PVB" and 
+            self.game_state.next_player == Player.white and 
+            not self.game_state.game_over()):
+            
+            # Delay bot move to better visibility
+            QTimer.singleShot(500, self.bots_move)
+        
         
     # Change between PVP & PVB 
     def change_game_mode(self, mode_text):
