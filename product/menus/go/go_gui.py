@@ -1,21 +1,20 @@
-import PySide6.QtCore, PySide6.QtGui, PySide6.QtWidgets
-
 from PySide6.QtCore import Qt, Signal, Slot
-from PySide6.QtWidgets import QWidget, QGridLayout, QLabel, QPushButton
+from PySide6.QtWidgets import QWidget, QGridLayout, QLabel, QPushButton, QApplication, QVBoxLayout, QHBoxLayout, QSpinBox, QComboBox, QSlider, QCheckBox, QGroupBox, QRadioButton, QButtonGroup
+from PySide6.QtGui import QPainter, QPen, QColor, QBrush
+
+import sys
 
 
 from menus.go.goboard import Player, Move, GoState
 from menus.go.goplayer import Point
-from menus.go.agent.random import MCTsAgent
-
-print(PySide6.QtCore.__version__)
+from menus.go.agent.mcts_agent import MCTsAgent
 
 # Widget to display and interact with the Go board
-class GoBoard(QWidget):
+class GoGameGui(QWidget):
     # Signal when a stone is placed 
     stone_placed = Signal(int,int)
     
-    def _init_(self, board_size=9, parent=None):
+    def __init__(self, board_size=9, parent=None):
         super().__init__(parent)
         self.board_size = board_size
         # Size of each cell in pixels 
@@ -34,6 +33,48 @@ class GoBoard(QWidget):
         # Set mouse tracking for hovering effects
         self.setMouseTracking(True)
         
+    # Drawing the goboard and stones 
+    def paintEvent(self, event):
+        painter = QPainter(self)
         
-if __name__ == '__main__':
-    pass
+        painter.setRenderHint(QPainter.Antialiasing, True)
+        
+        # Draw the board backgrounnd
+        painter.fillRect(self.rect(), QColor(236,197,125))
+        
+        # Draw the grid lines
+        pen = QPen(Qt.GlobalColor.black)
+        pen.setWidth(1)
+        painter.setPen(pen)
+        
+        # Gridlines positions
+        grid_start = self.board_margin
+        grid_end = grid_start + (self.board_size - 1) * self.cell_size
+        
+        # Drawing the horizontal and vertical lines 
+        for i in range(self.board_size):
+            # Draw horizontal lines
+            y = grid_start + i * self.cell_size
+            painter.drawLine(grid_start, y, grid_end, y)
+            
+            # Draw vertical lines 
+            x = grid_start + i * self.cell_size
+            painter.drawLine(x, grid_start, x, grid_end)
+        
+        # Location of the star points (hoshi)
+        star_points = [(2,2), (2,6), (6,2), (6,6), (4,4)]
+        
+        
+        painter.setBrush(Qt.GlobalColor.black)
+        # Draw the star points
+        for row,col in star_points:
+            x = grid_start + row * self.cell_size
+            y = grid_start + col * self.cell_size
+            painter.drawEllipse(x - 3.5, y - 3.5, 7, 7)
+            
+        
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    window = GoGameGui()
+    window.show()
+    sys.exit(app.exec()) 
