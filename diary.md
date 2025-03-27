@@ -1,5 +1,8 @@
 # FYP Diary 
 
+**26/03/2025**
+After researching I came to the conclusion of using PyQt for the GUI for the go game due to its fast perfomance and nice aesthethics, learning from the website's documentation. I have seperated into 2 classes of GoBoardGUI and then the main window where the GoBoardGUI sets up all the variables for the go board such as the background, gridlines, labels and then in the main GUI, creating method to handle how the UI will interact with placing a stone or the gameover state. Now the GUI is functioning with placing stones and the hover effect working, will need to do further testing with gamemodes then next I shall implement passing and resignation buttons while further enhancing the User Experience.  
+
 **24/03/2025**
 To improve the strength of the bots, I created a dynamic passing threshold where the bot would only pass if the winrate is below 25% ,however, this is unreasonable as the game further progresses since moves in the "endgame" usually would not have as much impact on the game. Therefore, by counting the total amount of stones played, I can estimate when the game is entering the endgame stage and therefore gradually increasing the passing threshold leading to the game to enter the scoring stage faster and more efficiently.  
 
