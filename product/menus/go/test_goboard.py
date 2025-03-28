@@ -319,6 +319,10 @@ class TestGoState(unittest.TestCase):
         self.assertIsNone(capture_play.board.get_player(Point(4,3)))
         self.assertIsNone(capture_play.board.get_go_string(Point(4,3)))
         
+        # Count captured amount 
+        #self.assertEqual(
+        print(capture_play.captured[Player.black])
+        
         
     # Test gameover function when player resigns 
     def test_game_resign(self):
