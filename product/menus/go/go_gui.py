@@ -167,7 +167,7 @@ class GoBoardGUI(QWidget):
             
             # Bottom labels 
             painter.drawText(
-                y - 5, grid_end + self.board_margin - 5, 15, 15, 
+                y - 5, grid_end + self.board_margin - 5, 10, 10, 
                 Qt.AlignmentFlag.AlignCenter, label
             )
             
@@ -180,7 +180,7 @@ class GoBoardGUI(QWidget):
             
             # Left labels 
             painter.drawText(
-                self.board_margin - 5, x -5, 15, 15, 
+                self.board_margin - 15, x -5, 15, 10, 
                 Qt.AlignmentFlag.AlignVCenter, label
             )     
     
@@ -189,6 +189,7 @@ class GoBoardGUI(QWidget):
         self.game_state = game_state
         if current_player is not None:
             self.current_player = current_player
+            
         self.update()
    
 # Main Window for the go game     
@@ -243,7 +244,7 @@ class GoGameGUI(QMainWindow):
         self.status_label.setStyleSheet("font-size: 16px; font-weight: bold;")
         
         # Capture display 
-        self.capture_label = QLabel("Black: 0 White: 0")
+        self.capture_label = QLabel("Black: 0 captures | White: 0 captures (+6.5 komi)")
         self.capture_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         
         # Game control buttons 
@@ -289,11 +290,16 @@ class GoGameGUI(QMainWindow):
             
         self.status_label.setText(f"{player_name}'s turn")
         
-        # Update score
-        if not self.game_state.game_over():
-            captures = self.game_state.captured
-            self.capture_label.setText(f"Black: {captures[Player.black]} White: {captures[Player.white]}")
-            
+        # Updating captures count 
+        black_captures = self.game_state.captured[Player.black]
+        white_captures = self.game_state.captured[Player.white]
+        
+        # Add komi variable 
+        komi = 6.5
+        
+        # Update score display
+        self.capture_label.setText(f"Black: {black_captures} | White: {white_captures} (+{komi} komi)")
+        
         # If its the bot's turn, make bot move 
         if (self.game_mode == "PVB" and 
             self.game_state.next_player == Player.white and 
@@ -361,6 +367,9 @@ class GoGameGUI(QMainWindow):
         
         scores = self.game_state.final_score()
         
+        # Calculating capture scores 
+        black_captures = self.game_state.captured[Player.white]
+        
         # Game over messsage displaying the winner 
         if self.game_state.last_move.is_resign:
             if self.game_state.next_player == Player.black:
@@ -378,6 +387,9 @@ class GoGameGUI(QMainWindow):
                 
         # Display game over message
         QMessageBox.information(self, "Game Over", display)
+        
+        # Restart game once the display is closed 
+        self.new_game()
         
         
     # Change between PVP & PVB 
