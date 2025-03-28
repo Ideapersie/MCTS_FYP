@@ -300,23 +300,18 @@ class GoGameGUI(QMainWindow):
         # Update score display
         self.capture_label.setText(f"Black: {black_captures} | White: {white_captures} captures (+{komi})")
         
-        # If its the bot's turn, make bot move 
-        if (self.game_mode == "PVB" and 
-            self.game_state.next_player == Player.white and 
-            not self.game_state.game_over()):
-            
-            # Bot's move
-            self.bots_move()
             
     # Defining method for bot's move
     def bots_move(self):
         if self.bot and not self.game_state.game_over():
+            # Calculate bot move
             bot_move = self.bot.select_move(self.game_state)
             self.game_state = self.game_state.play_move(bot_move)
             
             # check if game is over 
             if self.game_state.game_over():
                 self.game_over()
+                return
                 
             # Update UI after the bot has placed move
             self.update_ui()
@@ -340,9 +335,24 @@ class GoGameGUI(QMainWindow):
             # Check if game over after move played
             if self.game_state.game_over():
                 self.game_over()
-        
-        # Update UI 
-        self.update_ui()
+                return
+            
+            # Update UI immediately after player's move 
+            self.update_ui()
+            
+            # If its the bot's turn, make bot move 
+            if (self.game_mode == "PVB" and 
+                self.game_state.next_player == Player.white and 
+                not self.game_state.game_over()):
+                
+                 # Show thinking indicator
+                self.status_label.setText("White is thinking...")
+                
+                # Bot's move after UI update
+                QTimer.singleShot(50, self.bots_move)
+        else:
+            # Update UI 
+            self.update_ui()
         
     # Handle pass button 
     def handle_pass(self):
