@@ -23,7 +23,7 @@ class GoBoardGUI(QWidget):
         self.board_margin = 40
         # Extra margin for coordinates  
         self.label_margin = 20
-        self.stone_radius = int(self.cell_size * 0.2)
+        self.stone_radius = int(self.cell_size * 0.35)
         
         # Set fixed size for the board 
         board_pixels = (self.board_size - 1) * self.cell_size + 2 * (self.board_margin + self.label_margin)
@@ -45,10 +45,14 @@ class GoBoardGUI(QWidget):
         # Draw the board backgrounnd
         painter.fillRect(self.rect(), QColor(236,197,125))
         
+        # Draw board labels 
+        self.draw_board_labels(painter)
+        
         # Draw the grid lines
         pen = QPen(Qt.GlobalColor.black)
         pen.setWidth(1)
         painter.setPen(pen)
+    
         
         # Gridlines positions
         grid_start = self.board_margin + self.label_margin
@@ -162,19 +166,20 @@ class GoBoardGUI(QWidget):
             
             # Bottom labels 
             painter.drawText(
-                y , self.board.margin, 10, 10, 
+                y - 5, grid_end + self.board_margin - 5, 15, 15, 
                 Qt.AlignmentFlag.AlignCenter, label
             )
             
         # Draw row labels (numbers)
         for row in range(self.board_size):
-            label = row + 1 
+            # Row numbers in ascending order
+            label = str(self.board_size - row) 
                             
             x = grid_start + row * self.cell_size
             
             # Left labels 
             painter.drawText(
-                self.board.margin , y , 10, 10, 
+                self.board_margin - 5, x -5, 15, 15, 
                 Qt.AlignmentFlag.AlignVCenter, label
             )     
     
@@ -192,7 +197,7 @@ class GoGameGUI(QMainWindow):
         
         self.setWindowTitle("Go Game")
         self.board_size = 9 
-        self.game_mode = "PVB"
+        self.game_mode = "PVP"
         
         # Initialise game state 
         self.game_state = GoState.new_game(self.board_size)
@@ -240,12 +245,17 @@ class GoGameGUI(QMainWindow):
         self.capture_label = QLabel("Black: 0 White: 0")
         self.capture_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         
+        # Game control buttons 
+        self.pass_button = QPushButton("Pass turn")
+        self.pass_button.clicked.connect(self.handle_pass)
+        
         # Add widgets to controls layout 
         controls_layout.addLayout(mode_layout)
         controls_layout.addLayout(size_layout)
         controls_layout.addWidget(self.status_label)
         controls_layout.addWidget(self.capture_label)
         controls_layout.addStretch(1)
+        controls_layout.addWidget(self.pass_button)
         
         # Add widgets to main layout
         main_layout.addWidget(self.board_widget, 3) # 3:1 ratio to board controls 
@@ -288,9 +298,10 @@ class GoGameGUI(QMainWindow):
             self.game_state.next_player == Player.white and 
             not self.game_state.game_over()):
             
-            # Delay bot move to better visibility
-            QTimer.singleShot(500, self.bots_move)
+            # Bot's move
+            self.bots_move()
             
+    # Defining method for bot's move
     def bots_move(self):
         if self.bot and not self.game_state.game_over():
             bot_move = self.bot.select_move(self.game_state)
@@ -325,6 +336,23 @@ class GoGameGUI(QMainWindow):
         
         # Update UI 
         self.update_ui()
+        
+    # Handle pass button 
+    def handle_pass(self):
+        if not self.game_state.game_over():
+            # Player can't return if its bot's move 
+            if self.game_mode == "PVB" and self.game_state.next_player == Player.black:
+                return 
+            
+            self.game_state = self.game_state.play_move(Move.pass_turn())
+            
+            # Check if game is over (if theres 2 passes in a row)
+            if self.game_state.game_over():
+                self.game_over()
+                return 
+            
+            # Update UI 
+            self.update_ui
         
     # Handle UI when game is over     
     def game_over(self):
