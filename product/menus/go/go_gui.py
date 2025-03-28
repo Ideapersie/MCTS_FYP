@@ -102,25 +102,26 @@ class GoBoardGUI(QWidget):
         # Draw hover indicator for empty points
         if self.hover_point is not None:
             row, col = self.hover_point
-            point = Point(row,col)
-            
-            current_player = self.game_state.board.get_player(point)
-            
-            # only hover for empty points
-            if current_player is None:
-                x = grid_start + (row -1) * self.cell_size
-                y = grid_start + (col -1) * self.cell_size
+            if 1 <= row <= self.board_size and 1 <= col <= self.board_size:
+                point = Point(row,col)
                 
-                # semi-transparent stones for hover effects 
-                if self.current_player == Player.black:
-                    painter.setBrush(QColor(0,0,0, 100))
-                else: 
-                    painter.setBrush(QColor(255, 255, 255, 100))
+                current_player = self.game_state.board.get_player(point)
+                
+                # only hover for empty points
+                if current_player is None:
+                    x = grid_start + (row -1) * self.cell_size
+                    y = grid_start + (col -1) * self.cell_size
                     
-                painter.setPen(Qt.PenStyle.NoPen)
-                painter.drawEllipse(x - self.stone_radius, y - self.stone_radius,
-                                        self.stone_radius * 2, self.stone_radius *2)
-                
+                    # semi-transparent stones for hover effects 
+                    if self.current_player == Player.black:
+                        painter.setBrush(QColor(0,0,0, 100))
+                    else: 
+                        painter.setBrush(QColor(255, 255, 255, 100))
+                        
+                    painter.setPen(Qt.PenStyle.NoPen)
+                    painter.drawEllipse(x - self.stone_radius, y - self.stone_radius,
+                                            self.stone_radius * 2, self.stone_radius *2)
+                    
              
     # Track mouse movement           
     def mouseMoveEvent(self, event):
@@ -352,7 +353,7 @@ class GoGameGUI(QMainWindow):
                 return 
             
             # Update UI 
-            self.update_ui
+            self.update_ui()
         
     # Handle UI when game is over     
     def game_over(self):
