@@ -327,19 +327,22 @@ class GoState():
     # Apply the move to the board state and captured strings
     def play_move(self, move):
         if move is not None and move.is_play:
+            # Count stones on board before move played
+            count_before = self.count_stones()
+            
             next_board = copy.deepcopy(self.board)
             next_board.place_stone(self.next_player, move.point)
             
+            # Count stones on new board after move is played
+            count_after = self.count_stones(next_board)
+            
+            # -1 due to the new stone placed
+            captures = count_before - (count_after - 1)
+            
             # Captured strings in the next move
             next_captured = self.captured.copy()
-            captured_string = self.board.get_go_string(move.point)
-            
-            if captured_string is None:
-                captured_string = []
-            
-            # Amount of captured string
-            for string in captured_string:
-                next_captured[self.next_player.other] += len(string.stones)
+            if captures > 0:
+                next_captured[self.next_player] += captures
 
         else:
             next_board = self.board
@@ -353,6 +356,25 @@ class GoState():
             next_player=self.next_player.other,
             captured=next_captured
         )
+    
+    # Count stones to compare for captures     
+    def count_stones(self, board=None):
+        
+        # For when next board is applied
+        if board is None:
+            board_count = self.board
+        else: 
+            board_count = board
+        
+        count = 0 
+        
+        # Traverse board finding points with stones
+        for row in range(1, board_count.num_rows + 1):
+            for col in range(1, board_count.num_cols + 1):
+                point = Point(row, col)
+                if board_count.get_player(point) is not None:
+                    count += 1
+        return count 
     
     # Moves signifying the game is over 
     def game_over(self):
