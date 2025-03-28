@@ -298,7 +298,7 @@ class GoGameGUI(QMainWindow):
         komi = 6.5
         
         # Update score display
-        self.capture_label.setText(f"Black: {black_captures} | White: {white_captures} (+{komi} komi)")
+        self.capture_label.setText(f"Black: {black_captures} | White: {white_captures} captures (+{komi})")
         
         # If its the bot's turn, make bot move 
         if (self.game_mode == "PVB" and 
@@ -367,8 +367,16 @@ class GoGameGUI(QMainWindow):
         
         scores = self.game_state.final_score()
         
+        # Komi 
+        komi = 6.5
+        
         # Calculating capture scores 
-        black_captures = self.game_state.captured[Player.white]
+        black_captures = self.game_state.captured[Player.black]
+        white_captures = self.game_state.captured[Player.white]
+            
+        # Calculate territory 
+        black_territory = scores['Black'] - black_captures
+        white_territory = scores['White'] - white_captures - komi
         
         # Game over messsage displaying the winner 
         if self.game_state.last_move.is_resign:
@@ -381,9 +389,9 @@ class GoGameGUI(QMainWindow):
         
         else:
             if scores["Black"] > scores["White"]:
-                display = f"Black wins by {scores['Black'] - scores['White']:.1f} points!"
+                display = f"Black wins by {scores['Black'] - scores['White']:.1f} points! \n ({black_captures} captures + {black_territory} territory)"
             elif scores["White"] > scores["Black"]:
-                display = f"White wins by {scores['White'] - scores['Black']:.1f} points!"
+                display = f"White wins by {scores['White'] - scores['Black']:.1f} points! \n ({white_captures} captures + {white_territory:} territory + {komi} komi)"
                 
         # Display game over message
         QMessageBox.information(self, "Game Over", display)
