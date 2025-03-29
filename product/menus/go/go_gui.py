@@ -114,7 +114,7 @@ class GoBoardGUI(QWidget):
                     if self.current_player == Player.black:
                         self.realistic_stones(painter, x, y, True, 100) # 100 for semitransparency
                     else: 
-                        self.realistic_stones(painter, x, y, False, 100)
+                        self.realistic_stones(painter, x, y, False, 200)
                     
              
     # Track mouse movement           
@@ -234,7 +234,7 @@ class GoBoardGUI(QWidget):
                                     self.stone_radius * 0.8)
             
             # Fade from semi transparent white to fully transparent 
-            highlight_gradient.setColorAt(0, QColor(255,255,255, int(alpha) * 0.7))
+            highlight_gradient.setColorAt(0, QColor(255,255,255, int(alpha * 0.8))) # Shiny effect
             highlight_gradient.setColorAt(1, QColor(255,255,255, 0))
             
             painter.setPen(Qt.PenStyle.NoPen)
@@ -411,6 +411,7 @@ class GoGameGUI(QMainWindow):
                 # Bot's move after UI update
                 QTimer.singleShot(50, self.bots_move)
         else:
+            self.timed_message("Illegal move", "Please enter a legal move", 1500)
             # Update UI 
             self.update_ui()
         
@@ -426,13 +427,14 @@ class GoGameGUI(QMainWindow):
             
             self.game_state = self.game_state.play_move(Move.pass_turn())
             
-            # Display pass notification 
-            QMessageBox.information(self, "Pass", f"{current_player} passed their turn.")
-            
             # Check if game is over (if theres 2 passes in a row)
             if self.game_state.game_over():
                 self.game_over()
                 return 
+            # If game over then pass noti. isnt displayed
+            else: 
+                # Display pass notification 
+                self.timed_message("Pass", f"{current_player} passed their turn.", 1500)
             
             # Update UI 
             self.update_ui()
@@ -474,6 +476,21 @@ class GoGameGUI(QMainWindow):
         
         # Restart game once the display is closed 
         self.new_game()
+        
+    def timed_message(self, title, message, duration):
+        msg_box = QMessageBox(self)
+        msg_box.setWindowTitle(title)
+        msg_box.setText(message)
+        msg_box.setStandardButtons(QMessageBox.Close) # Close button for manual input
+        
+        # Set box to focus 
+        msg_box.setModal(True)
+        
+        # Display box 
+        msg_box.show()
+        
+        # Message closes after timer
+        QTimer.singleShot(duration, msg_box.close)
         
         
     # Change between PVP & PVB 
