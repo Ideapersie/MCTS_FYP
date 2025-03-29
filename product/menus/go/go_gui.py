@@ -23,7 +23,8 @@ class GoBoardGUI(QWidget):
         self.board_margin = 40
         # Extra margin for coordinates  
         self.label_margin = 20
-        self.stone_radius = int(self.cell_size * 0.35)
+        # Adjustable stone size
+        self.stone_radius = int(self.cell_size * 0.37)
         
         # Set fixed size for the board 
         board_pixels = (self.board_size - 1) * self.cell_size + 2 * (self.board_margin + self.label_margin)
@@ -189,7 +190,7 @@ class GoBoardGUI(QWidget):
             painter.setPen(Qt.PenStyle.NoPen)
             painter.setBrush(QBrush(shadow_colour))
             # offset by 2 therefore shadow can be seen behind stones
-            painter.drawEllipse(x - self.stone_radius +2 , y - self.stone_radius +2, diameter, diameter)
+            painter.drawEllipse(x - self.stone_radius + 2 , y - self.stone_radius + 2, diameter, diameter)
             
         # Create gradient for black stone
         if is_black:
@@ -205,6 +206,15 @@ class GoBoardGUI(QWidget):
             painter.setBrush(QBrush(gradient))
             painter.drawEllipse(x - self.stone_radius , y - self.stone_radius , diameter, diameter)
             
+            # Add a highlight to simulate a reflection on the stone 
+            highlight_gradient = QRadialGradient(x - self.stone_radius * 0.4, y - self.stone_radius * 0.4, 
+                                     self.stone_radius * 0.8)
+            # Fade from semi transparent white to fully transparent 
+            highlight_gradient.setColorAt(0, QColor(255,255,255, int(alpha) * 0.35))
+            highlight_gradient.setColorAt(1, QColor(255,255,255, 0))
+            
+            painter.setBrush(QBrush(highlight_gradient))
+            painter.drawEllipse(x - self.stone_radius, y - self.stone_radius, diameter, diameter)
     
     # Update board with a new state        
     def update_board(self, game_state, current_player=None):
