@@ -202,7 +202,7 @@ class GoBoardGUI(QWidget):
             gradient.setColorAt(1, QColor(0,0,0, alpha))
             
             # Drawing the stone 
-            painter.setPen(Qt.PenStyle.NoPen)
+            painter.setPen(QPen(QColor(0, 0, 0, alpha), 0.2))
             painter.setBrush(QBrush(gradient))
             painter.drawEllipse(x - self.stone_radius , y - self.stone_radius , diameter, diameter)
             
@@ -215,6 +215,34 @@ class GoBoardGUI(QWidget):
             
             painter.setBrush(QBrush(highlight_gradient))
             painter.drawEllipse(x - self.stone_radius, y - self.stone_radius, diameter, diameter)
+            
+        else:
+            gradient = QRadialGradient(x - self.stone_radius * 0.3, y - self.stone_radius * 0.3, 
+                                       self.stone_radius * 2)
+            # Gradient affect
+            gradient.setColorAt(0, QColor(240,240,240, alpha))
+            gradient.setColorAt(0.4, QColor(220,220,220, alpha))
+            gradient.setColorAt(1, QColor(160,160,160, alpha))
+            
+            # Drawing the stone 
+            painter.setPen(QPen(QColor(220, 220, 220, 155), 0.5)) # light border
+            painter.setBrush(QBrush(gradient))
+            painter.drawEllipse(x - self.stone_radius , y - self.stone_radius , diameter, diameter)
+            
+            # Add a highlight to simulate a reflection on the stone 
+            highlight_gradient = QRadialGradient(x - self.stone_radius * 0.4, y - self.stone_radius * 0.4, 
+                                    self.stone_radius * 0.8)
+            
+            # Fade from semi transparent white to fully transparent 
+            highlight_gradient.setColorAt(0, QColor(255,255,255, int(alpha) * 0.7))
+            highlight_gradient.setColorAt(1, QColor(255,255,255, 0))
+            
+            painter.setPen(Qt.PenStyle.NoPen)
+            painter.setBrush(QBrush(highlight_gradient))
+            painter.drawEllipse(x - self.stone_radius, y - self.stone_radius, diameter, diameter)
+            
+        # Restore the painter state
+        painter.restore()
     
     # Update board with a new state        
     def update_board(self, game_state, current_player=None):
