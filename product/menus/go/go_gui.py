@@ -358,10 +358,16 @@ class GoGameGUI(QMainWindow):
     def handle_pass(self):
         if not self.game_state.game_over():
             # Player can't return if its bot's move 
-            if self.game_mode == "PVB" and self.game_state.next_player == Player.black:
+            if self.game_mode == "PVB" and self.game_state.next_player == Player.white:
                 return 
             
+            # Obtain current player 
+            current_player = "Black" if self.game_state.next_player == Player.black else "White"
+            
             self.game_state = self.game_state.play_move(Move.pass_turn())
+            
+            # Display pass notification 
+            QMessageBox.information(self, "Pass", f"{current_player} passed their turn.")
             
             # Check if game is over (if theres 2 passes in a row)
             if self.game_state.game_over():
