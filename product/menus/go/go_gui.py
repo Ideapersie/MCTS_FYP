@@ -1,7 +1,7 @@
 from PySide6.QtCore import Qt, Signal, Slot, QTimer
 from PySide6.QtWidgets import QWidget, QGridLayout, QMessageBox, QLabel, QMainWindow, QPushButton \
 , QApplication, QVBoxLayout, QHBoxLayout, QSpinBox, QComboBox, QSlider, QCheckBox, QGroupBox, QRadioButton, QButtonGroup
-from PySide6.QtGui import QPainter, QPen, QColor, QBrush
+from PySide6.QtGui import QPainter, QPen, QColor, QBrush, QRadialGradient 
 
 import sys
 
@@ -91,13 +91,10 @@ class GoBoardGUI(QWidget):
                     y = grid_start + (col -1) * self.cell_size
                     
                     if player == Player.black:
-                        painter.setBrush(Qt.GlobalColor.black)
+                        self.realistic_stones(painter, x, y, True)
                     else:
-                        painter.setBrush(Qt.GlobalColor.white)
-                        
-                    painter.setPen(Qt.GlobalColor.black)
-                    painter.drawEllipse(x - self.stone_radius, y - self.stone_radius,
-                                        self.stone_radius * 2, self.stone_radius * 2)
+                        self.realistic_stones(painter, x, y, False)
+
          
         # Draw hover indicator for empty points
         if self.hover_point is not None:
@@ -114,13 +111,9 @@ class GoBoardGUI(QWidget):
                     
                     # semi-transparent stones for hover effects 
                     if self.current_player == Player.black:
-                        painter.setBrush(QColor(0,0,0, 100))
+                        self.realistic_stones(painter, x, y, True, 100) # 100 for semitransparency
                     else: 
-                        painter.setBrush(QColor(255, 255, 255, 100))
-                        
-                    painter.setPen(Qt.PenStyle.NoPen)
-                    painter.drawEllipse(x - self.stone_radius, y - self.stone_radius,
-                                            self.stone_radius * 2, self.stone_radius *2)
+                        self.realistic_stones(painter, x, y, False, 100)
                     
              
     # Track mouse movement           
@@ -183,6 +176,35 @@ class GoBoardGUI(QWidget):
                 self.board_margin - 15, x -5, 15, 10, 
                 Qt.AlignmentFlag.AlignVCenter, label
             )     
+            
+    # Draw a realistic stone using gradient and shadows        
+    def realistic_stones(self, painter, x, y, is_black, alpha=255):
+        diameter = self.stone_radius * 2
+        
+        # Save painter state
+        painter.save()
+        
+        if alpha == 255:
+            shadow_colour = QColor(0,0,0,30) # Transparent black
+            painter.setPen(Qt.PenStyle.NoPen)
+            painter.setBrush(QBrush(shadow_colour))
+            # offset by 2 therefore shadow can be seen behind stones
+            painter.drawEllipse(x - self.stone_radius +2 , y - self.stone_radius +2, diameter, diameter)
+            
+        # Create gradient for black stone
+        if is_black:
+            gradient = QRadialGradient(x - self.stone_radius * 0.3, y - self.stone_radius * 0.3, 
+                                       self.stone_radius * 2)
+            # Gradient affect
+            gradient.setColorAt(0, QColor(90,90,90, alpha))
+            gradient.setColorAt(0.4, QColor(30,30,30, alpha))
+            gradient.setColorAt(1, QColor(0,0,0, alpha))
+            
+            # Drawing the stone 
+            painter.setPen(Qt.PenStyle.NoPen)
+            painter.setBrush(QBrush(gradient))
+            painter.drawEllipse(x - self.stone_radius , y - self.stone_radius , diameter, diameter)
+            
     
     # Update board with a new state        
     def update_board(self, game_state, current_player=None):
