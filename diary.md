@@ -1,5 +1,8 @@
 # FYP Diary 
 
+**28/03/2025**
+Big improvements to the UI, including implementing a pass button for the players to pass turns, if both player passes then the game enters the scoring phase. I also came across an error with the captures counting method therefore I had to debug by counting the stones on the board instead of keeping track of captured groups, then display the captured amount calculated by the difference between the stones in previous board and current board. Lastly, I fixed the UI freeze issue by refactoring where the bot_move method was called.  
+
 **26/03/2025**
 After researching I came to the conclusion of using PyQt for the GUI for the go game due to its fast perfomance and nice aesthethics, learning from the website's documentation. I have seperated into 2 classes of GoBoardGUI and then the main window where the GoBoardGUI sets up all the variables for the go board such as the background, gridlines, labels and then in the main GUI, creating method to handle how the UI will interact with placing a stone or the gameover state. Now the GUI is functioning with placing stones and the hover effect working, will need to do further testing with gamemodes then next I shall implement passing and resignation buttons while further enhancing the User Experience.  
 
