@@ -58,6 +58,7 @@ class Board():
         self.num_rows = num_rows
         self.num_cols = num_cols
         self._grid = {}
+        self.captured_stones = []
         
     def __str__(self):
         # Stores representation of each row 
@@ -127,6 +128,16 @@ class Board():
         
     # Removing a string, can create liberties for other string
     def _remove_string(self, string):
+        # Store point from string to display captured stones 
+        captured_points = list(string.stones)
+        self.captured_stones.extend(captured_points)
+        
+        #Debug info -> print captured stones
+        print(f"Capturing string with {len(string.stones)} stones")
+        for stone in captured_points:
+            print(f" Removing stone at {stone}")
+        
+        # Remove go strings 
         for stone in string.stones:
             for neighbour in stone.neighbours():
                 neighbour_string = self._grid.get(neighbour)
@@ -135,6 +146,11 @@ class Board():
                 elif neighbour_string is not string:
                     neighbour_string.add_liberty(stone)
             del self._grid[stone]
+            
+    def recent_captures(self):
+        captures_no = len(self.captured_stones)
+        self.captured_stones = []
+        return captures_no
         
     # Placing a stone on the board & manages liberties of neighbouring stones    
     def place_stone(self, player, point):
@@ -249,9 +265,6 @@ class Board():
                 # Explore region and gather the territory and borders of each point 
                 territory, borders = self.explore_region(point, visited)
                 
-                # For debugging purposes
-                #print(f"territory:{territory}, borders:{borders}")
-                
                 # Assume the borders are all black or all white
                 black_border = True
                 white_border = True
@@ -343,6 +356,12 @@ class GoState():
             next_captured = self.captured.copy()
             if captures > 0:
                 next_captured[self.next_player] += captures
+                
+            # Debug output 
+            
+            Test_Capture = next_board.recent_captures()
+            if Test_Capture > 0:
+                print(f"Move at {move.point} captured {Test_Capture} stones")
 
         else:
             next_board = self.board
