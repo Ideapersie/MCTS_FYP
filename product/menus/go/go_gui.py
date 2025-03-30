@@ -88,8 +88,9 @@ class GoBoardGUI(QWidget):
                 player = self.game_state.board.get_player(point)
             
                 if player is not None:
-                    x = grid_start + (row -1) * self.cell_size
-                    y = grid_start + (col -1) * self.cell_size
+                    x = grid_start + (col -1) * self.cell_size
+                    # Invert to match row numbering 
+                    y = grid_start + (self.board_size - row) * self.cell_size
                     
                     if player == Player.black:
                         self.realistic_stones(painter, x, y, True)
@@ -107,8 +108,9 @@ class GoBoardGUI(QWidget):
                 
                 # only hover for empty points
                 if current_player is None:
-                    x = grid_start + (row -1) * self.cell_size
-                    y = grid_start + (col -1) * self.cell_size
+                    x = grid_start + (col -1) * self.cell_size
+                    # Invert to match y-coordinate 
+                    y = grid_start + (self.board_size - row) * self.cell_size
                     
                     # semi-transparent stones for hover effects 
                     if self.current_player == Player.black:
@@ -122,8 +124,10 @@ class GoBoardGUI(QWidget):
         x = event.position().x() - (self.board_margin + self.label_margin)
         y = event.position().y() - (self.board_margin + self.label_margin)
         
-        col = round(y / self.cell_size) + 1
-        row = round(x/ self.cell_size) + 1
+        # the column correlates with x instead of y 
+        col = round(x / self.cell_size) + 1
+        # Invert to match with bottom -> 1 
+        row = self.board_size - round(y/ self.cell_size)
         
         # Update hover points if changed 
         if self.hover_point != (row, col):
@@ -156,12 +160,12 @@ class GoBoardGUI(QWidget):
             # Skip I since it is not used in Go 
             if ord(label) >= ord('I'):
                 label = chr(ord(label)+1)
-                
-            y = grid_start + col * self.cell_size
+            # x-coordinates correlates to col   
+            x = grid_start + col * self.cell_size
             
             # Bottom labels 
             painter.drawText(
-                y - 5, grid_end + self.board_margin - 5, 10, 10, 
+                x - 5, grid_end + self.board_margin - 15, 12, 12, 
                 Qt.AlignmentFlag.AlignCenter, label
             )
             
@@ -170,11 +174,11 @@ class GoBoardGUI(QWidget):
             # Row numbers in ascending order
             label = str(self.board_size - row) 
                             
-            x = grid_start + row * self.cell_size
+            y = grid_start + row * self.cell_size
             
             # Left labels 
             painter.drawText(
-                self.board_margin - 15, x -5, 15, 10, 
+                self.board_margin - 15 , y -8, 12, 12, 
                 Qt.AlignmentFlag.AlignVCenter, label
             )     
             
@@ -411,7 +415,7 @@ class GoGameGUI(QMainWindow):
                 # Bot's move after UI update
                 QTimer.singleShot(50, self.bots_move)
         else:
-            self.timed_message("Illegal move", "Please enter a legal move", 1500)
+            self.timed_message("illegal move", "Please enter a legal move", 1500)
             # Update UI 
             self.update_ui()
         
