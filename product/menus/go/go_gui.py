@@ -414,7 +414,27 @@ class GoGameGUI(QMainWindow):
                 
                 # Bot's move after UI update
                 QTimer.singleShot(50, self.bots_move)
-        else:
+                
+        # Specify the error message, hide hover point         
+        elif self.game_state.ko_rule(self.game_state.next_player, move):
+            self.board_widget.hover_point = None
+            # Update UI 
+            self.board_widget.update()
+            
+            self.timed_message("Please enter a legal move", "this move violates the ko-rule", 1500)
+        
+        elif self.game_state.self_capture(self.game_state.next_player, move):
+            self.board_widget.hover_point = None
+            # Update UI 
+            self.board_widget.update()
+            
+            self.timed_message("Please enter a legal move", "this move is a self-capture", 1500)
+        # Incase some other error 
+        else: 
+            self.board_widget.hover_point = None
+            # Update UI 
+            self.board_widget.update()
+            
             self.timed_message("illegal move", "Please enter a legal move", 1500)
             # Update UI 
             self.update_ui()
