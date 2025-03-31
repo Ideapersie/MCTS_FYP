@@ -421,23 +421,21 @@ class GoGameGUI(QMainWindow):
             # Update UI 
             self.board_widget.update()
             
-            self.timed_message("Please enter a legal move", "this move violates the ko-rule", 1500)
+            self.timed_message("Please enter a legal move", "This move violates the Ko-rule", 2000)
         
         elif self.game_state.self_capture(self.game_state.next_player, move):
             self.board_widget.hover_point = None
             # Update UI 
             self.board_widget.update()
             
-            self.timed_message("Please enter a legal move", "this move is a self-capture", 1500)
+            self.timed_message("Please enter a legal move", "This move is a self-capture move", 2000)
         # Incase some other error 
         else: 
             self.board_widget.hover_point = None
             # Update UI 
             self.board_widget.update()
             
-            self.timed_message("illegal move", "Please enter a legal move", 1500)
-            # Update UI 
-            self.update_ui()
+            self.timed_message("illegal move", "Please enter a legal move", 2000)
         
     # Handle pass button 
     def handle_pass(self):
@@ -505,7 +503,14 @@ class GoGameGUI(QMainWindow):
         msg_box = QMessageBox(self)
         msg_box.setWindowTitle(title)
         msg_box.setText(message)
-        msg_box.setStandardButtons(QMessageBox.Close) # Close button for manual input
+        msg_box.setStandardButtons(QMessageBox.StandardButton.Close) # Close button for manual input
+        
+        # Makes dialog resizable
+        msg_box.setWindowFlags(msg_box.windowFlags() | Qt.WindowType.WindowMaximizeButtonHint)
+        
+        # Set min. size for scalability     
+        msg_box.setMinimumSize(400, 200)
+        msg_box.resize(400, 200)
         
         # Set box to focus 
         msg_box.setModal(True)
