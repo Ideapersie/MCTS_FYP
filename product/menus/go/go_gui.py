@@ -340,7 +340,7 @@ class GoGameGUI(QMainWindow):
         
         # Initialise bot for PVB mode 
         if self.game_mode == "PVB":
-            self.bot = MCTsAgent(temperature=1.4, num_rounds=5000)
+            self.bot = MCTsAgent(temperature=1.4, num_rounds=10000)
     
     # Update UI to display current game state    
     def update_ui(self):
@@ -405,15 +405,7 @@ class GoGameGUI(QMainWindow):
             self.update_ui()
             
             # If its the bot's turn, make bot move 
-            if (self.game_mode == "PVB" and 
-                self.game_state.next_player == Player.white and 
-                not self.game_state.game_over()):
-                
-                 # Show thinking indicator
-                self.status_label.setText("White is thinking...")
-                
-                # Bot's move after UI update
-                QTimer.singleShot(50, self.bots_move)
+            self.schedule_bot_move()
                 
         # Specify the error message, hide hover point         
         elif self.game_state.ko_rule(self.game_state.next_player, move):
@@ -460,6 +452,20 @@ class GoGameGUI(QMainWindow):
             
             # Update UI 
             self.update_ui()
+            # Trigger bot's move even after player passes
+            self.schedule_bot_move()
+                
+    # Schedule bot's turn while display indicator             
+    def schedule_bot_move(self):
+        if (self.game_mode == "PVB" and 
+                self.game_state.next_player == Player.white and 
+                not self.game_state.game_over()):
+                
+                # Show thinking indicator
+                self.status_label.setText("White is thinking...")
+                
+                # Bot's move after UI update
+                QTimer.singleShot(50, self.bots_move)
         
     # Handle UI when game is over     
     def game_over(self):
