@@ -30,10 +30,23 @@ class MCTsNode(object):
         
     # Defining the expansion step of the MCTS algorithm
     def random_child(self):
-        # select random move from unvisited moves
-        random_move = random.randint(0, len(self.unvisited_moves) - 1)
-        point = self.unvisited_moves.pop(random_move) 
-        move = Move.play(point)
+        
+        # Select moves from central moves in the opening game
+        if self.num_rollouts < 8 and len(self.unvisited_moves) > 20:
+            central_moves = [ move for move in self.unvisited_moves 
+                if 3 <= move.row <= 7 and 3 <= move.col <= 7]
+            
+            if central_moves:
+                random_move = random.choice(central_moves)
+            else:
+                random_move = random.choice(self.unvisited_moves)
+        
+        else: 
+            random_move = random.choice(self.unvisited_moves)
+                
+        # remove move from unvisited moves        
+        self.unvisited_moves.remove(random_move)
+        move = Move.play(random_move)
         
         # Create a deep copy of the game state to ensure node independence
         next_state = copy.deepcopy(self.game_state)
@@ -42,7 +55,7 @@ class MCTsNode(object):
         child_node = MCTsNode(next_state, self, move)
         self.children.append(child_node)
         return child_node
-    
+        
     # Update the rollout statistics to use for backpropagation step 
     def update_rollout(self, winner):
         self.num_rollouts += 1

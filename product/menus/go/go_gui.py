@@ -454,6 +454,7 @@ class GoGameGUI(QMainWindow):
             self.update_ui()
             # Trigger bot's move even after player passes
             self.schedule_bot_move()
+            
                 
     # Schedule bot's turn while display indicator             
     def schedule_bot_move(self):
