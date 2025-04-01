@@ -123,10 +123,6 @@ class MCTsAgent(Agent):
         print(f"Moves ratio /81: {move_ratio:.2f}, Passing threshold: {passing_threshold:.2f}")
     
             
-        # If opponent passes, then pass as well
-        if game_state.last_move and game_state.last_move.is_pass:
-            return Move.pass_turn()
-        
         # If winrate is below threshold, then pass or resign
         if highest_winrate < passing_threshold and move_ratio > 0.6:
             return Move.pass_turn()
