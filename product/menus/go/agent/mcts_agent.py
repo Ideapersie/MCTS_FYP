@@ -16,6 +16,25 @@ class MCTsAgent(Agent):
         self.temperature = temperature
         self.num_rounds = num_rounds
         self.go_moves = GoMoves()
+        
+        # Statistics for simulations
+        self.total_simulations = 0
+        self.total_simulation_moves = 0
+        self.min_simulation_moves = float('inf')
+        self.max_simulation_moves = 0
+        
+    # Keeping track of moves per simulation 
+    def _update_simulation_stats(self, moves_played):
+        self.total_simulations += 1
+        self.total_simulation_moves += moves_played
+        self.min_simulation_moves = min(self.min_simulation_moves, moves_played)
+        self.max_simulation_moves = max(self.max_simulation_moves, moves_played)
+     
+    # average moves per simulation    
+    def get_average_simulation_length(self):
+        if self.total_simulations == 0:
+            return 0
+        return self.total_simulation_moves / self.total_simulations
             
             
     def select_move(self, game_state):
@@ -33,6 +52,14 @@ class MCTsAgent(Agent):
         num_processes = mp.cpu_count()
         rollouts_per_process = self.num_rounds // num_processes 
         
+        # In select_move:
+        combined_stats = {
+            'total_moves': 0,
+            'min_moves': float('inf'),
+            'max_moves': 0,
+            'simulation_count': 0
+        }
+        
         # Create pool which runs parallel simulations 
         with mp.Pool(processes=num_processes) as pool:
             rollout_result = pool.starmap(
@@ -42,14 +69,20 @@ class MCTsAgent(Agent):
             
         # Combine results dictionary
         combined_results = {}
-        for result in rollout_result:
+        for result, stats in rollout_result:
             # Combine results from each process
             for move_point, wins in result.items():
                 # Create dictionary for each move point
                 if move_point not in combined_results:
                     combined_results[move_point] = {Player.black: 0, Player.white: 0}
                 combined_results[move_point][Player.black] += wins[Player.black]
-                combined_results[move_point][Player.white] += wins[Player.white]     
+                combined_results[move_point][Player.white] += wins[Player.white] 
+                
+            # Combine statistics
+            combined_stats['total_moves'] += stats['total_moves']
+            combined_stats['min_moves'] = min(combined_stats['min_moves'], stats['min_moves'])
+            combined_stats['max_moves'] = max(combined_stats['max_moves'], stats['max_moves'])
+            combined_stats['simulation_count'] += stats['simulation_count']   
                 
         # Update the root node with the combined results
         for child in root.children:
@@ -94,10 +127,16 @@ class MCTsAgent(Agent):
             for col in range(1, board_size+1):
                 if game_state.board.get_player(Point(row=row, col=col)) is not None:
                     stone_count += 1
+        
+        # Print statistics
+        avg_moves = combined_stats['total_moves'] / combined_stats['simulation_count']
+        print(f"\nSimulation statistics:")
+        print(f"  Average moves per simulation: {avg_moves:.2f}")
+        print(f"  Min/Max moves: {combined_stats['min_moves']}/{combined_stats['max_moves']}")
+        print(f"  Total simulations: {combined_stats['simulation_count']}")
                     
         # Count the captures for each player
         captures = game_state.captured[Player.black] + game_state.captured[Player.white]
-        
         
         # combine both to calculate total moves played
         total_moves = stone_count + captures
@@ -136,10 +175,14 @@ class MCTsAgent(Agent):
         # Convert game state to fast simulation
         sim_state = FastGoState(game_state.board.num_rows, game_state)
         
+        # Limit playlout depth - early termination -> faster rollouts
+        rollout_depth = 70
+        
         # Play until the game is over
         max_moves = game_state.board.num_rows * game_state.board.num_cols
+        moves_played = 0 
         
-        for _ in range(max_moves):
+        for _ in range(150):
             # Stop if game over 
             if sim_state.fast_game_over():
                 break
@@ -150,14 +193,16 @@ class MCTsAgent(Agent):
             if not possible_moves:
                 # if no legal moves then pass 
                 sim_state.fast_play_move(Move.pass_turn())
+                moves_played += 1 
                 continue
             
             # Choose random move and play it 
             random_move = Move.play(random.choice(possible_moves))
             sim_state.fast_play_move(random_move)
+            moves_played += 1
         
         # Quick scoring without territory calculation
-        return self.quick_eval(sim_state)
+        return self.quick_eval(sim_state), moves_played
 
     # Running a batch simulation for parallel processing
     def run_batch_simulation(self, game_state, num_simulation, batch_no):
@@ -165,6 +210,14 @@ class MCTsAgent(Agent):
        
         # Local random num generator 
         local_random =  random.Random(batch_no) 
+        
+         # Track statistics for this batch
+        batch_stats = {
+            'total_moves': 0,
+            'min_moves': float('inf'),
+            'max_moves': 0,
+            'simulation_count': 0
+        }
        
         for _ in range(num_simulation):
             
@@ -183,14 +236,20 @@ class MCTsAgent(Agent):
             sel_move = node.move.point
                 
             # Simulation step: simulate a random game from the new child node
-            winner = self.simulate_random_game(node.game_state)
+            winner, moves_played = self.simulate_random_game(node.game_state)
+            
+            # Update batch statistics
+            batch_stats['total_moves'] += moves_played
+            batch_stats['min_moves'] = min(batch_stats['min_moves'], moves_played)
+            batch_stats['max_moves'] = max(batch_stats['max_moves'], moves_played)
+            batch_stats['simulation_count'] += 1
             
             # Add number of wins depending on the move 
             if sel_move not in win_count:
                 win_count[sel_move] = {Player.black: 0, Player.white: 0}
             win_count[sel_move][winner] += 1 
            
-        return win_count
+        return win_count, batch_stats
     
     # Quick evaluation of the game state, only compares the score
     def quick_eval(self, sim_state):
