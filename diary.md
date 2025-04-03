@@ -1,5 +1,8 @@
 # FYP Diary 
 
+**01/03/2025**
+After further testing with the UI, I made improvement to the stone UI's to make them more realistic simulating light reflections on the stone using PyQT gradient function on both black and white stones and I am planning to add captures sounds for the stones later on. Furthermore, I came across a bug where the GUI's column was starting from the top as 1 instead of the bottom, this was easily fixed. Lastlym I added a function where in the early games the bot will focus on central moves since on smaller board especially a 9x9 board, these are very crucial and important areas of the board, depending on its effectiveness, I plan to further improve it by assigning specific openings such as (5,5) which is known as Hoshi.  
+
 **28/03/2025**
 Big improvements to the UI, including implementing a pass button for the players to pass turns, if both player passes then the game enters the scoring phase. I also came across an error with the captures counting method therefore I had to debug by counting the stones on the board instead of keeping track of captured groups, then display the captured amount calculated by the difference between the stones in previous board and current board. Lastly, I fixed the UI freeze issue by refactoring where the bot_move method was called.  
 
