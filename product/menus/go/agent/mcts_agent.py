@@ -16,26 +16,6 @@ class MCTsAgent(Agent):
         self.temperature = temperature
         self.num_rounds = num_rounds
         self.go_moves = GoMoves()
-        
-        # Statistics for simulations
-        self.total_simulations = 0
-        self.total_simulation_moves = 0
-        self.min_simulation_moves = float('inf')
-        self.max_simulation_moves = 0
-        
-    # Keeping track of moves per simulation 
-    def _update_simulation_stats(self, moves_played):
-        self.total_simulations += 1
-        self.total_simulation_moves += moves_played
-        self.min_simulation_moves = min(self.min_simulation_moves, moves_played)
-        self.max_simulation_moves = max(self.max_simulation_moves, moves_played)
-     
-    # average moves per simulation    
-    def get_average_simulation_length(self):
-        if self.total_simulations == 0:
-            return 0
-        return self.total_simulation_moves / self.total_simulations
-            
             
     def select_move(self, game_state):
         # Initialising the root node 
