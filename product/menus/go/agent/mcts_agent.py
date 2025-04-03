@@ -155,14 +155,30 @@ class MCTsAgent(Agent):
         # Convert game state to fast simulation
         sim_state = FastGoState(game_state.board.num_rows, game_state)
         
-        # Limit playlout depth - early termination -> faster rollouts
-        rollout_depth = 70
+        # Dynamic rollout depending on board size
+        board_size = game_state.board.num_rows
+        total_stones = board_size * board_size
+
+        # Keep track of existing stones 
+        black_stones = np.sum(sim_state.board.grid == 1)
+        white_stones = np.sum(sim_state.board.grid == 2)
+        stone_count = black_stones + white_stones
+        move_ratio = stone_count / total_stones
+        
+        # Changing the rollout depth depending on game phase 
+        if move_ratio < 0.25: 
+            rollout_depth = int(total_stones * 0.85)
+        elif move_ratio < 0.5:
+            rollout_depth = int(total_stones * 0.65)
+        # End game 
+        else:
+            rollout_depth = int(total_stones * 0.4)
         
         # Play until the game is over
         max_moves = game_state.board.num_rows * game_state.board.num_cols
         moves_played = 0 
         
-        for _ in range(150):
+        for _ in range(rollout_depth):
             # Stop if game over 
             if sim_state.fast_game_over():
                 break
