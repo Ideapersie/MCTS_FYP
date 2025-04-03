@@ -173,23 +173,38 @@ class MCTsAgent(Agent):
         # End game 
         else:
             rollout_depth = int(total_stones * 0.4)
-        
+
         # Play until the game is over
-        max_moves = game_state.board.num_rows * game_state.board.num_cols
         moves_played = 0 
+        consecutive_passes = 0
+        
+        # score difference threshold 
+        score_threshold = board_size * 1.5
         
         for _ in range(rollout_depth):
             # Stop if game over 
-            if sim_state.fast_game_over():
+            if sim_state.fast_game_over() or consecutive_passes >= 2:
                 break
             
             # Get faster legal moves
             possible_moves = sim_state.board.fast_legal_moves(sim_state.next_player)
             
+            
+            if moves_played > 30:
+                current_black = np.sum(sim_state.board.grid == 1) + sim_state.captured[Player.black]
+                current_white = np.sum(sim_state.board.grid == 2) + sim_state.captured[Player.white] + 6.5
+                score_diff = abs(current_black - current_white)
+                
+                # If one player has significant lead, end early 
+                if score_diff > score_threshold:
+                    break
+            
+            
             if not possible_moves:
                 # if no legal moves then pass 
                 sim_state.fast_play_move(Move.pass_turn())
                 moves_played += 1 
+                consecutive_passes += 1
                 continue
             
             # Choose random move and play it 
