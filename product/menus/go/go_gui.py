@@ -340,12 +340,14 @@ class GoGameGUI(QMainWindow):
         
     # Start a new game 
     def new_game(self):
-        self.game_state = GoState.new_game(self.board_size)
-        self.update_ui()
-        
         # Initialise bot for PVB mode 
         if self.game_mode == "PVB":
             self.bot = MCTsAgent(temperature=1.4, num_rounds=5000)
+        else: 
+            self.bot = None
+        # Reset game state
+        self.game_state = GoState.new_game(self.board_size)
+        self.update_ui()
     
     # Update UI to display current game state    
     def update_ui(self):
@@ -372,7 +374,7 @@ class GoGameGUI(QMainWindow):
             
     # Defining method for bot's move
     def bots_move(self):
-        if self.bot and not self.game_state.game_over():
+        if self.bot and self.game_mode == "PVB" and not self.game_state.game_over():
             # Calculate bot move
             bot_move = self.bot.select_move(self.game_state)
             self.game_state = self.game_state.play_move(bot_move)
@@ -392,6 +394,7 @@ class GoGameGUI(QMainWindow):
             return
 
         if self.game_mode == "PVB" and self.game_state.next_player == Player.white:
+            # Ignore player input if it's the bot's turn
             return 
         
         # Create move 
@@ -457,8 +460,10 @@ class GoGameGUI(QMainWindow):
             
             # Update UI 
             self.update_ui()
-            # Trigger bot's move even after player passes
-            QTimer.singleShot(1500, self.schedule_bot_move)
+            
+            if self.game_mode == "PVB" and self.bot is not None:
+                # Trigger bot's move even after player passes
+                QTimer.singleShot(1500, self.schedule_bot_move)
             
     def handle_resign(self):
         if not self.game_state.game_over():
@@ -474,7 +479,8 @@ class GoGameGUI(QMainWindow):
                 
     # Schedule bot's turn while display indicator             
     def schedule_bot_move(self):
-        if (self.game_mode == "PVB" and 
+        if (self.game_mode == "PVB" and
+                self.bot is not None and # Check if bot is initialised
                 self.game_state.next_player == Player.white and 
                 not self.game_state.game_over()):
                 
@@ -547,7 +553,7 @@ class GoGameGUI(QMainWindow):
         
     # Change between PVP & PVB 
     def change_game_mode(self, mode_text):
-        if "Player VS Player" in mode_text:
+        if "Player vs Player" in mode_text:
             self.game_mode = "PVP"
         else:
             self.game_mode = "PVB"
