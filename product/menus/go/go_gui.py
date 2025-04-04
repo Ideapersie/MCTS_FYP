@@ -458,7 +458,7 @@ class GoGameGUI(QMainWindow):
             # Update UI 
             self.update_ui()
             # Trigger bot's move even after player passes
-            self.schedule_bot_move()
+            QTimer.singleShot(1500, self.schedule_bot_move)
             
     def handle_resign(self):
         if not self.game_state.game_over():
