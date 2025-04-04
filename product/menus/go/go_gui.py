@@ -504,9 +504,9 @@ class GoGameGUI(QMainWindow):
         # Game over messsage displaying the winner 
         if self.game_state.last_move.is_resign:
             if self.game_state.next_player == Player.black:
-                winner = "White"
-            else: 
                 winner = "Black"
+            else: 
+                winner = "White"
                 
             display = f"{winner} wins by resignation! "
         
@@ -517,7 +517,7 @@ class GoGameGUI(QMainWindow):
                 display = f"White wins by {scores['White'] - scores['Black']:.1f} points! \n ({white_captures} captures + {white_territory:} territory + {komi} komi)"
                 
         # Display game over message
-        QMessageBox.information(self, "Game Over", display)
+        self.timed_message("Game Over!", display, 3000)
         
         # Restart game once the display is closed 
         self.new_game()
