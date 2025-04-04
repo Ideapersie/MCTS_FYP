@@ -315,6 +315,10 @@ class GoGameGUI(QMainWindow):
         self.pass_button = QPushButton("Pass turn")
         self.pass_button.clicked.connect(self.handle_pass)
         
+        # Resign button
+        self.resign_button = QPushButton("Resign")
+        self.resign_button.clicked.connect(self.handle_resign)
+        
         # Add widgets to controls layout 
         controls_layout.addLayout(mode_layout)
         controls_layout.addLayout(size_layout)
@@ -322,6 +326,7 @@ class GoGameGUI(QMainWindow):
         controls_layout.addWidget(self.capture_label)
         controls_layout.addStretch(1)
         controls_layout.addWidget(self.pass_button)
+        controls_layout.addWidget(self.resign_button)
         
         # Add widgets to main layout
         main_layout.addWidget(self.board_widget, 3) # 3:1 ratio to board controls 
@@ -340,7 +345,7 @@ class GoGameGUI(QMainWindow):
         
         # Initialise bot for PVB mode 
         if self.game_mode == "PVB":
-            self.bot = MCTsAgent(temperature=1.4, num_rounds=10000)
+            self.bot = MCTsAgent(temperature=1.4, num_rounds=5000)
     
     # Update UI to display current game state    
     def update_ui(self):
@@ -454,6 +459,17 @@ class GoGameGUI(QMainWindow):
             self.update_ui()
             # Trigger bot's move even after player passes
             self.schedule_bot_move()
+            
+    def handle_resign(self):
+        if not self.game_state.game_over():
+            # Create resign move
+            resign_move = Move.resign()
+            
+            # Play resign move
+            self.game_state = self.game_state.play_move(resign_move)
+
+            # call game over method to handle UI            
+            self.game_over()
             
                 
     # Schedule bot's turn while display indicator             
