@@ -319,12 +319,23 @@ class GoGameGUI(QMainWindow):
         self.resign_button = QPushButton("Resign")
         self.resign_button.clicked.connect(self.handle_resign)
         
+        # New game button
+        self.new_game_button = QPushButton("Start a new game!")
+        self.new_game_button.clicked.connect(self.new_game)
+        # Hide new game button until game is over
+        self.new_game_button.setVisible(False) 
+        
         # Add widgets to controls layout 
         controls_layout.addLayout(mode_layout)
         controls_layout.addLayout(size_layout)
         controls_layout.addWidget(self.status_label)
         controls_layout.addWidget(self.capture_label)
         controls_layout.addStretch(1)
+        controls_layout.addWidget(self.new_game_button)
+        
+        #Add spacing between buttons
+        controls_layout.addSpacing(20) 
+        
         controls_layout.addWidget(self.pass_button)
         controls_layout.addWidget(self.resign_button)
         
@@ -348,6 +359,8 @@ class GoGameGUI(QMainWindow):
         # Reset game state
         self.game_state = GoState.new_game(self.board_size)
         self.update_ui()
+        # Hide new game button until game is over
+        self.new_game_button.setVisible(False)
     
     # Update UI to display current game state    
     def update_ui(self):
@@ -575,6 +588,9 @@ class GoGameGUI(QMainWindow):
         # Display box 
         game_over_box.show()
         
+        # Display new game button when game is over
+        self.new_game_button.setVisible(True)
+                
     # only start new game if the button is clicked
     def handle_game_over(self, dialog, new_game_button):
         if dialog.clickedButton() == new_game_button:
