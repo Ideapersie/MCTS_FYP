@@ -550,6 +550,37 @@ class GoGameGUI(QMainWindow):
         # Message closes after timer
         QTimer.singleShot(duration, msg_box.close)
         
+    # Game over message when the new game only starts if the button is clicked
+    def game_over_message(self, message):
+        game_over_box = QMessageBox(self)
+        game_over_box.setText(message)
+        # Display game over message
+        game_over_box.setWindowTitle("Game Over!")
+        game_over_box.setInformativeText("Click New Game to start a new game.")
+        
+        new_game_button = game_over_box.addButton("New Game", QMessageBox.ButtonRole.AcceptRole)
+        exit_button = game_over_box.addButton("Exit", QMessageBox.ButtonRole.RejectRole)
+        
+        # Make dialog resizable
+        game_over_box.setWindowFlags(game_over_box.windowFlags() | Qt.WindowType.WindowMaximizeButtonHint)
+        
+        # Set min. size for scalability     
+        game_over_box.setMinimumSize(600, 400)
+        game_over_box.resize(600, 400)
+        
+        # Set box to focus but allow interaction with the main window
+        game_over_box.setModal(False)
+        
+        game_over_box.finished.connect( 
+            lambda result: self.handle_game_over(game_over_box, new_game_button))
+        
+        # Display box 
+        game_over_box.show()
+        
+    # only start new game if the button is clicked
+    def handle_game_over(self, dialog, new_game_button):
+        if dialog.clickedButton() == new_game_button:
+            self.new_game()
         
     # Change between PVP & PVB 
     def change_game_mode(self, mode_text):
