@@ -117,7 +117,45 @@ class GoBoardGUI(QWidget):
                         self.realistic_stones(painter, x, y, True, 100) # 100 for semitransparency
                     else: 
                         self.realistic_stones(painter, x, y, False, 200)
-                    
+                        
+        # Draw indicator for the last placed stone 
+        if self.game_state.last_move is not None and self.game_state.last_move.is_play:
+            last_point = self.game_state.last_move.point
+            
+            # get the coordinates of the last stone
+            x = grid_start + (last_point.col - 1) * self.cell_size
+            y = grid_start + (self.board_size - last_point.row) * self.cell_size
+            
+            # Player who placed the last stone
+            last_player = self.game_state.board.get_player(last_point)
+            
+            if last_player == Player.black:
+                # Draw a small white dot for black stone 
+                painter.setPen(Qt.PenStyle.NoPen)
+                # semi-transparent white dot
+                painter.setBrush(QBrush(QColor(255, 255, 255, 200)))
+                
+                # Calculat the size of the dot 
+                dot_size = self.stone_radius * 0.6
+                
+                # position relative to dot 
+                dot_x = x - (dot_size / 2)
+                dot_y = y - (dot_size / 2)
+                
+                painter.drawEllipse(dot_x, dot_y, dot_size, dot_size)
+            else:
+                # Draw a small black dot for white stone
+                painter.setPen(Qt.PenStyle.NoPen)
+                painter.setBrush(QBrush(QColor(0, 0, 0, 200)))
+                
+                # Calculat the size of the dot 
+                dot_size = self.stone_radius * 0.6
+                
+                # position relative to dot 
+                dot_x = x - (dot_size / 2)
+                dot_y = y - (dot_size / 2)
+                
+                painter.drawEllipse(dot_x, dot_y, dot_size, dot_size)    
              
     # Track mouse movement           
     def mouseMoveEvent(self, event):
