@@ -523,11 +523,9 @@ class GoGameGUI(QMainWindow):
                 display = f"White wins by {scores['White'] - scores['Black']:.1f} points! \n ({white_captures} captures + {white_territory:} territory + {komi} komi)"
                 
         # Display game over message
-        self.timed_message("Game Over!", display, 3000)
+        self.game_over_message(display)
         
-        # Restart game once the display is closed 
-        self.new_game()
-        
+    # Display message box for a certain duration and closes after
     def timed_message(self, title, message, duration):
         msg_box = QMessageBox(self)
         msg_box.setWindowTitle(title)
