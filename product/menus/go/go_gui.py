@@ -2,9 +2,7 @@ from PySide6.QtCore import Qt, Signal, Slot, QTimer
 from PySide6.QtWidgets import QWidget, QGridLayout, QMessageBox, QLabel, QMainWindow, QPushButton \
 , QApplication, QVBoxLayout, QHBoxLayout, QSpinBox, QComboBox, QSlider, QCheckBox, QGroupBox, QRadioButton, QButtonGroup
 from PySide6.QtGui import QPainter, QPen, QColor, QBrush, QRadialGradient 
-
 import sys
-
 
 from menus.go.goboard import Player, Move, GoState
 from menus.go.goplayer import Point
@@ -19,12 +17,12 @@ class GoBoardGUI(QWidget):
         super().__init__(parent)
         self.board_size = board_size
         # Size of each cell in pixels 
-        self.cell_size = 40
-        self.board_margin = 40
+        self.cell_size = 48
+        self.board_margin = 60
         # Extra margin for coordinates  
-        self.label_margin = 20
+        self.label_margin = 15
         # Adjustable stone size
-        self.stone_radius = int(self.cell_size * 0.37)
+        self.stone_radius = int(self.cell_size * 0.38)
         
         # Set fixed size for the board 
         board_pixels = (self.board_size - 1) * self.cell_size + 2 * (self.board_margin + self.label_margin)
@@ -129,33 +127,22 @@ class GoBoardGUI(QWidget):
             # Player who placed the last stone
             last_player = self.game_state.board.get_player(last_point)
             
+            painter.setPen(Qt.PenStyle.NoPen)
+            # Calculat the size of the dot 
+            dot_size = self.stone_radius * 0.65
+            
             if last_player == Player.black:
-                # Draw a small white dot for black stone 
-                painter.setPen(Qt.PenStyle.NoPen)
                 # semi-transparent white dot
-                painter.setBrush(QBrush(QColor(255, 255, 255, 200)))
-                
-                # Calculat the size of the dot 
-                dot_size = self.stone_radius * 0.6
-                
-                # position relative to dot 
-                dot_x = x - (dot_size / 2)
-                dot_y = y - (dot_size / 2)
-                
-                painter.drawEllipse(dot_x, dot_y, dot_size, dot_size)
+                painter.setBrush(QBrush(QColor(255, 255, 255, 230)))
             else:
                 # Draw a small black dot for white stone
-                painter.setPen(Qt.PenStyle.NoPen)
                 painter.setBrush(QBrush(QColor(0, 0, 0, 200)))
+            
+            # position relative to dot 
+            dot_x = x - (dot_size / 2)
+            dot_y = y - (dot_size / 2) 
                 
-                # Calculat the size of the dot 
-                dot_size = self.stone_radius * 0.6
-                
-                # position relative to dot 
-                dot_x = x - (dot_size / 2)
-                dot_y = y - (dot_size / 2)
-                
-                painter.drawEllipse(dot_x, dot_y, dot_size, dot_size)    
+            painter.drawEllipse(dot_x, dot_y, dot_size, dot_size)   
              
     # Track mouse movement           
     def mouseMoveEvent(self, event):
@@ -372,10 +359,12 @@ class GoGameGUI(QMainWindow):
         # Game control buttons 
         self.pass_button = QPushButton("Pass turn")
         self.pass_button.clicked.connect(self.handle_pass)
+        self.pass_button.setStyleSheet("background-color: rgb(193,112,44);")
         
         # Resign button
         self.resign_button = QPushButton("Resign")
         self.resign_button.clicked.connect(self.handle_resign)
+        self.resign_button.setStyleSheet("background-color: rgb(193,112,44);")
         
         # New game button
         self.new_game_button = QPushButton("Start a new game!")
@@ -656,7 +645,8 @@ class GoGameGUI(QMainWindow):
         
     # Change between PVP & PVB 
     def change_game_mode(self, mode_text):
-        if "Player vs Player" in mode_text:
+        #if "Player vs Player" in mode_text:
+        if mode_text.text() == "Player vs Player":
             self.game_mode = "PVP"
         else:
             self.game_mode = "PVB"
