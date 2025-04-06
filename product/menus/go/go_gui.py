@@ -327,15 +327,33 @@ class GoGameGUI(QMainWindow):
         controls_widget = QWidget()
         controls_layout = QVBoxLayout(controls_widget)
         
-        # Game mode layout
-        mode_layout = QHBoxLayout()
-        mode_label = QLabel("Game Mode: ")
         
-        self.mode_box = QComboBox()
-        self.mode_box.addItems(["Player vs Player", "Player vs Bot"])
-        self.mode_box.currentTextChanged.connect(self.change_game_mode)
-        mode_layout.addWidget(mode_label)
-        mode_layout.addWidget(self.mode_box)
+        # Game mode layout 
+        mode_group = QGroupBox("Game Mode")
+        mode_group.setStyleSheet("QGroupBox { font-size: 16px; font-weight: bold;}")
+
+        # Create radio buttons for game modes
+        self.pvp_radio = QRadioButton("Player vs Player")
+        self.pvb_radio = QRadioButton("Player vs Bot")
+        self.pvp_radio.setStyleSheet("font-size: 14px; padding: 5px;")
+        self.pvb_radio.setStyleSheet("font-size: 14px; padding: 5px;")
+
+        # Create button group for radio buttons
+        mode_button_group = QButtonGroup(self)
+        mode_button_group.addButton(self.pvp_radio)
+        mode_button_group.addButton(self.pvb_radio)
+        mode_button_group.buttonClicked.connect(self.change_game_mode)
+
+        # Set default selection
+        self.pvp_radio.setChecked(True)
+        
+        mode_layout = QVBoxLayout(mode_group)
+        # Add to layout
+        mode_layout.addWidget(self.pvp_radio)
+        mode_layout.addWidget(self.pvb_radio)
+
+        # Add to the top of the controls layout
+        controls_layout.addWidget(mode_group)
         
         # Board size selection 
         size_layout = QHBoxLayout()
