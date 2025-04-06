@@ -318,6 +318,7 @@ class GoGameGUI(QMainWindow):
         # Main widget and layout 
         main_widget = QWidget()
         main_layout = QHBoxLayout(main_widget)
+        main_widget.setStyleSheet(f"background-color: {"rgb(236, 197, 125)"};")
         
         # GO board widget
         self.board_widget = GoBoardGUI(board_size=self.board_size)
@@ -366,6 +367,7 @@ class GoGameGUI(QMainWindow):
         # Capture display 
         self.capture_label = QLabel("Black: 0 captures | White: 0 captures (+6.5 komi)")
         self.capture_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.capture_label.setStyleSheet("font-size: 14px;")
         
         # Game control buttons 
         self.pass_button = QPushButton("Pass turn")
