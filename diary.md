@@ -1,5 +1,8 @@
 # FYP Diary 
 
+**05/03/2025**
+Improved the UI and refactored a lot of the code, Firstly I added the resign button and a new game button when the game is over, I added this so that the player can review the game state when the game is over then start a new game whenever they desire. Furthemore, I changed the colours of the background to match the board further changing the button colours to replicate a wooden colour. As an visual indicator, I added a small dot in the middle of the stones if it was the last move played since this is easy to understand yet an elegant visual rather than displaying a text for lastest move.  
+
 **03/03/2025**
 With further testing, I want to optimise the computational speed even more, therefore using debug print statements, I used them to display important information about how many turns each simulated games are taking, and surprisingly, they are exceeding the amount of turns expected. To solve this issue, I implemented a condition where the game would end early if 2 player passes or the score difference is too large. Furthermore, I added adaptive rollout_depth where the depth at which the play is played out is capped depending on the stage of the game since after a certain threshold, the moves has lesser impact on the outcome of the game.  
 
