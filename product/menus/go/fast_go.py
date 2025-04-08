@@ -45,6 +45,7 @@ class FastBoard:
                     continue
                 # Add the legal move
                 moves.append(point)
+                
         return moves
          
     def fast_self_capture(self, point, player):
@@ -167,6 +168,7 @@ class FastBoard:
             
         # No liberties found
         return True
+    """
     
 # Faster game state implementation for MCTs simulations
 class FastGoState:
@@ -309,3 +311,15 @@ class FastGoState:
         
         # else game continues 
         return False
+    
+    # Get total of stones played 
+    def get_total_moves(self):
+        # count stones 
+        black_stones = np.sum(self.board.grid == 1)
+        white_stones = np.sum(self.board.grid == 2)
+        
+        # count captured stones
+        total_captures = self.captured[Player.black] + self.captured[Player.white]
+        
+        # combine stones and captures
+        return black_stones + white_stones + total_captures
