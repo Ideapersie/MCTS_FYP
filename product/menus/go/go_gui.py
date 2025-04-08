@@ -373,7 +373,6 @@ class GoGameGUI(QMainWindow):
         self.new_game_button.setVisible(False) 
         
         # Add widgets to controls layout 
-        controls_layout.addLayout(mode_layout)
         controls_layout.addLayout(size_layout)
         controls_layout.addWidget(self.status_label)
         controls_layout.addWidget(self.capture_label)
@@ -437,8 +436,14 @@ class GoGameGUI(QMainWindow):
         if self.bot and self.game_mode == "PVB" and not self.game_state.game_over():
             # Calculate bot move
             bot_move = self.bot.select_move(self.game_state)
+            # Check if the bot's move is a pass 
+            is_pass = bot_move.is_pass
+            
             self.game_state = self.game_state.play_move(bot_move)
             
+            # Display popup message if the bot passes
+            if is_pass:
+                self.timed_message("Pass"," White passed their turn.", 1500)
             # check if game is over 
             if self.game_state.game_over():
                 self.game_over()
