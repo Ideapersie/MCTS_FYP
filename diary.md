@@ -1,5 +1,8 @@
 # FYP Diary 
 
+**08/03/2025**
+After testing the game, I came across a bug where the bot would play moves that are considered self-capture moves and I wasn't sure about the cause of this bug. After further debugging, I figured it was to do with the liberty checking method in the self_capture method therefore I refactored it to be a group liberty checking instead to make sure that the surrounding group of stones dont have any liberties. Furthermore, I added a new method to check the total amount of moves played and added a pop-up msg whenever the bot passes.  
+
 **05/03/2025**
 Improved the UI and refactored a lot of the code, Firstly I added the resign button and a new game button when the game is over, I added this so that the player can review the game state when the game is over then start a new game whenever they desire. Furthemore, I changed the colours of the background to match the board further changing the button colours to replicate a wooden colour. As an visual indicator, I added a small dot in the middle of the stones if it was the last move played since this is easy to understand yet an elegant visual rather than displaying a text for lastest move.  
 
