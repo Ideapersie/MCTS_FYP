@@ -69,8 +69,43 @@ class FastBoard:
                 self.grid[adj_row, adj_col] == 0):
                 # Has liberties, not a self capture
                 return False
+            
+        # Simulate playing next move 
+        original_grid = self.grid.copy()
+        self.grid[row, col] = player_num
+        
+        # Check if this move would create group with no liberties
+        has_liberty = self.group_has_liberty(row, col, player_num)
+        
+        if has_liberty:
+            # Restore the original grid
+            self.grid = original_grid
+            return False
+        
+        # Check if this move would capture opponent stones
+        would_capture = False
+        
+        # Check if move captures opponent stones
+        for adj_row, adj_col in adjacent_points:
+            # Check if inside board 
+            if (1 <= adj_row <= self.num_rows and 1 <= adj_col <= self.num_cols and 
+                self.grid[adj_row, adj_col] == opponenet_num):
+                # Check opponent stone has liberties
+                opponenent_liberty = self.group_has_liberty(adj_row, adj_col, opponenet_num)
                 
-    
+                if not opponenent_liberty:
+                    # Capture the opponent stone
+                    would_capture = True
+                    break
+        
+        # Restore the original grid        
+        self.grid = original_grid
+        
+        return not would_capture
+        
+
+                
+        """
         # Check if the stone capture any opponent stones
         for adj_row, adj_col in adjacent_points:
             # Skip if outside board
