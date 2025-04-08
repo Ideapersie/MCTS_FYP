@@ -1,6 +1,7 @@
 from menus.go.goboard import Player, Move
 from menus.go.fast_go import FastGoState, FastBoard
 import random,copy
+import numpy as np
 
 class MCTsNode(object):
     def __init__(self, game_state, parent=None, move=None):
@@ -30,9 +31,11 @@ class MCTsNode(object):
         
     # Defining the expansion step of the MCTS algorithm
     def random_child(self):
+        # Count stones to determine no. of moves 
+        total_moves = self.game_state.get_total_moves()
         
         # Select moves from central moves in the opening game
-        if self.num_rollouts < 8 and len(self.unvisited_moves) > 20:
+        if total_moves < 15:
             central_moves = [ move for move in self.unvisited_moves 
                 if 3 <= move.row <= 7 and 3 <= move.col <= 7]
             

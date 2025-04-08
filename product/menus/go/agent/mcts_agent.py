@@ -125,15 +125,15 @@ class MCTsAgent(Agent):
         # Calculate the ratio of moves played
         move_ratio = total_moves / expected_moves
         
-        # Threshold for resigning move 
-        resignation_threshold = 0.1 # Resign if winrate is below 10%
+        # Threshold for resigning move (10%) 
+        resignation_threshold = 0.1 
         
         # Dynamic threshold for passing move
         base_threshold = 0.25
         endgame_threshold = 0.40
         
         # Adjusting the passing threshold based on the move ratio 
-        if move_ratio > 0.7: # After 60% of expected moves played
+        if move_ratio > 0.7: # After 70% of expected moves played
             passing_threshold = base_threshold + (move_ratio - 0.7) * (endgame_threshold - base_threshold) / 0.25
         else:
             passing_threshold = base_threshold
