@@ -84,7 +84,38 @@ class FastBoard:
                 return False
         # no liberties found and no captures -> self capture
         return True 
-                        
+        """
+        
+    # Loop and check for liberties in the group
+    def group_has_liberty(self, start_row, start_col, player_num):
+        visited = set([(start_row, start_col)])
+        queue = [(start_row, start_col)]
+        
+        while queue:
+            row, col = queue.pop(0)
+            
+            for adj_row, adj_col in [(row-1, col), (row+1, col), (row, col-1), (row, col+1)]:
+                # Skip if adjacent point is outside the board 
+                if not (1 <= adj_row <= self.num_rows and 1 <= adj_col <= self.num_cols):
+                    continue
+                # Skip if adjacent point is visited
+                if (adj_row, adj_col) in visited:
+                    continue
+                
+                # If adjacent point is empty, there is a liberty
+                if self.grid[adj_row, adj_col] == 0:
+                    return True
+                
+                # Add adjacent point to the queue if it is the same player
+                if self.grid[adj_row, adj_col] == player_num:
+                    visited.add((adj_row, adj_col))
+                    queue.append((adj_row, adj_col))
+                    
+        # No liberties in group
+        return False
+    
+    #def fast_ko_rule(self, point, player):
+    """                
     def has_no_liberties_except(self, stone_row, stone_col, except_row, except_col):
         # Check if the stone has any liberties except the exception point
         for adj_row, adj_col in [(stone_row-1, stone_col), (stone_row+1, stone_col), 
