@@ -32,6 +32,7 @@ class MCTsAgent(Agent):
         num_processes = mp.cpu_count()
         rollouts_per_process = self.num_rounds // num_processes 
         
+        
         # In select_move:
         combined_stats = {
             'total_moves': 0,
@@ -179,7 +180,7 @@ class MCTsAgent(Agent):
         consecutive_passes = 0
         
         # score difference threshold 
-        score_threshold = board_size * 1.5
+        score_threshold = board_size * 1.5 # 
         
         for _ in range(rollout_depth):
             # Stop if game over 

@@ -104,23 +104,6 @@ class FastBoard:
         
         return not would_capture
         
-
-                
-        """
-        # Check if the stone capture any opponent stones
-        for adj_row, adj_col in adjacent_points:
-            # Skip if outside board
-            if not (1 <= adj_row <= self.num_rows and 1 <= adj_col <= self.num_cols):
-                continue
-            
-            # Check if adjecent point is an opponent stone and would be captured
-            if self.grid[adj_row, adj_col] == opponenet_num and \
-                self.has_no_liberties_except(adj_row, adj_col, row, col):
-                # Capture the stone, therefore not a self capture
-                return False
-        # no liberties found and no captures -> self capture
-        return True 
-        """
         
     # Loop and check for liberties in the group
     def group_has_liberty(self, start_row, start_col, player_num):
@@ -151,24 +134,7 @@ class FastBoard:
         return False
     
     #def fast_ko_rule(self, point, player):
-    """                
-    def has_no_liberties_except(self, stone_row, stone_col, except_row, except_col):
-        # Check if the stone has any liberties except the exception point
-        for adj_row, adj_col in [(stone_row-1, stone_col), (stone_row+1, stone_col), 
-                                 (stone_row, stone_col-1), (stone_row, stone_col+1)]:
-            # skip if outside the board
-            if not (1 <= adj_row <= self.num_rows and 1 <= adj_col <= self.num_cols):
-                continue
-            # skip the except points
-            if adj_row == except_row and adj_col == except_col:
-                continue
-            # if the adjacent point is empty, the stone has liberties
-            if self.grid[adj_row, adj_col] == 0:
-                return False
-            
-        # No liberties found
-        return True
-    """
+
     
 # Faster game state implementation for MCTs simulations
 class FastGoState:
@@ -322,4 +288,4 @@ class FastGoState:
         total_captures = self.captured[Player.black] + self.captured[Player.white]
         
         # combine stones and captures
-        return black_stones + white_stones + total_captures
+        return black_stones + white_stones + total_captures     

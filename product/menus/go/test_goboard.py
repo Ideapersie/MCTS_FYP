@@ -319,9 +319,6 @@ class TestGoState(unittest.TestCase):
         self.assertIsNone(capture_play.board.get_player(Point(4,3)))
         self.assertIsNone(capture_play.board.get_go_string(Point(4,3)))
         
-        # Count captured amount 
-        #self.assertEqual(
-        print(capture_play.captured[Player.black])
         
         
     # Test gameover function when player resigns 
@@ -362,7 +359,6 @@ class TestGoState(unittest.TestCase):
         
         selfcap_move = Move.play(Point(4,3))
         outcome = self.game.self_capture(Player.black, selfcap_move)
-        print(outcome)
         
         self.assertTrue(outcome)
         
@@ -471,7 +467,7 @@ class TestGoState(unittest.TestCase):
     
         play1 = self.game.play_move(move1)
         
-        # Valid move 
+        # valid if move is not self-capture or ko rule  
         self.assertTrue(play1.valid_move(move2))
         
     def test_valid_move_selfcapture(self):

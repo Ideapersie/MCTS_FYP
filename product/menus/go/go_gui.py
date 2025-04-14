@@ -190,7 +190,7 @@ class GoBoardGUI(QWidget):
             
             # Bottom labels 
             painter.drawText(
-                x - 5, grid_end + self.board_margin - 15, 12, 12, 
+                x - 5, grid_end + 25, 12, 12, 
                 Qt.AlignmentFlag.AlignCenter, label
             )
             
@@ -369,7 +369,21 @@ class GoGameGUI(QMainWindow):
                 background-color: #c39c60;
             }
             """
-        
+            
+        darken_wooden_style = """
+            QPushButton {
+                    background-color: #785114;
+                    color: white;
+                    border: 2px solid #704214;
+                    border-radius: 5px;
+                    padding: 5px;
+                    font-weight: bold;
+                }
+                QPushButton:hover {
+                    background-color: #c39c60;
+                }
+            """
+            
         # Game control buttons 
         self.pass_button = QPushButton("Pass turn")
         self.pass_button.clicked.connect(self.handle_pass)
@@ -383,7 +397,7 @@ class GoGameGUI(QMainWindow):
         # New game button
         self.new_game_button = QPushButton("Start a new game!")
         self.new_game_button.clicked.connect(self.new_game)
-        self.new_game_button.setStyleSheet("background-color: rgb(162,90,43);")
+        self.new_game_button.setStyleSheet(darken_wooden_style)
         
         # Hide new game button until game is over
         self.new_game_button.setVisible(False) 
@@ -644,8 +658,8 @@ class GoGameGUI(QMainWindow):
         game_over_box.setWindowFlags(game_over_box.windowFlags() | Qt.WindowType.WindowMaximizeButtonHint)
         
         # Set min. size for scalability     
-        game_over_box.setMinimumSize(600, 400)
-        game_over_box.resize(600, 400)
+        game_over_box.setMinimumSize(1000, 500)
+        game_over_box.resize(1000, 500)
         
         # Set box to focus but allow interaction with the main window
         game_over_box.setModal(False)
