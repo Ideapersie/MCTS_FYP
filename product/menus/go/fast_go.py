@@ -5,9 +5,10 @@ import copy
 
 # Faster board implementation for MCTs rollouts using arrays 
 class FastBoard: 
-    def __init__(self, num_rows, num_cols, original_board=None):
+    def __init__(self, num_rows, num_cols, original_board=None, game_state=None):
         self.num_rows = num_rows
         self.num_cols = num_cols
+        self.game_state = game_state
         
         # Use numpy arrays to store board state, 0 for empty, 1 for black, 2 for white
         self.grid = np.zeros((num_rows+1, num_cols+1), dtype=int)
@@ -133,9 +134,64 @@ class FastBoard:
         # No liberties in group
         return False
     
-    #def fast_ko_rule(self, point, player):
-
+    # Check if the move violates Ko rule
+    def fast_ko_rule(self, point, player):
     
+        # Check if last move was a capture
+        if self.game_state.last_captured is None:
+            return False   
+
+        # Convert enum values to grid
+        player_num = 1 if player == Player.black else 2
+        opponent_num = 3 - player_num
+        
+        """
+        Ko rule only applies if:
+        1. Playing a stone on the same point as the last captured stone
+        2. Last capture was a single stone
+        3. The stone placing will immediately capture that stone
+        """
+        
+        row, col = point.row, point.col
+        last_cap_row, last_cap_col = self.game_state.last_captured 
+        
+        # Check if playing where the last stone was captured
+        if row != last_cap_row or col != last_cap_col:
+            return False
+        
+        # Tracking adjacant opponent stones
+        adjacent_opponent_stones = 0
+        max_possible_liberties = 0
+        
+        
+        # Adjust possible liberties depending on edge\corner cases
+        if row == 1 or row == self.num_rows:
+            max_possible_liberties -= 1
+            
+        if col == 1 or col == self.num_cols:
+            max_possible_liberties -= 1
+            
+        # Check adjacent points for opponent stones
+        for adj_row, adj_col in [(row-1, col), (row+1, col), (row, col-1), (row, col+1)]:
+            #skip if outside the board
+            if not (1 <= adj_row <= self.num_rows and 1 <= adj_col <= self.num_cols):
+                continue
+            
+            # If adjacent point is opponent stone, add 1 
+            if self.grid[adj_row, adj_col] == opponent_num:
+                adjacent_opponent_stones += 1
+                
+                # Check if the opponent stone has liberties
+                if not self.has_one_liberty(adj_row, adj_col):
+                    return False # If opponent stone has no liberties/ more than 1, not a ko
+        
+        # Ko if surrounded by opponent stones
+        return adjacent_opponent_stones == max_possible_liberties
+        
+        
+        
+        
+        
 # Faster game state implementation for MCTs simulations
 class FastGoState:
     def __init__(self, board_size, original_state=None):
@@ -153,6 +209,8 @@ class FastGoState:
         self.previous_pass = False
         # Track if a player has resigned 
         self.is_resigned = False
+        # Track last captured stone 
+        self.last_captured = None 
         
     # Faster and more efficient play move implementation
     def fast_play_move(self, move):
