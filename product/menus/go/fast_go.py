@@ -188,7 +188,25 @@ class FastBoard:
         # Ko if surrounded by opponent stones
         return adjacent_opponent_stones == max_possible_liberties
         
+    # Check if the group has only one liberty
+    def has_one_liberty(self, row, col):
+        liberty_count = 0 
         
+        # Check adjacent points for liberties
+        for adj_row, adj_col in [(row-1, col), (row+1, col), (row, col-1), (row, col+1)]:
+            # Skip if outside the board 
+            if not (1 <= adj_row <= self.num_rows and 1 <= adj_col <= self.num_cols):
+                continue
+            
+            # If adjacent point is empty, add to liberty count
+            if self.grid[adj_row, adj_col] == 0:
+                liberty_count += 1 
+                
+                if liberty_count > 1:
+                    return False
+            
+        return liberty_count == 1
+                                 
         
         
         
