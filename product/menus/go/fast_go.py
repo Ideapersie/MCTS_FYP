@@ -44,6 +44,11 @@ class FastBoard:
                 # Skip if self capture
                 if self.fast_self_capture(point, next_player):
                     continue
+                
+                # Skip if ko rule
+                if self.fast_ko_rule(point, next_player):
+                    continue
+                
                 # Add the legal move
                 moves.append(point)
                 
@@ -136,6 +141,10 @@ class FastBoard:
     
     # Check if the move violates Ko rule
     def fast_ko_rule(self, point, player):
+        
+        # Check if game_state is None (first move) 
+        if self.game_state is None:
+            return False
     
         # Check if last move was a capture
         if self.game_state.last_captured is None:
@@ -159,9 +168,12 @@ class FastBoard:
         if row != last_cap_row or col != last_cap_col:
             return False
         
+        """
         # Tracking adjacant opponent stones
         adjacent_opponent_stones = 0
-        max_possible_liberties = 0
+        all_have_liberties = True
+        
+        max_possible_liberties = 4
         
         
         # Adjust possible liberties depending on edge\corner cases
@@ -170,6 +182,9 @@ class FastBoard:
             
         if col == 1 or col == self.num_cols:
             max_possible_liberties -= 1
+        """
+        
+        single_liberty_stones = 0
             
         # Check adjacent points for opponent stones
         for adj_row, adj_col in [(row-1, col), (row+1, col), (row, col-1), (row, col+1)]:
@@ -178,15 +193,31 @@ class FastBoard:
                 continue
             
             # If adjacent point is opponent stone, add 1 
-            if self.grid[adj_row, adj_col] == opponent_num:
+            if self.grid[adj_row, adj_col] == opponent_num and self.has_one_liberty(adj_row, adj_col):
+                # Check if this move would capture the opponent stone
+                single_liberty_stones += 1
+                """
                 adjacent_opponent_stones += 1
                 
-                # Check if the opponent stone has liberties
-                if not self.has_one_liberty(adj_row, adj_col):
-                    return False # If opponent stone has no liberties/ more than 1, not a ko
+                # Simulate placing stone 
+                original_grid = self.grid.copy()
+                self.grid[row, col] = player_num
+                
+                # Check if this move captures the opponent stone
+                has_liberty = self.group_has_liberty(adj_row, adj_col, opponent_num)
+                
+                # restore grid 
+                self.grid = original_grid
+                
+                # If the opponent stone has liberties, not a ko
+                if not has_liberty:
+                    all_have_liberties = False
+                    break
+                """
         
         # Ko if surrounded by opponent stones
-        return adjacent_opponent_stones == max_possible_liberties
+        return single_liberty_stones == 1 
+    #(adjacent_opponent_stones == max_possible_liberties) and all_have_liberties
         
     # Check if the group has only one liberty
     def has_one_liberty(self, row, col):
@@ -206,19 +237,18 @@ class FastBoard:
                     return False
             
         return liberty_count == 1
-                                 
-        
+                                     
         
         
 # Faster game state implementation for MCTs simulations
 class FastGoState:
     def __init__(self, board_size, original_state=None):
         if original_state:
-            self.board = FastBoard(board_size, board_size, original_state.board)
+            self.board = FastBoard(board_size, board_size, original_state.board, self)
             self.next_player = original_state.next_player
             self.captured = original_state.captured.copy()
         else:
-            self.board = FastBoard(board_size, board_size)
+            self.board = FastBoard(board_size, board_size, game_state=self)
             self.next_player = Player.black
             self.captured = {Player.black: 0, Player.white: 0}
             
@@ -276,6 +306,9 @@ class FastGoState:
         # Track the number of captures
         total_captures = 0 
         
+        # Reset last captured stone
+        self.last_captured = None
+        
         # Check adjacent points for potential captures
         for adj_row, adj_col in [(point.row-1, point.col), (point.row+1, point.col), 
                                  (point.row, point.col-1), (point.row, point.col+1)]:
@@ -289,7 +322,13 @@ class FastGoState:
                 continue
             
             # Check for captures and update the total captures
-            _, num_captured = self.check_and_remove_group(adj_row, adj_col)
+            captured, num_captured, captured_points = self.check_and_remove_group(adj_row, adj_col)
+            
+            # If 1 stone is captured, update last captured stone
+            if captured and num_captured == 1:
+                self.last_captured = captured_points[0]
+            
+            # update the total captures
             total_captures += num_captured
                 
         return total_captures
@@ -298,11 +337,11 @@ class FastGoState:
     # Check for captures and remove the captured stones
     def check_and_remove_group(self, row, col):
         """
-        Returns (is_captured, num_captured) 
+        Returns (is_captured, num_captured, captured_points) 
         """
         stone_colour = self.board.grid[row, col]
         if stone_colour == 0:
-            return False, 0
+            return False, 0, []
         
         # Use BFS to find connected group, checking liberties 
         group = set()
@@ -332,12 +371,14 @@ class FastGoState:
                     queue.append((adj_row, adj_col))
                     
         if not has_liberties:
+            # Convert to list for easier handling
+            captured_points = list(group)
             # Remove the captured group
             for captured_row, captured_col in group:
                 self.board.grid[captured_row, captured_col] = 0
-            return True, len(group)
+            return True, len(group), captured_points
         
-        return False, 0
+        return False, 0, []
     
     # Moves signifying the game is over 
     def fast_game_over(self):
