@@ -279,6 +279,26 @@ class GoBoardGUI(QWidget):
             
         # Restore the painter state
         painter.restore()
+        
+    def resizeEvent(self, event):
+        # calculate minimum dimensions
+        min_dimension = min(self.width(), self.height())
+        
+        # Calculate margins based on the widget size
+        self.board_margin = int(min_dimension * self.board_margin_ratio)
+        self.label_margin = int(min_dimension * self.label_margin_ratio)
+        
+        # Calculate cell size 
+        available_space = min_dimension - 2 * (self.board_margin + self.label_margin)
+        self.cell_size = max(self.min_cell_size, available_space / (self.board_size - 1))
+        
+        # Recalculate stone radius based on cell size
+        self.stone_radius = int(self.cell_size * 0.38)
+        
+        # Adjust font size based on cell size
+        self.font_size = max(8, int(self.cell_size * 0.2))
+        # update all resizing element
+        self.update()
     
     # Update board with a new state        
     def update_board(self, game_state, current_player=None):
