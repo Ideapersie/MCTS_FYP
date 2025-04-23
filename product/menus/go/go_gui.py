@@ -17,17 +17,24 @@ class GoBoardGUI(QWidget):
         super().__init__(parent)
         self.board_size = board_size
         # Size of each cell in pixels 
-        self.cell_size = 48
-        self.board_margin = 60
-        # Extra margin for coordinates  
-        self.label_margin = 15
-        # Adjustable stone size
+        self.min_cell_size = 48
+        self.cell_size = self.min_cell_size
+        
+        # ratio to change during resizing
+        self.board_margin_ratio = 0.1
+        self.label_margin_ratio = 0.03
+        
+        # Extra margin for coordinates
+        self.board_margin = int(400*self.board_margin_ratio)
+        self.label_margin = int(400*self.label_margin_ratio)
+
         self.stone_radius = int(self.cell_size * 0.38)
         
         # Set fixed size for the board 
-        board_pixels = (self.board_size - 1) * self.cell_size + 2 * (self.board_margin + self.label_margin)
-        self.setMinimumSize(board_pixels, board_pixels)
-        self.setMaximumSize(board_pixels, board_pixels)
+        self.setMinimumSize(400, 400)
+        
+        # Set size policy to expand
+        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
         # point where the point is hovering
         self.hover_point = None
