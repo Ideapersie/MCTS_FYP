@@ -1,15 +1,18 @@
 # FYP Diary 
 
-**08/03/2025**
+**14/04/2025**
+Ko Rule is another rule in Go besides the self-capture rule and has still yet to be included in the fast implementation class. I have been trying to implement this without the use of deep.copy however it has failed multiple times therefore I will need a new approach, furthermore I have been researching about optimal opening move choices however due to the bot being the second move, it is harder to determine the opening moves since the players who play the game might not know the normal opening moves on 9x9 board such as an e4 or d4 move in Chess.  
+
+**08/04/2025**
 After testing the game, I came across a bug where the bot would play moves that are considered self-capture moves and I wasn't sure about the cause of this bug. After further debugging, I figured it was to do with the liberty checking method in the self_capture method therefore I refactored it to be a group liberty checking instead to make sure that the surrounding group of stones dont have any liberties. Furthermore, I added a new method to check the total amount of moves played and added a pop-up msg whenever the bot passes.  
 
-**05/03/2025**
+**05/04/2025**
 Improved the UI and refactored a lot of the code, Firstly I added the resign button and a new game button when the game is over, I added this so that the player can review the game state when the game is over then start a new game whenever they desire. Furthemore, I changed the colours of the background to match the board further changing the button colours to replicate a wooden colour. As an visual indicator, I added a small dot in the middle of the stones if it was the last move played since this is easy to understand yet an elegant visual rather than displaying a text for lastest move.  
 
-**03/03/2025**
+**03/04/2025**
 With further testing, I want to optimise the computational speed even more, therefore using debug print statements, I used them to display important information about how many turns each simulated games are taking, and surprisingly, they are exceeding the amount of turns expected. To solve this issue, I implemented a condition where the game would end early if 2 player passes or the score difference is too large. Furthermore, I added adaptive rollout_depth where the depth at which the play is played out is capped depending on the stage of the game since after a certain threshold, the moves has lesser impact on the outcome of the game.  
 
-**01/03/2025**
+**01/04/2025**
 After further testing with the UI, I made improvement to the stone UI's to make them more realistic simulating light reflections on the stone using PyQT gradient function on both black and white stones and I am planning to add captures sounds for the stones later on. Furthermore, I came across a bug where the GUI's column was starting from the top as 1 instead of the bottom, this was easily fixed. Lastlym I added a function where in the early games the bot will focus on central moves since on smaller board especially a 9x9 board, these are very crucial and important areas of the board, depending on its effectiveness, I plan to further improve it by assigning specific openings such as (5,5) which is known as Hoshi.  
 
 **28/03/2025**
