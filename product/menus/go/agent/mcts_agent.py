@@ -134,7 +134,7 @@ class MCTsAgent(Agent):
         endgame_threshold = 0.40
         
         # Adjusting the passing threshold based on the move ratio 
-        if move_ratio > 0.7: # After 70% of expected moves played
+        if move_ratio > 0.65: # After 65% of expected moves played
             passing_threshold = base_threshold + (move_ratio - 0.7) * (endgame_threshold - base_threshold) / 0.25
         else:
             passing_threshold = base_threshold

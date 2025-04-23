@@ -1,7 +1,7 @@
 from PySide6.QtCore import Qt, Signal, Slot, QTimer
 from PySide6.QtWidgets import QWidget, QGridLayout, QMessageBox, QLabel, QMainWindow, QPushButton \
-, QApplication, QVBoxLayout, QHBoxLayout, QSpinBox, QComboBox, QSlider, QCheckBox, QGroupBox, QRadioButton, QButtonGroup
-from PySide6.QtGui import QPainter, QPen, QColor, QBrush, QRadialGradient 
+, QApplication, QVBoxLayout, QHBoxLayout, QSpinBox, QComboBox, QSlider, QCheckBox, QGroupBox, QRadioButton, QButtonGroup, QSizePolicy
+from PySide6.QtGui import QPainter, QPen, QColor, QBrush, QRadialGradient , QFontMetrics
 import sys
 
 from menus.go.goboard import Player, Move, GoState
@@ -178,12 +178,17 @@ class GoBoardGUI(QWidget):
     def draw_board_labels(self, painter):
         # set label font 
         font = painter.font()
-        font.setPointSize(10)
+        font.setPointSize(self.font_size)
         painter.setFont(font)
         
         # Calculate grid boundaries including label margins
         grid_start = self.board_margin + self.label_margin
         grid_end = grid_start + (self.board_size - 1) * self.cell_size
+        
+        # font metrics for centering text
+        font_metrics = QFontMetrics(font)
+        text_height = font_metrics.height()
+        
         
         # Draw column labels (letters)
         for col in range(self.board_size):
@@ -194,11 +199,13 @@ class GoBoardGUI(QWidget):
                 label = chr(ord(label)+1)
             # x-coordinates correlates to col   
             x = grid_start + col * self.cell_size
+            text_width = font_metrics.horizontalAdvance(label)
             
             # Bottom labels 
             painter.drawText(
-                x - 5, grid_end + 25, 12, 12, 
-                Qt.AlignmentFlag.AlignCenter, label
+                x - text_width/2, # Center horizontally
+                grid_end + self.label_margin + text_height/2, # Position below the grid
+                label
             )
             
         # Draw row labels (numbers)
@@ -207,12 +214,14 @@ class GoBoardGUI(QWidget):
             label = str(self.board_size - row) 
                             
             y = grid_start + row * self.cell_size
+            text_width = font_metrics.horizontalAdvance(label)
             
             # Left labels 
             painter.drawText(
-                self.board_margin - 15 , y -8, 12, 12, 
-                Qt.AlignmentFlag.AlignVCenter, label
-            )     
+                grid_start - self.label_margin - text_width,  # Position left of grid
+                y + text_height/3,                              # vertical center
+                label
+            )    
             
     # Draw a realistic stone using gradient and shadows        
     def realistic_stones(self, painter, x, y, is_black, alpha=255):
@@ -327,6 +336,9 @@ class GoGameGUI(QMainWindow):
         # Start a new game 
         self.new_game()
         
+        # Set window to fullscreen 
+        self.showMaximized()
+        
     # Setting up the user interface 
     def init_ui(self):
         # Main widget and layout 
@@ -334,24 +346,29 @@ class GoGameGUI(QMainWindow):
         main_layout = QHBoxLayout(main_widget)
         main_widget.setStyleSheet(f"background-color: {"rgb(236, 197, 125)"};")
         
+        # Add a stretch before the board (expands in fullscreen)
+        main_layout.addStretch(1)
+        
         # GO board widget
         self.board_widget = GoBoardGUI(board_size=self.board_size)
+        self.board_widget.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.board_widget.stone_placed.connect(self.place_stone)
         
         # Game controls widget 
         controls_widget = QWidget()
         controls_layout = QVBoxLayout(controls_widget)
+        controls_widget.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
         
         
         # Game mode layout 
         mode_group = QGroupBox("Game Mode")
-        mode_group.setStyleSheet("QGroupBox { font-size: 16px; font-weight: bold;}")
+        mode_group.setStyleSheet("QGroupBox { font-size: 20px; font-weight: bold;}")
 
         # Create radio buttons for game modes
         self.pvp_radio = QRadioButton("Player vs Player")
         self.pvb_radio = QRadioButton("Player vs Bot")
-        self.pvp_radio.setStyleSheet("font-size: 14px; padding: 5px;")
-        self.pvb_radio.setStyleSheet("font-size: 14px; padding: 5px;")
+        self.pvp_radio.setStyleSheet("font-size: 16px; padding: 5px;")
+        self.pvb_radio.setStyleSheet("font-size: 16px; padding: 5px;")
 
         # Create button group for radio buttons
         mode_button_group = QButtonGroup(self)
@@ -443,8 +460,8 @@ class GoGameGUI(QMainWindow):
         controls_layout.addWidget(self.resign_button)
         
         # Add widgets to main layout
-        main_layout.addWidget(self.board_widget, 3) # 3:1 ratio to board controls 
-        main_layout.addWidget(controls_widget, 1)
+        main_layout.addWidget(self.board_widget, 5) # 5:2 ratio to board controls 
+        main_layout.addWidget(controls_widget, 2)
         
         # Set main widget as central
         self.setCentralWidget(main_widget)
