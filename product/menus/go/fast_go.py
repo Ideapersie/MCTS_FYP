@@ -143,101 +143,22 @@ class FastBoard:
     def fast_ko_rule(self, point, player):
         
         # Check if game_state is None (first move) 
-        if self.game_state is None:
+        if self.game_state is None or self.game_state.last_captured is None:
             return False
     
-        # Check if last move was a capture
-        if self.game_state.last_captured is None:
-            return False   
-
-        # Convert enum values to grid
-        player_num = 1 if player == Player.black else 2
-        opponent_num = 3 - player_num
-        
         """
         Ko rule only applies if:
         1. Playing a stone on the same point as the last captured stone
         2. Last capture was a single stone
         3. The stone placing will immediately capture that stone
         """
-        
         row, col = point.row, point.col
-        last_cap_row, last_cap_col = self.game_state.last_captured 
+        last_cap_row, last_cap_col = self.game_state.last_captured
         
-        # Check if playing where the last stone was captured
-        if row != last_cap_row or col != last_cap_col:
-            return False
+        print(f"Checking ko rule: {row}, {col} vs {last_cap_row}, {last_cap_col}")
         
-        """
-        # Tracking adjacant opponent stones
-        adjacent_opponent_stones = 0
-        all_have_liberties = True
-        
-        max_possible_liberties = 4
-        
-        
-        # Adjust possible liberties depending on edge\corner cases
-        if row == 1 or row == self.num_rows:
-            max_possible_liberties -= 1
-            
-        if col == 1 or col == self.num_cols:
-            max_possible_liberties -= 1
-        """
-        
-        single_liberty_stones = 0
-            
-        # Check adjacent points for opponent stones
-        for adj_row, adj_col in [(row-1, col), (row+1, col), (row, col-1), (row, col+1)]:
-            #skip if outside the board
-            if not (1 <= adj_row <= self.num_rows and 1 <= adj_col <= self.num_cols):
-                continue
-            
-            # If adjacent point is opponent stone, add 1 
-            if self.grid[adj_row, adj_col] == opponent_num and self.has_one_liberty(adj_row, adj_col):
-                # Check if this move would capture the opponent stone
-                single_liberty_stones += 1
-                """
-                adjacent_opponent_stones += 1
-                
-                # Simulate placing stone 
-                original_grid = self.grid.copy()
-                self.grid[row, col] = player_num
-                
-                # Check if this move captures the opponent stone
-                has_liberty = self.group_has_liberty(adj_row, adj_col, opponent_num)
-                
-                # restore grid 
-                self.grid = original_grid
-                
-                # If the opponent stone has liberties, not a ko
-                if not has_liberty:
-                    all_have_liberties = False
-                    break
-                """
-        
-        # Ko if surrounded by opponent stones
-        return single_liberty_stones == 1 
-    #(adjacent_opponent_stones == max_possible_liberties) and all_have_liberties
-        
-    # Check if the group has only one liberty
-    def has_one_liberty(self, row, col):
-        liberty_count = 0 
-        
-        # Check adjacent points for liberties
-        for adj_row, adj_col in [(row-1, col), (row+1, col), (row, col-1), (row, col+1)]:
-            # Skip if outside the board 
-            if not (1 <= adj_row <= self.num_rows and 1 <= adj_col <= self.num_cols):
-                continue
-            
-            # If adjacent point is empty, add to liberty count
-            if self.grid[adj_row, adj_col] == 0:
-                liberty_count += 1 
-                
-                if liberty_count > 1:
-                    return False
-            
-        return liberty_count == 1
-                                     
+        # If this matches the last captured position, it may violate the ko rule
+        return row == last_cap_row and col == last_cap_col
         
         
 # Faster game state implementation for MCTs simulations
@@ -247,18 +168,20 @@ class FastGoState:
             self.board = FastBoard(board_size, board_size, original_state.board, self)
             self.next_player = original_state.next_player
             self.captured = original_state.captured.copy()
+            self.last_captured = original_state.last_captured if hasattr(original_state, 'last_captured') else None
+        
         else:
             self.board = FastBoard(board_size, board_size, game_state=self)
             self.next_player = Player.black
             self.captured = {Player.black: 0, Player.white: 0}
+            # Explicitly initialize to None
+            self.last_captured = None
             
         self.last_move = None
         # Track if previous move is a pass
         self.previous_pass = False
         # Track if a player has resigned 
-        self.is_resigned = False
-        # Track last captured stone 
-        self.last_captured = None 
+        self.is_resigned = False 
         
     # Faster and more efficient play move implementation
     def fast_play_move(self, move):
@@ -324,21 +247,21 @@ class FastGoState:
             # Check for captures and update the total captures
             captured, num_captured, captured_points = self.check_and_remove_group(adj_row, adj_col)
             
-            # If 1 stone is captured, update last captured stone
-            if captured and num_captured == 1:
-                self.last_captured = captured_points[0]
-            
-            # update the total captures
-            total_captures += num_captured
+            # Only update if we actually captured something
+            if captured and num_captured > 0:
+                total_captures += num_captured
+                
+                # If exactly one stone was captured, store its position for ko rule
+                if num_captured == 1:
+                    # Store as a tuple, not a Point object
+                    self.last_captured = captured_points[0]
                 
         return total_captures
         
         
     # Check for captures and remove the captured stones
     def check_and_remove_group(self, row, col):
-        """
-        Returns (is_captured, num_captured, captured_points) 
-        """
+        # Check if the point is empty
         stone_colour = self.board.grid[row, col]
         if stone_colour == 0:
             return False, 0, []
@@ -376,6 +299,7 @@ class FastGoState:
             # Remove the captured group
             for captured_row, captured_col in group:
                 self.board.grid[captured_row, captured_col] = 0
+                
             return True, len(group), captured_points
         
         return False, 0, []
