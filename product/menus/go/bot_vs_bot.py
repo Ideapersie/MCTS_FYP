@@ -1,5 +1,5 @@
 from menus.go.goplayer import Player
-from menus.go.goboard import GoState
+from menus.go.goboard import GoState, Move
 from menus.go.go_moves import GoMoves
 from menus.go.agent.mcts_agent import MCTsAgent
 import winsound
@@ -33,8 +33,6 @@ class BotVsBot(GoMoves):
             
             # To format displaying only the Player's colour
             print(f"\n{current_player[1]}'s Player move: {self.print_move(bot_move)}")
-            
-            
             
         # Display results
         self.end_PvBgame()

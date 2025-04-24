@@ -96,7 +96,7 @@ class TestBoard(unittest.TestCase):
             "3 . . . . . . . . .\n"
             "2 . . . . . . . . .\n"
             "1 . . . . . . . . .\n"
-            "  A B C D E F G H I "
+            "  A B C D E F G H J "
         )
         self.assertEqual(expected_str.strip(), str(self.board).strip())
 
@@ -114,7 +114,7 @@ class TestBoard(unittest.TestCase):
             "3 . . . . . . . . .\n"
             "2 . . . . . . . . .\n"
             "1 X . . . . . . . .\n"
-            "  A B C D E F G H I "
+            "  A B C D E F G H J "
         )
         self.assertEqual(expected_str.strip(), str(self.board).strip())
 
@@ -131,7 +131,7 @@ class TestBoard(unittest.TestCase):
             "3 . . . . . . . . .\n"
             "2 . O . . . . . . .\n"
             "1 X . . . . . . . .\n"
-            "  A B C D E F G H I "
+            "  A B C D E F G H J "
         )
         self.assertEqual(expected_str.strip(), str(self.board).strip())
         
@@ -152,7 +152,7 @@ class TestBoard(unittest.TestCase):
             "3 . . . . . . . . .\n"
             "2 . . . . . . . . .\n"
             "1 O . . . . . . . .\n"
-            "  A B C D E F G H I "
+            "  A B C D E F G H J "
         )
         # Altered expected_str to be wrong 
         self.assertNotEqual(str(self.board).strip(), wrong_str.strip())

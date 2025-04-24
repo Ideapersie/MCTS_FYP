@@ -8,8 +8,8 @@ def display_go():
         print("\n\nWelcome to the GO game:\n")
         print("1) Player Vs Player mode")
         print("2) Play against random AI")
-        print("3) Bot vs Bot mode MCTS version ")
-        print("4) Play against AI with MCTs")
+        print("3) Play against AI with MCTs")
+        print("4) Bot vs Bot mode MCTS version")
         print("5) Exit")
         
         user_input = input("\nEnter choice: ")
@@ -21,9 +21,9 @@ def display_go():
         elif user_input == '2':
             PlayerVsBot()
         elif user_input == '3':
-            BotVsBot()
-        elif user_input == '4':
             PlayerVsMcts()
+        elif user_input == '4':
+            BotVsBot()
         elif user_input == '5':
             print("Returning to main menu....")
             break
