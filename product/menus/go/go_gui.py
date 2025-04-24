@@ -331,7 +331,7 @@ class GoGameGUI(QMainWindow):
         
         self.setWindowTitle("Go Game")
         self.board_size = 9 
-        self.game_mode = "PVP"
+        self.game_mode = "PVB" # Default game mode
         
         # Initialise game state 
         self.game_state = GoState.new_game(self.board_size)
@@ -377,8 +377,8 @@ class GoGameGUI(QMainWindow):
         mode_group.setStyleSheet("QGroupBox { font-size: 20px; font-weight: bold;}")
 
         # Create radio buttons for game modes
-        self.pvp_radio = QRadioButton("Player vs Player")
-        self.pvb_radio = QRadioButton("Player vs Bot")
+        self.pvp_radio = QRadioButton("Player vs Bot")
+        self.pvb_radio = QRadioButton("Player vs Player")
         self.pvp_radio.setStyleSheet("font-size: 16px; padding: 5px;")
         self.pvb_radio.setStyleSheet("font-size: 16px; padding: 5px;")
 
