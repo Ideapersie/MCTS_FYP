@@ -134,14 +134,13 @@ class MCTsAgent(Agent):
         
         # Dynamic threshold for passing move
         base_threshold = 0.25
-        endgame_threshold = 0.40
+        endgame_threshold = 0.45
         
         # Adjusting the passing threshold based on the move ratio 
         if move_ratio > 0.65: # After 65% of expected moves played
             passing_threshold = base_threshold + (move_ratio - 0.7) * (endgame_threshold - base_threshold) / 0.25
         else:
             passing_threshold = base_threshold
-            
             
         # If winrate is below threshold, then pass or resign
         if highest_winrate < passing_threshold and move_ratio > 0.6:
@@ -180,7 +179,7 @@ class MCTsAgent(Agent):
         consecutive_passes = 0
         
         # score difference threshold 
-        score_threshold = board_size * 1.5 # 
+        score_threshold = board_size * 1.5 # 1.5 x 9 = 13.5 
         
         for _ in range(rollout_depth):
             # Stop if game over 

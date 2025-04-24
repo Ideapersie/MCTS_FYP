@@ -289,7 +289,9 @@ class GoBoardGUI(QWidget):
         # Restore the painter state
         painter.restore()
         
+        
     def resizeEvent(self, event):
+        super().resizeEvent(event)
         # calculate minimum dimensions
         min_dimension = min(self.width(), self.height())
         
@@ -306,6 +308,11 @@ class GoBoardGUI(QWidget):
         
         # Adjust font size based on cell size
         self.font_size = max(8, int(self.cell_size * 0.2))
+        # Update font size for labels and buttons
+        # Update font size based on window dimensions
+        scale_factor = max(0.7, min(1.5, self.width() / 1600))
+        self.base_font_size = int(14 * scale_factor)
+        
         # update all resizing element
         self.update()
     
@@ -329,6 +336,12 @@ class GoGameGUI(QMainWindow):
         # Initialise game state 
         self.game_state = GoState.new_game(self.board_size)
         self.bot = None
+        
+        # Font size for responsive text
+        self.base_font_size = 14
+        
+        # update font size 
+        #self.update_font_size()
         
         # Set up the UI 
         self.init_ui()
@@ -359,7 +372,6 @@ class GoGameGUI(QMainWindow):
         controls_layout = QVBoxLayout(controls_widget)
         controls_widget.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
         
-        
         # Game mode layout 
         mode_group = QGroupBox("Game Mode")
         mode_group.setStyleSheet("QGroupBox { font-size: 20px; font-weight: bold;}")
@@ -375,7 +387,7 @@ class GoGameGUI(QMainWindow):
         mode_button_group.addButton(self.pvp_radio)
         mode_button_group.addButton(self.pvb_radio)
         mode_button_group.buttonClicked.connect(self.change_game_mode)
-
+        
         # Set default selection
         self.pvp_radio.setChecked(True)
         
@@ -466,8 +478,10 @@ class GoGameGUI(QMainWindow):
         # Set main widget as central
         self.setCentralWidget(main_widget)
         
-        
         self.resize(800,600)
+        
+        # update font size according to window size
+        self.update_font_size()
         
     # Start a new game 
     def new_game(self):
@@ -503,6 +517,46 @@ class GoGameGUI(QMainWindow):
         
         # Update score display
         self.capture_label.setText(f"Black: {black_captures} | White: {white_captures} captures (+{komi})")
+        
+    def update_font_size(self):
+        # calculate font size based on window size
+        window_width = self.width()
+        
+        # calculate scale factor based on window size
+        if window_width <= 800:
+            scale_factor = min(0.95, window_width / 800)
+        else:
+            scale_factor = max(0.7, min(1.5, self.width() / 1600))
+        
+        # Calculate font sizes with more pronounced scaling
+        base_font_size = 14
+        font_size = int(base_font_size * scale_factor)
+        
+        # Ensure minimum readability
+        font_size = max(font_size, 10)
+        
+        # set font sizes via stylesheet
+        self.status_label.setStyleSheet(f"font-size: {font_size + 2}px; font-weight: bold;")
+        self.capture_label.setStyleSheet(f"font-size: {font_size}px;")
+        
+        # update radio buttons
+        radio_style = f"font-size: {font_size}px; padding: 5px;"
+        self.pvp_radio.setStyleSheet(radio_style)
+        self.pvb_radio.setStyleSheet(radio_style)
+        
+        # Update buttons with consistent style
+        for button in [self.pass_button, self.resign_button, self.new_game_button]:
+            button.setStyleSheet(button.styleSheet() + f"\nfont-size: {font_size}px;")
+            
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        
+        # Update base font size based on window dimensions
+        scale_factor = max(0.7, min(1.5, self.width() / 1600))
+        self.base_font_size = int(14 * scale_factor)
+        
+        # Update font sizes
+        self.update_font_size()
         
             
     # Defining method for bot's move
@@ -628,6 +682,7 @@ class GoGameGUI(QMainWindow):
                 
                 # Bot's move after UI update
                 QTimer.singleShot(50, self.bots_move)
+                
         
     # Handle UI when game is over     
     def game_over(self):
@@ -674,9 +729,12 @@ class GoGameGUI(QMainWindow):
         # Makes dialog resizable
         msg_box.setWindowFlags(msg_box.windowFlags() | Qt.WindowType.WindowMaximizeButtonHint)
         
+        # Simple styling with CSS
+        msg_box.setStyleSheet(f"QLabel {{ font-size: {self.font_size}px; }}")
+        
         # Set min. size for scalability     
-        msg_box.setMinimumSize(400, 200)
-        msg_box.resize(400, 200)
+        msg_box.setMinimumSize(600, 300)
+        msg_box.resize(600, 300)
         
         # Set box to focus 
         msg_box.setModal(True)
@@ -702,8 +760,8 @@ class GoGameGUI(QMainWindow):
         game_over_box.setWindowFlags(game_over_box.windowFlags() | Qt.WindowType.WindowMaximizeButtonHint)
         
         # Set min. size for scalability     
-        game_over_box.setMinimumSize(1000, 500)
-        game_over_box.resize(1000, 500)
+        game_over_box.setMinimumSize(1200, 600)
+        game_over_box.resize(1200, 600)
         
         # Set box to focus but allow interaction with the main window
         game_over_box.setModal(False)
