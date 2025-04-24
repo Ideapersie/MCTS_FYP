@@ -84,12 +84,9 @@ class TestBoard(unittest.TestCase):
         self.assertEqual(self.board.num_cols, 9)
         
        
-    def test_str(self):
-        # White stone at bottom left 
-        self.board.place_stone(Player.white, Point(1,1))
-        
+    def test_str_empty(self):
+        # Test empty board
         expected_str = (
-            
             "9 . . . . . . . . .\n"
             "8 . . . . . . . . .\n"
             "7 . . . . . . . . .\n"
@@ -98,8 +95,43 @@ class TestBoard(unittest.TestCase):
             "4 . . . . . . . . .\n"
             "3 . . . . . . . . .\n"
             "2 . . . . . . . . .\n"
-            "1 . . . . . . . .\n"
-            "  A B C D E F G H I "
+            "1 . . . . . . . . .\n"
+            "  A B C D E F G H J "
+        )
+        self.assertEqual(expected_str.strip(), str(self.board).strip())
+
+    def test_str_black_stone(self):
+        # Test board with one black stone
+        self.board.place_stone(Player.black, Point(1,1))
+        
+        expected_str = (
+            "9 . . . . . . . . .\n"
+            "8 . . . . . . . . .\n"
+            "7 . . . . . . . . .\n"
+            "6 . . . . . . . . .\n"
+            "5 . . . . . . . . .\n"
+            "4 . . . . . . . . .\n"
+            "3 . . . . . . . . .\n"
+            "2 . . . . . . . . .\n"
+            "1 X . . . . . . . .\n"
+            "  A B C D E F G H J "
+        )
+        self.assertEqual(expected_str.strip(), str(self.board).strip())
+
+    def test_str_both_stones(self):
+        # Test board with one white stone
+        self.board.place_stone(Player.white, Point(2, 2))
+        expected_str = (
+            "9 . . . . . . . . .\n"
+            "8 . . . . . . . . .\n"
+            "7 . . . . . . . . .\n"
+            "6 . . . . . . . . .\n"
+            "5 . . . . . . . . .\n"
+            "4 . . . . . . . . .\n"
+            "3 . . . . . . . . .\n"
+            "2 . O . . . . . . .\n"
+            "1 X . . . . . . . .\n"
+            "  A B C D E F G H J "
         )
         self.assertEqual(expected_str.strip(), str(self.board).strip())
         
@@ -120,7 +152,7 @@ class TestBoard(unittest.TestCase):
             "3 . . . . . . . . .\n"
             "2 . . . . . . . . .\n"
             "1 O . . . . . . . .\n"
-            "  A B C D E F G H I "
+            "  A B C D E F G H J "
         )
         # Altered expected_str to be wrong 
         self.assertNotEqual(str(self.board).strip(), wrong_str.strip())
@@ -288,6 +320,7 @@ class TestGoState(unittest.TestCase):
         self.assertIsNone(capture_play.board.get_go_string(Point(4,3)))
         
         
+        
     # Test gameover function when player resigns 
     def test_game_resign(self):
         over_move = Move.resign()
@@ -326,7 +359,6 @@ class TestGoState(unittest.TestCase):
         
         selfcap_move = Move.play(Point(4,3))
         outcome = self.game.self_capture(Player.black, selfcap_move)
-        print(outcome)
         
         self.assertTrue(outcome)
         
@@ -435,7 +467,7 @@ class TestGoState(unittest.TestCase):
     
         play1 = self.game.play_move(move1)
         
-        # Valid move 
+        # valid if move is not self-capture or ko rule  
         self.assertTrue(play1.valid_move(move2))
         
     def test_valid_move_selfcapture(self):
@@ -460,6 +492,56 @@ class TestGoState(unittest.TestCase):
         cornercap_move = Move.play(Point(1,2))
         # False due to self-capture
         self.assertFalse(play6.valid_move(cornercap_move))
+        
+    def test_legal_moves(self):
+        # Test using previous testcase to assure self capture moves are not in legal moves 
+        black_move1 = Move.play(Point(1,1))
+        white_move1 = Move.play(Point(2,1))
+        black_move2 = Move.play(Point(4,3))
+        white_move2 = Move.play(Point(2,2))
+        black_move3 = Move.play(Point(4,4))
+        white_move3 = Move.play(Point(1,3))
+        
+        play1 = self.game.play_move(black_move1)
+        play2 = play1.play_move(white_move1)
+        play3 = play2.play_move(black_move2)
+        play4 = play3.play_move(white_move2)
+        play5 = play4.play_move(black_move3)
+        play6 = play5.play_move(white_move3)
+        
+        # Valid move before self-capture
+        self.assertIn(white_move3.point, play5.legal_moves())
+        
+        # This leads to a self-capture move therefore should not be in legal moves
+        notlegal_move = Move.play(Point(1,2))
+        self.assertNotIn(notlegal_move.point, play6.legal_moves())
+        
+    def test_final_score(self):
+        moves = [
+            Move.play(Point(1, 3)), Move.play(Point(1, 6)),
+            Move.play(Point(2, 3)), Move.play(Point(2, 6)),
+            Move.play(Point(3, 3)), Move.play(Point(3, 6)),
+            Move.play(Point(4, 3)), Move.play(Point(4, 6)),
+            Move.play(Point(5, 3)), Move.play(Point(5, 6)),
+            Move.play(Point(6, 3)), Move.play(Point(6, 6)),
+            Move.play(Point(7, 3)), Move.play(Point(7, 6)),
+            Move.play(Point(8, 3)), Move.play(Point(8, 6)),
+            Move.play(Point(9, 3)), Move.play(Point(9, 6)),
+        ]
+
+        # Play moves
+        for move in moves:
+            self.game = self.game.play_move(move)
+        
+        # Calculate the final score
+        score = self.game.final_score()
+        
+        print(f"\n"+str(self.game.board))
+
+        # Check the scores
+        self.assertGreater(score["White"], score["Black"])
+        self.assertEqual(score["Black"], 18)
+        self.assertEqual(score["White"], 33.5) # 27 + 6.5 for komi 
         
         
 if __name__ == '__main__':

@@ -1,7 +1,6 @@
 import unittest
-from unittest.mock import patch, MagicMock
-from go.goboard import Move
-from go.goplayer import Player, Point
+from unittest.mock import patch
+from go.goplayer import Point
 from go.player_vs_player import PlayerVsPlayer
 
 class TestPlayerInput(unittest.TestCase):

@@ -1,5 +1,51 @@
 # FYP Diary 
 
+**23/04/2025**
+Completed the GUI implementation, included new adaptive board and buttons sizes depending on window size therefore players can play both fullscreen and windowed mode. Will now be merging the gogame_CLI branch to main since this implementation has been finalized.  
+
+**20/04/2025**
+Further trying to debug the Ko rule implementation, using a more simple approach and keeping track of the last captured stones, however there seems to be an issue with this variable. Changed the main.py to run the GUI version of the game instead of the CLI therefore the game can easily be launched and more accesible, the CLI version is still playable through running the CLI.py file.  
+
+**14/04/2025**
+Ko Rule is another rule in Go besides the self-capture rule and has still yet to be included in the fast implementation class. I have been trying to implement this without the use of deep.copy however it has failed multiple times therefore I will need a new approach, furthermore I have been researching about optimal opening move choices however due to the bot being the second move, it is harder to determine the opening moves since the players who play the game might not know the normal opening moves on 9x9 board such as an e4 or d4 move in Chess.  
+
+**08/04/2025**
+After testing the game, I came across a bug where the bot would play moves that are considered self-capture moves and I wasn't sure about the cause of this bug. After further debugging, I figured it was to do with the liberty checking method in the self_capture method therefore I refactored it to be a group liberty checking instead to make sure that the surrounding group of stones dont have any liberties. Furthermore, I added a new method to check the total amount of moves played and added a pop-up msg whenever the bot passes.  
+
+**05/04/2025**
+Improved the UI and refactored a lot of the code, Firstly I added the resign button and a new game button when the game is over, I added this so that the player can review the game state when the game is over then start a new game whenever they desire. Furthemore, I changed the colours of the background to match the board further changing the button colours to replicate a wooden colour. As an visual indicator, I added a small dot in the middle of the stones if it was the last move played since this is easy to understand yet an elegant visual rather than displaying a text for lastest move.  
+
+**03/04/2025**
+With further testing, I want to optimise the computational speed even more, therefore using debug print statements, I used them to display important information about how many turns each simulated games are taking, and surprisingly, they are exceeding the amount of turns expected. To solve this issue, I implemented a condition where the game would end early if 2 player passes or the score difference is too large. Furthermore, I added adaptive rollout_depth where the depth at which the play is played out is capped depending on the stage of the game since after a certain threshold, the moves has lesser impact on the outcome of the game.  
+
+**01/04/2025**
+After further testing with the UI, I made improvement to the stone UI's to make them more realistic simulating light reflections on the stone using PyQT gradient function on both black and white stones and I am planning to add captures sounds for the stones later on. Furthermore, I came across a bug where the GUI's column was starting from the top as 1 instead of the bottom, this was easily fixed. Lastlym I added a function where in the early games the bot will focus on central moves since on smaller board especially a 9x9 board, these are very crucial and important areas of the board, depending on its effectiveness, I plan to further improve it by assigning specific openings such as (5,5) which is known as Hoshi.  
+
+**28/03/2025**
+Big improvements to the UI, including implementing a pass button for the players to pass turns, if both player passes then the game enters the scoring phase. I also came across an error with the captures counting method therefore I had to debug by counting the stones on the board instead of keeping track of captured groups, then display the captured amount calculated by the difference between the stones in previous board and current board. Lastly, I fixed the UI freeze issue by refactoring where the bot_move method was called.  
+
+**26/03/2025**
+After researching I came to the conclusion of using PyQt for the GUI for the go game due to its fast perfomance and nice aesthethics, learning from the website's documentation. I have seperated into 2 classes of GoBoardGUI and then the main window where the GoBoardGUI sets up all the variables for the go board such as the background, gridlines, labels and then in the main GUI, creating method to handle how the UI will interact with placing a stone or the gameover state. Now the GUI is functioning with placing stones and the hover effect working, will need to do further testing with gamemodes then next I shall implement passing and resignation buttons while further enhancing the User Experience.  
+
+**24/03/2025**
+To improve the strength of the bots, I created a dynamic passing threshold where the bot would only pass if the winrate is below 25% ,however, this is unreasonable as the game further progresses since moves in the "endgame" usually would not have as much impact on the game. Therefore, by counting the total amount of stones played, I can estimate when the game is entering the endgame stage and therefore gradually increasing the passing threshold leading to the game to enter the scoring stage faster and more efficiently.  
+
+**21/03/2025**
+To further improve the processing speed of the rollouts, I am implementating multiprocessing to be able to run multiple simulations in parallel using the multiprocessing library in Python, this allows bypassing the Global Interpreter lock and allows the code to be sent the multiple processors for simulatanoues simulations. The simulations will be ran in a new method called batch_simulations where the method will update the win_counts per move therefore the win_counts can be updated accordingly and at the same time.  
+
+**19/03/2025**
+I started the implementation of new classes to optimize the goboard for faster MCTs rollouts with the goal of achieving atleast 10000 rollouts within seconds to allow the MCTs algorithm to perform to its potential, this will be done by mainly changing the dictionary structure into Arrays and also refactoring any methods which uses DeepCopy. Firstly, A faster self-capture method using loop instead of DeepCopying the previous board state, allowing faster computation to be used in the new Legal_moves method. 
+Next is the Fast_play_move where the handling of captures and removal of captured stones are done by using sets to store the groups of stones, this new method is then used in the simulation step of the MCTs algorithm. Another extension is using the quick_eval method where instead of counting all the territory, we are counting the number of stones of the board since that means the player has more territory and less stones captured, further improving the computational time. Finally, implementing all these changes and receiving incomparable computational time compared to the previous implementations, with a difference more than 200x faster.
+
+**18/03/2025**
+Implementing DFS where the stack explores and stores the connected empty points, however this implementation is different where the borders including the ones surrounding the board are assumed as both black and white until it is disprovened by one of the stones in the border being an opposing colour, if it is both colours then its neutral else its that colour's territory, this leads to the correct scoring of the final scoring. 
+
+**13/03/2025**
+Add print statements to debug the errors ending the simulations, where the simulations end with None since there are no remaning childs which can be added. Furthermore, I am trying to implement a new approach for the calculating territory method.  
+
+**08/03/2025**
+Conducting further research into the extensions of the MCTS algorithm firstly I will start optimizing the computational time required for each move enabling the algorithm to calculate more than 10000 rollouts within seconds, furthermore, I will add multiprocessing allowing the rollouts to be run in batch simulations and updating the rollouts accordingly, extending this by adding passing and resignation thresholds for the simulations and potentially adding opening moves to strengthen the start of every simulated game rollouts.  
+
 **27/02/2025**
 Made a new mode for player to play against the MCTs agent to see how the strength compares to the random agent however due to the inefficiency of the current MCTs implementation it takes too long to play against the engine with more than 10 rollouts which is unfeasible to make a good bot, therefore I will create new method to improve this later on. Further, I added a bot vs bot mode for the MCTs agent which will be used for paramater analysis later on in the project.  
 

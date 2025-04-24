@@ -58,6 +58,7 @@ class Board():
         self.num_rows = num_rows
         self.num_cols = num_cols
         self._grid = {}
+        self.captured_stones = []
         
     def __str__(self):
         # Stores representation of each row 
@@ -65,6 +66,9 @@ class Board():
         # Dynamically generate column labels based on the number of columns
         col_labels = []
         for i in range(self.num_cols):
+            # Add this condition to skip I, as it is not used in Go
+            if i == 8:
+                i += 1
             # Convert each unicode index to letter 
             col_label = chr(ord('A')+ i)
             col_labels.append(col_label)
@@ -124,6 +128,11 @@ class Board():
         
     # Removing a string, can create liberties for other string
     def _remove_string(self, string):
+        # Store point from string to display captured stones 
+        captured_points = list(string.stones)
+        self.captured_stones.extend(captured_points)
+        
+        # Remove go strings 
         for stone in string.stones:
             for neighbour in stone.neighbours():
                 neighbour_string = self._grid.get(neighbour)
@@ -131,7 +140,12 @@ class Board():
                     continue
                 elif neighbour_string is not string:
                     neighbour_string.add_liberty(stone)
-            self._grid[stone] = None
+            del self._grid[stone]
+            
+    def recent_captures(self):
+        captures_no = len(self.captured_stones)
+        self.captured_stones = []
+        return captures_no
         
     # Placing a stone on the board & manages liberties of neighbouring stones    
     def place_stone(self, player, point):
@@ -179,7 +193,7 @@ class Board():
             place_string_other.remove_liberty(point)
             if place_string_other.num_liberties == 0:
                 self._remove_string(place_string_other)
-         
+ 
     # For explored region used for calculate_territory method  
     def explore_region(self, start, visited):
         # Stack stores explored points 
@@ -194,17 +208,31 @@ class Board():
             # Skip if point has been visited 
             if point in visited:
                 continue
+            
             # If not, mark point as visited 
             visited.add(point)
             
+            # Get player colour at point
+            player = self.get_player(point)
+            
             # If point is empty, add it to territory
-            if self.get_player(point) is None:
+            if player is None:
                 territory.add(point)
                 
-                for neighbours in point.neighbours():
-                    if self.in_grid(neighbours):
-                        stack.append(neighbours)
-            # If point occupied = border of the region 
+                for neighbour in point.neighbours():
+                    # If neighbour is out of bounds, skip it
+                    if not self.in_grid(neighbour):
+                        continue 
+                    
+                    neighbour_player = self.get_player(neighbour)
+                        
+                    # If neighbour is empty and not visited, add to the exploration stack
+                    if neighbour_player is None and neighbour not in visited:
+                        stack.append(neighbour)
+                    # If point occupied = border of the region 
+                    elif neighbour_player is not None:
+                        borders.add(neighbour)
+            # If point is occupied, it is a border point
             else:
                 borders.add(point)
                 
@@ -232,33 +260,37 @@ class Board():
                 # Explore region and gather the territory and borders of each point 
                 territory, borders = self.explore_region(point, visited)
                 
-                # Checking if certain region is surrounded by ONLY black or white stones
+                # Assume the borders are all black or all white
                 black_border = True
                 white_border = True
                 
-                # Loop over border points
+                # Loop over border points to determine if all borders are one color
                 for border in borders:
                     player = self.get_player(border)
+                    # If border is one colour, then it cant be the other
                     if player == Player.black:
-                        white_border = False
+                        white_border = False  
                     elif player == Player.white:
-                        black_border = False
+                        black_border = False  
                     else:
+                        # neutral border
                         black_border = False
                         white_border = False
-                       
-                # Iterate over points in each territory       
-                for point in territory:
-                    # Empty points inside the border
-                    if self.get_player(point) is None: 
-                        if black_border and not white_border:
-                            black_territory += 1
-                        elif white_border and not black_border:
-                            white_territory += 1
-                        else:
-                            neutral_territory += 1
+                
+                # Count the territory based on border colors
+                territory_size = len(territory)
+                
+                # All borders are black stones
+                if black_border and not white_border:
+                    black_territory += territory_size
+                elif white_border and not black_border:
+                    white_territory += territory_size
+                else:
+                    # Mixed borders are neutral 
+                    neutral_territory += territory_size
                     
         return black_territory, white_territory, neutral_territory
+                    
       
     # To compare board states, especially for the Ko rule          
     def __eq__(self, other):
@@ -303,19 +335,22 @@ class GoState():
     # Apply the move to the board state and captured strings
     def play_move(self, move):
         if move is not None and move.is_play:
+            # Count stones on board before move played
+            count_before = self.count_stones()
+            
             next_board = copy.deepcopy(self.board)
             next_board.place_stone(self.next_player, move.point)
             
+            # Count stones on new board after move is played
+            count_after = self.count_stones(next_board)
+            
+            # -1 due to the new stone placed
+            captures = count_before - (count_after - 1)
+            
             # Captured strings in the next move
             next_captured = self.captured.copy()
-            captured_string = self.board.get_go_string(move.point)
-            
-            if captured_string is None:
-                captured_string = []
-            
-            # Amount of captured string
-            for string in captured_string:
-                next_captured[self.next_player.other] += len(string.stones)
+            if captures > 0:
+                next_captured[self.next_player] += captures
 
         else:
             next_board = self.board
@@ -330,9 +365,27 @@ class GoState():
             captured=next_captured
         )
     
+    # Count stones to compare for captures     
+    def count_stones(self, board=None):
+        
+        # For when next board is applied
+        if board is None:
+            board_count = self.board
+        else: 
+            board_count = board
+        
+        count = 0 
+        
+        # Traverse board finding points with stones
+        for row in range(1, board_count.num_rows + 1):
+            for col in range(1, board_count.num_cols + 1):
+                point = Point(row, col)
+                if board_count.get_player(point) is not None:
+                    count += 1
+        return count 
+    
     # Moves signifying the game is over 
     def game_over(self):
-        
         if self.last_move is None:
             return False 
         # If player resigns, the game is over 
@@ -389,9 +442,20 @@ class GoState():
         # Else, move is invalid 
         return False 
     
+    # Returns a list of all legal moves in current game state 
+    def legal_moves(self):
+        moves = []
+        for row in range(1, self.board.num_rows + 1):
+            for col in range(1, self.board.num_cols + 1):
+                point = Point(row, col)
+                move = Move.play(point)
+                if self.valid_move(move):
+                    moves.append(point)
+        return moves
+    
     # Calculates the final score, adding komi
     def final_score(self, komi=6.5):
-        
+
         black_territory, white_territory, _ = self.board.calculate_territory()
         
         black_score = black_territory + self.captured[Player.black]
