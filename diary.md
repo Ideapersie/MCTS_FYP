@@ -1,5 +1,8 @@
 # FYP Diary 
 
+**23/04/2025**
+Completed the GUI implementation, included new adaptive board and buttons sizes depending on window size therefore players can play both fullscreen and windowed mode. Will now be merging the gogame_CLI branch to main since this implementation has been finalized.  
+
 **20/04/2025**
 Further trying to debug the Ko rule implementation, using a more simple approach and keeping track of the last captured stones, however there seems to be an issue with this variable. Changed the main.py to run the GUI version of the game instead of the CLI therefore the game can easily be launched and more accesible, the CLI version is still playable through running the CLI.py file.  
 
