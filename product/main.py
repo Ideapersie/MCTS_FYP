@@ -1,20 +1,18 @@
-from menus.main_menu import display_main_menu
-from menus.bandit.display_bandit import display_bandit
-from menus.go.display_go import display_go
+"""
+Main entry point for the Go game application.
+Launches the graphical user interface by default.
+"""
+
+import sys
+from PySide6.QtWidgets import QApplication
+from menus.go.go_gui import GoGameGUI
 
 def main():
-    while True:
-        choice = display_main_menu()
-
-        if (choice == "1"):
-            display_bandit()
-        elif(choice =="2"):
-            display_go()
-        elif(choice =="3"):
-            print("\nExiting the program")
-            break
-        else:
-            print("Invalid input: please try again")
+    #Launch the Go game graphical user interface"
+    app = QApplication(sys.argv)
+    window = GoGameGUI()
+    window.show()
+    sys.exit(app.exec())
 
 if __name__ == "__main__":
     main()
