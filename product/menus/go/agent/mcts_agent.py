@@ -85,8 +85,8 @@ class MCTsAgent(Agent):
         for child in root.children:
             child_winrate = child.rollout_winrate(game_state.next_player)
             
-            # DEBUG: Check the winrate of each child node
-            print(f"Move: {self.go_moves.print_move(child.move)}, Win rate: {child_winrate:.2%}, Visits: {child.num_rollouts}")
+            # DEBUG: Check the winrate of each child node, for analysis and testing
+            #print(f"Move: {self.go_moves.print_move(child.move)}, Win rate: {child_winrate:.2%}, Visits: {child.num_rollouts}")
             
             if child_winrate > highest_winrate:
                 highest_winrate = child_winrate
@@ -95,8 +95,8 @@ class MCTsAgent(Agent):
         # Compute the time taken for the move
         end_time = time.time()
                 
-        # DEBUG: Check the winrate of best node
-        print(f"\n DEBUG: Best move -> {self.go_moves.print_move(best_move)}, Winrate: {highest_winrate:.2%}, \
+        # Show simulation statistics
+        print(f"\n Best move -> {self.go_moves.print_move(best_move)}, Winrate: {highest_winrate:.2%}, \
               Time Taken: {end_time - start_time:.2f}")
         
         board_size = game_state.board.num_rows
@@ -109,12 +109,15 @@ class MCTsAgent(Agent):
                 if game_state.board.get_player(Point(row=row, col=col)) is not None:
                     stone_count += 1
         
-        # Print statistics
+        """ 
+        # DEBUG: Check the simulation statistics, used for analysis
+        
         avg_moves = combined_stats['total_moves'] / combined_stats['simulation_count']
         print(f"\nSimulation statistics:")
         print(f"  Average moves per simulation: {avg_moves:.2f}")
         print(f"  Min/Max moves: {combined_stats['min_moves']}/{combined_stats['max_moves']}")
         print(f"  Total simulations: {combined_stats['simulation_count']}")
+        """
                     
         # Count the captures for each player
         captures = game_state.captured[Player.black] + game_state.captured[Player.white]
@@ -139,9 +142,6 @@ class MCTsAgent(Agent):
         else:
             passing_threshold = base_threshold
             
-        # Debug information
-        print(f"Moves ratio /81: {move_ratio:.2f}, Passing threshold: {passing_threshold:.2f}")
-    
             
         # If winrate is below threshold, then pass or resign
         if highest_winrate < passing_threshold and move_ratio > 0.6:

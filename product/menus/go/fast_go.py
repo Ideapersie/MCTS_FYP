@@ -155,8 +155,6 @@ class FastBoard:
         row, col = point.row, point.col
         last_cap_row, last_cap_col = self.game_state.last_captured
         
-        print(f"Checking ko rule: {row}, {col} vs {last_cap_row}, {last_cap_col}")
-        
         # If this matches the last captured position, it may violate the ko rule
         return row == last_cap_row and col == last_cap_col
         

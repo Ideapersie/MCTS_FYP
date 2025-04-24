@@ -132,11 +132,6 @@ class Board():
         captured_points = list(string.stones)
         self.captured_stones.extend(captured_points)
         
-        #Debug info -> print captured stones
-        print(f"Capturing string with {len(string.stones)} stones")
-        for stone in captured_points:
-            print(f" Removing stone at {stone}")
-        
         # Remove go strings 
         for stone in string.stones:
             for neighbour in stone.neighbours():
@@ -356,12 +351,6 @@ class GoState():
             next_captured = self.captured.copy()
             if captures > 0:
                 next_captured[self.next_player] += captures
-                
-            # Debug output 
-            
-            Test_Capture = next_board.recent_captures()
-            if Test_Capture > 0:
-                print(f"Move at {move.point} captured {Test_Capture} stones")
 
         else:
             next_board = self.board
