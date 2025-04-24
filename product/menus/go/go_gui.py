@@ -729,12 +729,20 @@ class GoGameGUI(QMainWindow):
         # Makes dialog resizable
         msg_box.setWindowFlags(msg_box.windowFlags() | Qt.WindowType.WindowMaximizeButtonHint)
         
+        # Calculate font size based on window width
+        window_width = self.width()
+        
+        if window_width <= 800:
+            self.base_font_size = int(12 * (window_width / 800))
+        else:
+            self.base_font_size = int(14 * (window_width / 1600))
+        
         # Simple styling with CSS
-        msg_box.setStyleSheet(f"QLabel {{ font-size: {self.font_size}px; }}")
+        msg_box.setStyleSheet(f"QLabel {{ font-size: {self.base_font_size}px; }}")
         
         # Set min. size for scalability     
-        msg_box.setMinimumSize(600, 300)
-        msg_box.resize(600, 300)
+        msg_box.setMinimumSize(800, 400)
+        msg_box.resize(800, 400)
         
         # Set box to focus 
         msg_box.setModal(True)
@@ -758,6 +766,9 @@ class GoGameGUI(QMainWindow):
         
         # Make dialog resizable
         game_over_box.setWindowFlags(game_over_box.windowFlags() | Qt.WindowType.WindowMaximizeButtonHint)
+        
+        # Simple styling with CSS
+        game_over_box.setStyleSheet(f"QLabel {{ font-size: {self.base_font_size}px; }}")
         
         # Set min. size for scalability     
         game_over_box.setMinimumSize(1200, 600)
