@@ -1,5 +1,8 @@
 # FYP Diary 
 
+**20/04/2025**
+Further trying to debug the Ko rule implementation, using a more simple approach and keeping track of the last captured stones, however there seems to be an issue with this variable. Changed the main.py to run the GUI version of the game instead of the CLI therefore the game can easily be launched and more accesible, the CLI version is still playable through running the CLI.py file.  
+
 **14/04/2025**
 Ko Rule is another rule in Go besides the self-capture rule and has still yet to be included in the fast implementation class. I have been trying to implement this without the use of deep.copy however it has failed multiple times therefore I will need a new approach, furthermore I have been researching about optimal opening move choices however due to the bot being the second move, it is harder to determine the opening moves since the players who play the game might not know the normal opening moves on 9x9 board such as an e4 or d4 move in Chess.  
 

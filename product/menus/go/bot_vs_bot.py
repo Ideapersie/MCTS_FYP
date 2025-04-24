@@ -10,7 +10,7 @@ class BotVsBot(GoMoves):
         self.game = GoState.new_game(board_size)
         # Two bots with different values to test strength 
         self.bot = {
-            Player.black: MCTsAgent(temperature=1.4, num_rounds=2500),
+            Player.black: MCTsAgent(temperature=1.2, num_rounds=5000),
             Player.white: MCTsAgent(temperature=1.4, num_rounds=5000)
         }
         
