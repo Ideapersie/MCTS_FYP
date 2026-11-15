@@ -1,14 +1,26 @@
-# Final Year Project
+# Game Playing with Monte Carlo Tree Search
 
-The Code for this project will be contained in the product folder and the documents folder containing the Final Report submission and Interim Report submission
+BSc Computer Science (AI) final year project, Royal Holloway, University of London (2025). Supervisor: Magnus Wahlström.
 
-A video demonstration can be viewed be clicking this link: https://youtu.be/Yw8vwLQCCxw
+A study of why Monte Carlo Tree Search works, in two parts:
 
-For the code itself, in the product directory the main.py can be ran to start the Go game with GUI 
+1. **Multi-armed bandits.** Four selection strategies (random, epsilon-greedy, decaying epsilon-greedy and UCB) compared experimentally on 10 to 100 arms over 1,000 iterations. UCB gives the best exploration/exploitation balance: higher reward and more accurate value estimates for the best arms. This is the selection rule MCTS is built on.
+2. **Go with an MCTS opponent.** A complete Go implementation (ko and self-capture rules, territory scoring with komi) with a Qt (PySide6) GUI, a CLI, and player-vs-player and player-vs-AI modes. The MCTS agent was optimised with an array-based board and parallel rollouts, cutting computation time by 99.7% to 10,000 simulations in 7.67 seconds, plus adaptive rollout depth and early termination.
+
+**Video demo:** https://youtu.be/Yw8vwLQCCxw
+
+**Documents:** [final report](documents/THARITMOHAMEDHUSSAINKHAN.final.pdf) (79 pages), [user manual](documents/FYP_User_Manual.pdf), [interim report](documents/THARITMOHAMEDHUSSAINKHAN.interim.pdf), [project plan](documents/THARITMOHAMEDHUSSAINKHAN-plan.pdf). Development diary: [`diary.md`](diary.md).
+
+## Quick start
 
 ```bash
-python main.py
+cd product
+pip install PySide6 numpy matplotlib
+python main.py        # GUI: main menu with the Go game and the bandit experiments
+python cli.py         # terminal version of Go
 ```
+
+The bandit experiments live in `product/menus/bandit/` (one `simulate_*.py` per strategy, plotted by `plot_utils.py`).
 
 # Go Game Implementation
 
@@ -53,9 +65,10 @@ Both interfaces support:
 
 ## Project Structure
 
-- `main.py` - Entry point for the graphical interface
-- `cli.py` - Entry point for the command-line interface
-- `menus/go/` - Core game implementation
+- `product/main.py` - Entry point for the graphical interface (main menu)
+- `product/cli.py` - Entry point for the command-line interface
+- `product/menus/bandit/` - Multi-armed bandit strategies and simulations
+- `product/menus/go/` - Core game implementation
   - `goboard.py` - Game state and rules
   - `goplayer.py` - Player and point representation
   - `go_moves.py` - Move handling for CLI
@@ -70,9 +83,5 @@ Both interfaces support:
 ## Dependencies
 
 - Python 3.6+
-- PySide6 or PyQt6 (for graphical interface)
+- PySide6 (for graphical interface)
 - NumPy (for AI optimizations)
-
-This repository has been created to store your final year project.
-
-You may edit it as you like, but please do not remove the default topics or the project members list. These need to stay as currently defined in order for your supervisor to be able to find your project.
