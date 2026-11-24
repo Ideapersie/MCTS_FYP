@@ -6,7 +6,14 @@ from .random_agent import RandomAgent
 from .flat import FlatMC
 from .uct import UCT
 
-REGISTRY = {"random": RandomAgent, "fyp_flat": FlatMC, "uct": UCT}
+
+def _puct(**kw):
+    from .puct import PUCT  # imports torch, so only when asked for
+
+    return PUCT(**kw)
+
+
+REGISTRY = {"random": RandomAgent, "fyp_flat": FlatMC, "uct": UCT, "puct": _puct}
 
 
 def make(spec: str, playouts: int, seed: int):
@@ -15,6 +22,11 @@ def make(spec: str, playouts: int, seed: int):
     kwargs = {}
     for kv in filter(None, opts.split(",")):
         k, v = kv.split("=")
-        kwargs[k] = float(v) if "." in v else int(v)
+        for cast in (int, float, str):
+            try:
+                kwargs[k] = cast(v)
+                break
+            except ValueError:
+                continue
     cls = REGISTRY[name]
     return cls(playouts=playouts, seed=seed, **kwargs)

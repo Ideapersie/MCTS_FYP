@@ -7,9 +7,11 @@
   candidate once the board is half full.
 - Simulation: random playout to the end, never filling own eyes, area scoring.
 - Move choice: the most visited child (robust child), not the best win rate.
-- rave=1: AMAF statistics blended in with beta = sqrt(k / (3n + k)), the
-  classic MoGo schedule; selection then uses no exploration term.
+- rave=1: AMAF statistics blended in with beta = sqrt(k / (3n + k)) on the
+  child's visit count n (the MoGo schedule), with a small exploration term.
 - reuse=1: keep the subtree under the moves actually played.
+- heavy=1: playouts capture and escape around the last move before playing
+  randomly (MoGo-style), so tactics are not left to chance.
 """
 
 import math
@@ -39,13 +41,14 @@ class Node:
 class UCT:
     name = "uct"
 
-    def __init__(self, playouts=1000, seed=0, c=1.0, rave=0, k=600, reuse=0, resign=0.05):
+    def __init__(self, playouts=1000, seed=0, c=1.0, rave=0, k=600, reuse=0, heavy=0, resign=0.05):
         self.playouts = playouts
         self.rng = np.random.default_rng(seed)
         self.c = c
         self.rave = bool(rave)
         self.k = k
         self.reuse = bool(reuse)
+        self.heavy = bool(heavy)
         self.resign = resign
         self.root = None
 
@@ -61,11 +64,15 @@ class UCT:
 
     def _score(self, parent: Node, child: Node, log_n: float) -> float:
         q = child.w / child.n
-        if self.rave and child.rn:
-            beta = math.sqrt(self.k / (3 * parent.n + self.k))
+        if not self.rave:
+            return q + self.c * math.sqrt(log_n / child.n)
+        # With RAVE every child, pass included, gets the same small exploration
+        # term. (Giving moves without AMAF data the full term made pass the
+        # most explored move, and the bot passed games away.)
+        if child.rn:
+            beta = math.sqrt(self.k / (3 * child.n + self.k))
             q = (1 - beta) * q + beta * (child.rw / child.rn)
-            return q + self.c * 0.3 * math.sqrt(log_n / child.n)
-        return q + self.c * math.sqrt(log_n / child.n)
+        return q + self.c * 0.3 * math.sqrt(log_n / child.n)
 
     def _select(self, node: Node) -> Node:
         log_n = math.log(node.n)
@@ -111,8 +118,9 @@ class UCT:
             if b.over():
                 score = b.score()
             else:
+                last = b.history[-1] if b.history else -1
                 score = playout(b.cells, b.to_play, b.ko, b.n, b.komi, b.max_moves - b.moves,
-                                int(self.rng.integers(2**31)), amaf)
+                                int(self.rng.integers(2**31)), amaf, last, self.heavy)
             winner = BLACK if score > 0 else 3 - BLACK
             # Backpropagation
             while node is not None:

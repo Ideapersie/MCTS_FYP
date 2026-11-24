@@ -207,9 +207,57 @@ def legal_moves(board, colour, ko, n, stride, mark, stamp, buf, out, skip_eyes):
 
 
 @njit(cache=True)
-def playout(board, colour, ko, n, komi, max_moves, seed, amaf):
-    """Uniform random playout to the end (eyes are never filled).
+def _urgent(board, last, colour, stride, mark, stamp, buf, ko):
+    """Capture or escape around the last move, as in MoGo's playout policy.
 
+    1. An enemy group next to the last move with one liberty: take it.
+    2. One of our groups next to the last move in atari: extend at its
+       liberty if that leaves more than one liberty.
+    Returns a move or PASS (meaning no urgent move)."""
+    if last < 0:
+        return PASS
+    nb = _neighbours(stride)
+    opp = 3 - colour
+    # Check the last stone itself and its neighbours.
+    for k in range(5):
+        q = last if k == 4 else last + nb[k]
+        v = board[q]
+        if v != opp and v != colour:
+            continue
+        stamp[0] += 1
+        size, libs = _libs_and_stones(board, q, stride, mark, stamp[0], buf)
+        if libs != 1:
+            continue
+        # find the single liberty
+        lib = PASS
+        for i in range(size):
+            s = buf[i]
+            for j in range(4):
+                r = s + nb[j]
+                if board[r] == EMPTY:
+                    lib = r
+                    break
+            if lib != PASS:
+                break
+        if lib == PASS or not is_legal(board, lib, colour, ko, stride, mark, stamp, buf):
+            continue
+        if v == opp:
+            return lib
+        # Escape: only if the extension has more than one liberty.
+        board[lib] = colour
+        stamp[0] += 1
+        _, l2 = _libs_and_stones(board, lib, stride, mark, stamp[0], buf)
+        board[lib] = EMPTY
+        if l2 > 1:
+            return lib
+    return PASS
+
+
+@njit(cache=True)
+def playout(board, colour, ko, n, komi, max_moves, seed, amaf, last=-1, heavy=False):
+    """Random playout to the end (eyes are never filled).
+
+    heavy=True first plays urgent captures and escapes around the last move.
     Plays on `board` in place. amaf[p] records which colour first played p
     (0 if nobody), for RAVE. Returns the final area score (black minus white)."""
     np.random.seed(seed)
@@ -230,6 +278,17 @@ def playout(board, colour, ko, n, komi, max_moves, seed, amaf):
                     cand[m] = p
                     m += 1
         played = False
+        if heavy:
+            u = _urgent(board, last, colour, stride, mark, stamp, buf, ko)
+            if u != PASS:
+                _, ko = play(board, u, colour, stride, mark, stamp, buf)
+                if amaf[u] == 0:
+                    amaf[u] = colour
+                last = u
+                passes = 0
+                colour = 3 - colour
+                moves += 1
+                continue
         while m > 0:
             i = np.random.randint(m)
             p = cand[i]
@@ -239,12 +298,14 @@ def playout(board, colour, ko, n, komi, max_moves, seed, amaf):
                 _, ko = play(board, p, colour, stride, mark, stamp, buf)
                 if amaf[p] == 0:
                     amaf[p] = colour
+                last = p
                 played = True
                 break
         if played:
             passes = 0
         else:
             ko = PASS
+            last = -1
             passes += 1
         colour = 3 - colour
         moves += 1
