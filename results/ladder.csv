@@ -1,6 +1,10 @@
-when,commit,size,komi,playouts,a,b,games,a_wins,a_rate,ci_low,ci_high,a_black_rate,a_white_rate,sec_per_game,note
-2026-11-24 02:07,288cef7,9,7.0,1000,fyp_flat,random,50,42,0.84,0.715,0.917,0.92,0.76,18.97,baseline: FYP agent vs random
-2026-11-24 02:21,288cef7,9,7.0,1000,uct,fyp_flat,50,50,1.0,0.929,1.0,1.0,1.0,33.53,fixed tree search vs FYP agent
-2026-11-24 02:32,288cef7,9,7.0,1000,uct:rave=1,uct,60,30,0.5,0.377,0.623,0.2,0.8,20.97,RAVE k=600 vs plain UCT | SUPERSEDED: bug made pass over-explored under RAVE; fixed in the next commit
-2026-11-24 02:36,288cef7,9,7.0,300,"uct:rave=1,k=300",uct,60,3,0.05,0.017,0.137,0.033,0.067,6.51,RAVE k=300 vs UCT at low playouts | SUPERSEDED: bug made pass over-explored under RAVE; fixed in the next commit
-2026-11-24 02:38,288cef7,7,9.0,800,uct,random,40,40,1.0,0.912,1.0,1.0,1.0,6.04,7x7 sanity: UCT vs random
+when,commit,size,komi,playouts,a,b,games,a_wins,a_rate,ci_low,ci_high,a_black_rate,a_white_rate,sec_per_game,note,a_margin,margin_ci
+2026-11-24 02:07,288cef7,9,7.0,1000,fyp_flat,random,50,42,0.84,0.715,0.917,0.92,0.76,18.97,baseline: FYP agent vs random,,
+2026-11-24 02:21,288cef7,9,7.0,1000,uct,fyp_flat,50,50,1.0,0.929,1.0,1.0,1.0,33.53,fixed tree search vs FYP agent,,
+2026-11-24 02:32,288cef7,9,7.0,1000,uct:rave=1,uct,60,30,0.5,0.377,0.623,0.2,0.8,20.97,RAVE k=600 vs plain UCT | SUPERSEDED: bug made pass over-explored under RAVE; fixed in the next commit,,
+2026-11-24 02:36,288cef7,9,7.0,300,"uct:rave=1,k=300",uct,60,3,0.05,0.017,0.137,0.033,0.067,6.51,RAVE k=300 vs UCT at low playouts | SUPERSEDED: bug made pass over-explored under RAVE; fixed in the next commit,,
+2026-11-24 02:38,288cef7,7,9.0,800,uct,random,40,40,1.0,0.912,1.0,1.0,1.0,6.04,7x7 sanity: UCT vs random,,
+2026-11-24 02:47,68385c9,9,7.0,300,"uct:rave=1,k=300",uct,100,99,0.99,0.946,0.998,0.98,1.0,7.94,"RAVE vs plain UCT, after the pass fix",,
+2026-11-24 02:52,68385c9,9,7.0,300,"uct:rave=1,k=300,heavy=1","uct:rave=1,k=300",100,30,0.3,0.219,0.396,0.2,0.4,6.54,heavy playouts on top of RAVE,,
+2026-11-24 03:23,68385c9,9,7.0,1000,"uct:rave=1,k=300",fyp_flat,50,50,1.0,0.929,1.0,1.0,1.0,19.39,best search (RAVE) vs FYP agent,,
+2026-11-24 03:44,68385c9,7,9.0,96,puct:weights=weights/candidate.pt,puct:weights=weights/best.pt,80,40,0.5,0.393,0.607,0.0,1.0,3.45,"gate: candidate vs gen0 | SUPERSEDED: both nets played deterministically, so the 80 games were 2 games repeated; gates now sample the first 6 moves",,

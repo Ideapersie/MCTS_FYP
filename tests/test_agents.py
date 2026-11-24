@@ -22,7 +22,7 @@ def test_uct_takes_a_free_capture():
 def test_uct_beats_random():
     wins = 0
     for g in range(4):
-        w, a_colour = play_game(("uct", "random", 5, 3.0, 150, g, BLACK if g % 2 == 0 else WHITE))
+        w, a_colour, _ = play_game(("uct", "random", 5, 3.0, 150, g, BLACK if g % 2 == 0 else WHITE))
         wins += w == a_colour
     assert wins >= 3
 

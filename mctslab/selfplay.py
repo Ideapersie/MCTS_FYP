@@ -1,6 +1,6 @@
 """Generate training games.
 
-teacher: UCT with RAVE and heavy playouts plays itself; the policy target is the root's visit share.
+teacher: UCT with RAVE plays itself; the policy target is the root's visit share.
 net:     PUCT with the current network plays itself, with root noise and
          sampled opening moves, AlphaZero style.
 Each game yields (planes, policy, outcome-for-side-to-move) for every move.
@@ -35,7 +35,7 @@ def game(args):
     board = Board(size, komi)
     xs, pis, sides = [], [], []
     if mode == "teacher":
-        agent = UCT(playouts=playouts, seed=seed, rave=1, k=300, heavy=1)
+        agent = UCT(playouts=playouts, seed=seed, rave=1, k=300)
     else:
         from .agents.puct import PUCT
 

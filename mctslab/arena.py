@@ -25,7 +25,7 @@ from .board import BLACK, PASS, Board
 RESIGN = -2
 LADDER = os.path.join(os.path.dirname(__file__), "..", "results", "ladder.csv")
 FIELDS = ["when", "commit", "size", "komi", "playouts", "a", "b", "games", "a_wins", "a_rate", "ci_low", "ci_high",
-          "a_black_rate", "a_white_rate", "sec_per_game", "note"]
+          "a_black_rate", "a_white_rate", "sec_per_game", "note", "a_margin", "margin_ci"]
 
 
 def wilson(wins: int, n: int, z: float = 1.96) -> tuple[float, float]:
@@ -38,8 +38,9 @@ def wilson(wins: int, n: int, z: float = 1.96) -> tuple[float, float]:
     return centre - half, centre + half
 
 
-def play_game(args) -> tuple[int, int]:
-    """Returns (winner colour, colour agent A played)."""
+def play_game(args) -> tuple[int, int, float]:
+    """Returns (winner colour, colour agent A played, final score black minus
+    white). A resignation counts as losing by the whole board."""
     spec_a, spec_b, size, komi, playouts, seed, a_colour = args
     a = make(spec_a, playouts, seed)
     b = make(spec_b, playouts, seed + 1)
@@ -49,7 +50,8 @@ def play_game(args) -> tuple[int, int]:
         agent = players[board.to_play]
         mv = agent.select(board)
         if mv == RESIGN:
-            return 3 - board.to_play, a_colour
+            loser = board.to_play
+            return 3 - loser, a_colour, float(board.n * board.n) * (-1 if loser == BLACK else 1)
         if mv != PASS and not board.legal(mv):
             mv = PASS
         mover = board.to_play
@@ -59,7 +61,7 @@ def play_game(args) -> tuple[int, int]:
                 ag.observe(mover, cap)
             if hasattr(ag, "advance"):
                 ag.advance(mv)
-    return board.winner(), a_colour
+    return board.winner(), a_colour, board.score()
 
 
 def commit() -> str:
@@ -78,9 +80,14 @@ def match(spec_a, spec_b, size=7, komi=None, playouts=400, games=100, seed=0, pr
     with mp.Pool(procs or os.cpu_count()) as pool:
         results = pool.map(play_game, jobs, chunksize=1)
     secs = (time.time() - t) / games * (procs or os.cpu_count())
-    a_wins = sum(w == ac for w, ac in results)
-    a_b = [w == ac for w, ac in results if ac == BLACK]
-    a_w = [w == ac for w, ac in results if ac != BLACK]
+    a_wins = sum(w == ac for w, ac, _ in results)
+    a_b = [w == ac for w, ac, _ in results if ac == BLACK]
+    a_w = [w == ac for w, ac, _ in results if ac != BLACK]
+    # Score margin from A's side: still informative when colour decides most games.
+    margins = [sc if ac == BLACK else -sc for _, ac, sc in results]
+    m = sum(margins) / len(margins)
+    sd = (sum((x - m) ** 2 for x in margins) / max(len(margins) - 1, 1)) ** 0.5
+    half = 1.96 * sd / math.sqrt(len(margins))
     lo, hi = wilson(a_wins, games)
     row = {
         "when": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M"), "commit": commit(), "size": size, "komi": komi,
@@ -88,6 +95,7 @@ def match(spec_a, spec_b, size=7, komi=None, playouts=400, games=100, seed=0, pr
         "a_rate": round(a_wins / games, 3), "ci_low": round(lo, 3), "ci_high": round(hi, 3),
         "a_black_rate": round(sum(a_b) / max(len(a_b), 1), 3), "a_white_rate": round(sum(a_w) / max(len(a_w), 1), 3),
         "sec_per_game": round(secs, 2), "note": note,
+        "a_margin": round(m, 2), "margin_ci": f"{m - half:.2f} to {m + half:.2f}",
     }
     if log:
         new = not os.path.exists(LADDER)
@@ -114,7 +122,8 @@ def main():
     r = match(a.a, a.b, a.size, a.komi, a.playouts, a.games, a.seed, note=a.note, log=not a.no_log)
     print(f"{r['a']} vs {r['b']} on {r['size']}x{r['size']} at {r['playouts']} playouts: "
           f"{r['a_wins']}/{r['games']} = {r['a_rate']:.0%} (95% CI {r['ci_low']:.0%} to {r['ci_high']:.0%}), "
-          f"as black {r['a_black_rate']:.0%}, as white {r['a_white_rate']:.0%}, {r['sec_per_game']}s per game")
+          f"as black {r['a_black_rate']:.0%}, as white {r['a_white_rate']:.0%}, "
+          f"mean margin {r['a_margin']:+.1f} points ({r['margin_ci']}), {r['sec_per_game']}s per game")
 
 
 if __name__ == "__main__":

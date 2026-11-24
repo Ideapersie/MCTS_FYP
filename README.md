@@ -11,6 +11,37 @@ A study of why Monte Carlo Tree Search works, in two parts:
 
 **Documents:** [final report](documents/THARITMOHAMEDHUSSAINKHAN.final.pdf) (79 pages), [user manual](documents/FYP_User_Manual.pdf), [interim report](documents/THARITMOHAMEDHUSSAINKHAN.interim.pdf), [project plan](documents/THARITMOHAMEDHUSSAINKHAN-plan.pdf). Development diary: [`diary.md`](diary.md).
 
+## mctslab: measuring and improving the engine (2026)
+
+`mctslab/` is a test bench built after the project was submitted. `product/` is untouched. The bench re-implements the board with flat numba arrays (about 2,300 random playouts a second on one core for 9x9), re-implements the original agent on it so it can be compared fairly, and adds stronger searches one at a time. Every number below is a row in [`results/ladder.csv`](results/ladder.csv), with the commit that produced it; [`results/RESULTS.md`](results/RESULTS.md) renders the whole ladder.
+
+**What the review of the original agent found.** Each simulation in `mcts_agent.py` starts a fresh node at the root and expands one random child, so the UCB selection code is never reached: the agent is flat Monte Carlo over the root moves, not a tree search. Rollouts are cut short and scored by stones plus captures rather than territory, and the move with the best win rate is played however few visits it had. The TypeScript port on the portfolio had its own bug: it scored every node from the root player's side, so in its tree the opponent tried to help it.
+
+**Results so far (9x9, komi 7, equal playouts per move):**
+
+| Match | Result | 95% interval |
+|---|---|---|
+| Original agent vs random, 1,000 playouts | 42/50 | 72% to 92% |
+| UCT (a real tree, per-side values, most-visited move) vs original | 50/50 | 93% to 100% |
+| UCT + RAVE vs plain UCT, 300 playouts | 99/100 | 95% to 100% |
+| UCT + RAVE + heavy playouts vs UCT + RAVE, 300 playouts | 30/100 | 22% to 40% |
+| UCT + RAVE vs original, 1,000 playouts | 50/50 | 93% to 100% |
+
+Heavy playouts (capture or escape around the last move, MoGo style) made the bot weaker at equal playouts, so they are off by default; the code and the result stay in for the record. An early RAVE run lost because pass was over-explored; the fix and the superseded rows are in the ladder.
+
+**Learning from self-play (7x7, komi 9).** `selfplay.py`, `train.py` and `iterate.py` are a small AlphaZero-style loop sized for a laptop CPU: a policy and value network (4 residual blocks, 32 channels, 84k parameters) guides a PUCT search with no playouts. It is bootstrapped on 500 games of UCT + RAVE playing itself, then improved by self-play, and a new network only replaces the old one if it wins at least 55% of a gate match. NET_RESULTS
+
+```bash
+pip install numpy numba torch pytest
+python -m pytest tests                                  # board rules, parity with product/, agents
+python -m mctslab.arena uct:rave=1,k=300 fyp_flat --size 9 --playouts 1000 --games 50
+python -m mctslab.selfplay teacher --games 500 --size 7 --komi 9 --playouts 400 --out results/selfplay/teacher1.npz
+python -m mctslab.iterate --iters 3                     # bootstrap, then self-play, train, gate
+python -m mctslab.report                                # results/RESULTS.md from the ladder
+```
+
+The improved search (UCT + RAVE on a flat typed-array board) is ported to TypeScript and plays on [the portfolio](https://github.com/Ideapersie/MainPortfolio).
+
 ## Quick start
 
 ```bash
