@@ -29,7 +29,17 @@ A study of why Monte Carlo Tree Search works, in two parts:
 
 Heavy playouts (capture or escape around the last move, MoGo style) made the bot weaker at equal playouts, so they are off by default; the code and the result stay in for the record. An early RAVE run lost because pass was over-explored; the fix and the superseded rows are in the ladder.
 
-**Learning from self-play (7x7, komi 9).** `selfplay.py`, `train.py` and `iterate.py` are a small AlphaZero-style loop sized for a laptop CPU: a policy and value network (4 residual blocks, 32 channels, 84k parameters) guides a PUCT search with no playouts. It is bootstrapped on 500 games of UCT + RAVE playing itself, then improved by self-play, and a new network only replaces the old one if it wins at least 55% of a gate match. NET_RESULTS
+**Learning from self-play (7x7, komi 9).** `selfplay.py`, `train.py` and `iterate.py` are a small AlphaZero-style loop sized for a laptop CPU: a policy and value network (4 residual blocks, 32 channels, 84k parameters) guides a PUCT search with no playouts. It is bootstrapped on 500 games of UCT + RAVE playing itself, then improved by self-play, and a new network only replaces the old one if it wins at least 55% of a gate match.
+
+First results, 7x7, one night on a 2-core CPU (about 94,000 self-play and teacher positions):
+
+| Match | Result | 95% interval |
+|---|---|---|
+| Net + PUCT vs UCT + RAVE, 200 simulations each | 32/60 | 41% to 65% |
+| Net + PUCT vs UCT + RAVE, 400 each | 23/60 | 27% to 51% |
+| Best net (one promotion) vs the bootstrap net, 128 each | 37/60 | 49% to 73% |
+
+So far the network matches RAVE at 200 simulations without a single playout, falls behind at 400, and self-play has given one modest promotion in three gates. On 7x7 with komi 9 colour decides many games (white won 70 to 100% of games in every match), which is why the ladder also logs the mean score margin; the margins in these rows are inflated because UCT resigns lost games, and a resignation counts as losing by the whole board. More self-play is the obvious next step: `python -m mctslab.iterate --iters 10`.
 
 ```bash
 pip install numpy numba torch pytest
