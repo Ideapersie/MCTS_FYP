@@ -29,9 +29,9 @@ A study of why Monte Carlo Tree Search works, in two parts:
 
 Heavy playouts (capture or escape around the last move, MoGo style) made the bot weaker at equal playouts, so they are off by default; the code and the result stay in for the record. An early RAVE run lost because pass was over-explored; the fix and the superseded rows are in the ladder.
 
-**Learning from self-play (7x7, komi 9).** `selfplay.py`, `train.py` and `iterate.py` are a small AlphaZero-style loop sized for a laptop CPU: a policy and value network (4 residual blocks, 32 channels, 84k parameters) guides a PUCT search with no playouts. It is bootstrapped on 500 games of UCT + RAVE playing itself, then improved by self-play, and a new network only replaces the old one if it wins at least 55% of a gate match.
+**Learning from self-play (7x7).** `selfplay.py`, `train.py` and `iterate.py` are a small AlphaZero-style loop sized for a laptop CPU: a policy and value network (4 residual blocks, 32 channels, 84k parameters) guides a PUCT search with no playouts. It is bootstrapped on games of UCT + RAVE playing itself, then improved by self-play, and a new network only replaces the old one if it wins at least 55% of a gate match (or its mean margin is above zero with 95% confidence). Gates sample the first 6 moves so they are not replays of two games.
 
-First results, 7x7, one night on a 2-core CPU (about 94,000 self-play and teacher positions):
+First round, komi 9, one night on a 2-core CPU (about 94,000 self-play and teacher positions):
 
 | Match | Result | 95% interval |
 |---|---|---|
@@ -39,14 +39,61 @@ First results, 7x7, one night on a 2-core CPU (about 94,000 self-play and teache
 | Net + PUCT vs UCT + RAVE, 400 each | 23/60 | 27% to 51% |
 | Best net (one promotion) vs the bootstrap net, 128 each | 37/60 | 49% to 73% |
 
-So far the network matches RAVE at 200 simulations without a single playout, falls behind at 400, and self-play has given one modest promotion in three gates. On 7x7 with komi 9 colour decides many games (white won 70 to 100% of games in every match), which is why the ladder also logs the mean score margin; the margins in these rows are inflated because UCT resigns lost games, and a resignation counts as losing by the whole board. More self-play is the obvious next step: `python -m mctslab.iterate --iters 10`.
+The margins logged in that round are inflated: UCT resigns lost games, and a resignation then counted as losing by the whole board. Since the komi sweep the arena still scores a resignation as a loss, but plays the game out to the end with resignation switched off, so every margin in the ladder from then on is a real area score; `RESULTS.md` marks the old margins with *.
+
+**Komi.** White won 70 to 100% of games in every 7x7 pairing at komi 9, so komi is now a parameter everywhere (`--komi` on arena, selfplay and iterate; agents read it from the board) with one default table, `board.KOMI`. To choose the 7x7 value, UCT + RAVE (300 playouts) played itself at six komi values; only black's win rate matters:
+
+| Komi | Black won | 95% interval |
+|---|---|---|
+| 0.5 | 40/60 (67%) | 54% to 77% |
+| 2.5 | 31/60 (52%) | 39% to 64% |
+| 4.5 | 35/60 (58%) | 46% to 70% |
+| 5.5 | 42/100 (42%) | 33% to 52% |
+| 6.5 | 26/60 (43%) | 32% to 56% |
+| 8.5 | 27/60 (45%) | 33% to 58% |
+
+The curve is shallow and noisy: between bots this weak most games are decided by a large capture, not by a few points. The single value nearest 50% is 2.5, but that is one noisy point; a logistic fit over all 400 games puts black at 50% at komi 4.8, so the 7x7 default is now **4.5** (a half point, so there are no draws). Half points are used throughout so no game can end level (the board would give a level game to white).
+
+Two caveats the data forces. First, at komi 8.5 RAVE against itself is close to even, so the white dominance seen at komi 9 was mostly not komi: it came from the networks. Second, the fair komi depends on strength. 7x7 is solved with a komi of 9 under perfect play, and the stronger the players the closer they get to that; the networks, which play more accurately than RAVE at equal search, still let white win most net-vs-net games at komi 4.5 (see the gates below). A komi chosen with RAVE is the fair komi for RAVE, not for the nets.
+
+**Second round, komi 4.5.** The existing net was trained at komi 9 and its value head has learned that white wins. Re-bootstrapping from teacher games would have cost most of the time budget, so the loop continued from the komi-9 best net and trained only on new komi-4.5 self-play (the komi-9 data was dropped, since its outcome labels are wrong at the new komi). Three iterations, 120 self-play games each at 96 simulations (23,149 positions), 5 epochs per candidate, 80-game gates:
+
+| Gate | Result | 95% interval | Mean margin | Black won | Outcome |
+|---|---|---|---|---|---|
+| candidate vs gen1 | 37/80 | 36% to 57% | -0.8 (-4.0 to 2.3) | 11% | kept |
+| candidate vs gen1 | 47/80 | 48% to 69% | +2.4 (-0.4 to 5.1) | 9% | promoted to gen2 |
+| candidate vs gen2 | 42/80 | 42% to 63% | -0.5 (-3.6 to 2.6) | 8% | kept |
+
+Black won 29, 27 and then 8 of the 120 self-play games in the three iterations: as the nets improve, white's share goes up, as the caveat above predicts.
+
+Evaluation of gen2 (never used for training or gating):
+
+| Match (komi 4.5) | Result | 95% interval | Net as black / white | Net's mean margin |
+|---|---|---|---|---|
+| Net gen2 + PUCT vs UCT + RAVE, 200 each | 27/60 | 33% to 57% | 37% / 53% | +12.0 (7.7 to 16.2) |
+| Net gen2 + PUCT vs UCT + RAVE, 400 each | 16/60 | 17% to 39% | 13% / 40% | +4.8 (1.6 to 8.1) |
+| Net gen2 vs the komi-9 best net (gen1), 128 each | 35/60 | 46% to 70% | 20% / 97% | +0.9 (-2.5 to 4.3) |
+
+So the net is still weaker than RAVE: level at best at 200 simulations and clearly behind at 400, and the second round did not change that (at komi 9 the same comparison was 32/60 and 23/60). The komi-4.5 net is probably a little better than the komi-9 one, but the interval still includes even. Against RAVE the net's mean margin is positive while its win rate is below half. In all three net-vs-RAVE matches (7x7 at 200 and 400, 9x9 below) the number of net wins equals the number of RAVE resignations: RAVE resigns every game it is losing, the net never resigns, so every net win is a resignation and every RAVE win is on the count. Played out with resignation off, RAVE then loses those games by a lot, while its own wins are narrow; that is where the positive margin comes from, so here the win rate is the better measure. The honest summary is that an 84k-parameter net trained for about an hour of CPU self-play replaces random playouts with a learned evaluation and matches RAVE at low search, but does not yet beat it.
+
+**9x9.** The net, features, self-play, training, the loop and PUCT are size-generic (the net takes the board size from its weights file and refuses a board of another size), and `tests/test_net.py` checks a 9x9 forward pass and one full 9x9 self-play game. With the time left, a 9x9 net was bootstrapped from only 60 RAVE teacher games (300 playouts, 4,167 positions, 5 epochs, no self-play, komi 7):
+
+| Match (9x9, komi 7) | Result | 95% interval | Net as black / white | Net's mean margin |
+|---|---|---|---|---|
+| 9x9 net + PUCT vs UCT + RAVE, 200 each | 7/30 | 12% to 41% | 7% / 40% | -5.2 (-8.5 to -1.9) |
+
+It is clearly weaker than RAVE, as expected from so little data; the policy matches the teacher's first choice on under 5% of held-out positions. The validation split is by position, not by game, so the value loss it prints is optimistic. The commands to continue it are below.
+
+The network has no komi input: komi only enters through the training labels. Mixing data from two komi values would therefore give it contradictory targets, which is why the loop keeps data per size and komi.
 
 ```bash
 pip install numpy numba torch pytest
 python -m pytest tests                                  # board rules, parity with product/, agents
 python -m mctslab.arena uct:rave=1,k=300 fyp_flat --size 9 --playouts 1000 --games 50
-python -m mctslab.selfplay teacher --games 500 --size 7 --komi 9 --playouts 400 --out results/selfplay/teacher1.npz
-python -m mctslab.iterate --iters 3                     # bootstrap, then self-play, train, gate
+python -m mctslab.arena uct:rave=1,k=300 uct:rave=1,k=300 --size 7 --komi 4.5 --playouts 300 --games 100  # komi check
+python -m mctslab.iterate --iters 3 --games 120 --gate-games 80 --epochs 5 --window 3   # 7x7, komi from board.KOMI
+python -m mctslab.iterate --size 9 --wdir weights/9x9 --iters 0 --teacher-games 60 --boot-epochs 5   # 9x9 bootstrap only
+python -m mctslab.iterate --size 9 --wdir weights/9x9 --iters 3 --games 60 --gate-games 40 --epochs 5   # 9x9 self-play
 python -m mctslab.report                                # results/RESULTS.md from the ladder
 ```
 

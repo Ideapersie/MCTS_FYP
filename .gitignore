@@ -222,3 +222,4 @@ $RECYCLE.BIN/
 *.pyc
 weights/*.pt
 results/selfplay/
+weights/**/*.pt

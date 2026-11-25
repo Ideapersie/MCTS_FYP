@@ -26,3 +26,4 @@ when,commit,size,komi,playouts,a,b,games,a_wins,a_rate,ci_low,ci_high,a_black_ra
 2026-11-25 18:17,74d41e6,7,4.5,200,"puct:weights=weights/best.pt,temp_moves=6","uct:rave=1,k=300",60,27,0.45,0.331,0.575,0.367,0.533,5.33,net gen2 (komi 4.5) PUCT vs RAVE at 200,11.97,7.72 to 16.21,27,0.417
 2026-11-25 18:21,74d41e6,7,4.5,128,"puct:weights=weights/best.pt,temp_moves=6","puct:weights=weights/k9_best.pt,temp_moves=6",60,35,0.583,0.457,0.699,0.2,0.967,6.58,net gen2 (komi 4.5) vs previous best (komi-9 gen1),0.93,-2.47 to 4.33,0,0.117
 2026-11-25 18:26,74d41e6,7,4.5,400,"puct:weights=weights/best.pt,temp_moves=6","uct:rave=1,k=300",60,16,0.267,0.171,0.39,0.133,0.4,10.87,net gen2 (komi 4.5) PUCT vs RAVE at 400,4.83,1.56 to 8.11,16,0.367
+2026-11-25 18:35,f19f064,9,7.0,200,"puct:weights=weights/9x9/best.pt,temp_moves=6","uct:rave=1,k=300",30,7,0.233,0.118,0.409,0.067,0.4,15.18,"9x9 net (60 teacher games, no self-play) PUCT vs RAVE at 200",-5.17,-8.48 to -1.85,7,0.333
