@@ -10,7 +10,7 @@
    Every gate match is logged to the ladder.
 
     python -m mctslab.iterate --iters 3                       # 7x7, default komi
-    python -m mctslab.iterate --size 9 --wdir weights/9x9 --iters 1
+    python -m mctslab.iterate --size 9 --wdir weights/9x9 --iters 0 --teacher-games 100 --boot-epochs 6
 """
 
 import argparse
@@ -43,6 +43,7 @@ def main():
     ap.add_argument("--epochs", type=int, default=8)
     ap.add_argument("--teacher-games", type=int, default=300)
     ap.add_argument("--teacher-playouts", type=int, default=300)
+    ap.add_argument("--boot-epochs", type=int, default=14)
     ap.add_argument("--blocks", type=int, default=4)
     ap.add_argument("--ch", type=int, default=32)
     a = ap.parse_args()
@@ -58,7 +59,7 @@ def main():
             out = f"{D}/teacher_{t}_0.npz"
             selfplay("teacher", a.teacher_games, size, komi, a.teacher_playouts, out, seed=0)
             teach = [out]
-        train(teach, best, n=size, epochs=14, blocks=a.blocks, ch=a.ch)
+        train(teach, best, n=size, epochs=a.boot_epochs, blocks=a.blocks, ch=a.ch)
         shutil.copy(best, os.path.join(W, "gen0.pt"))
     gen = len(glob.glob(f"{W}/gen*.pt")) - 1
     for _ in range(a.iters):
