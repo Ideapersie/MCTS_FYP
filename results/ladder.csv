@@ -1,16 +1,22 @@
-when,commit,size,komi,playouts,a,b,games,a_wins,a_rate,ci_low,ci_high,a_black_rate,a_white_rate,sec_per_game,note,a_margin,margin_ci
-2026-11-24 02:07,288cef7,9,7.0,1000,fyp_flat,random,50,42,0.84,0.715,0.917,0.92,0.76,18.97,baseline: FYP agent vs random,,
-2026-11-24 02:21,288cef7,9,7.0,1000,uct,fyp_flat,50,50,1.0,0.929,1.0,1.0,1.0,33.53,fixed tree search vs FYP agent,,
-2026-11-24 02:32,288cef7,9,7.0,1000,uct:rave=1,uct,60,30,0.5,0.377,0.623,0.2,0.8,20.97,RAVE k=600 vs plain UCT | SUPERSEDED: bug made pass over-explored under RAVE; fixed in the next commit,,
-2026-11-24 02:36,288cef7,9,7.0,300,"uct:rave=1,k=300",uct,60,3,0.05,0.017,0.137,0.033,0.067,6.51,RAVE k=300 vs UCT at low playouts | SUPERSEDED: bug made pass over-explored under RAVE; fixed in the next commit,,
-2026-11-24 02:38,288cef7,7,9.0,800,uct,random,40,40,1.0,0.912,1.0,1.0,1.0,6.04,7x7 sanity: UCT vs random,,
-2026-11-24 02:47,68385c9,9,7.0,300,"uct:rave=1,k=300",uct,100,99,0.99,0.946,0.998,0.98,1.0,7.94,"RAVE vs plain UCT, after the pass fix",,
-2026-11-24 02:52,68385c9,9,7.0,300,"uct:rave=1,k=300,heavy=1","uct:rave=1,k=300",100,30,0.3,0.219,0.396,0.2,0.4,6.54,heavy playouts on top of RAVE,,
-2026-11-24 03:23,68385c9,9,7.0,1000,"uct:rave=1,k=300",fyp_flat,50,50,1.0,0.929,1.0,1.0,1.0,19.39,best search (RAVE) vs FYP agent,,
-2026-11-24 03:44,68385c9,7,9.0,96,puct:weights=weights/candidate.pt,puct:weights=weights/best.pt,80,40,0.5,0.393,0.607,0.0,1.0,3.45,"gate: candidate vs gen0 | SUPERSEDED: both nets played deterministically, so the 80 games were 2 games repeated; gates now sample the first 6 moves",,
-2026-11-24 04:17,6ef3db7,7,9.0,128,"puct:weights=weights/candidate.pt,temp_moves=6","puct:weights=weights/best.pt,temp_moves=6",80,42,0.525,0.417,0.631,0.05,1.0,6.49,gate: candidate vs gen0,2.24,-1.65 to 6.13
-2026-11-24 04:42,6ef3db7,7,9.0,128,"puct:weights=weights/candidate.pt,temp_moves=6","puct:weights=weights/best.pt,temp_moves=6",80,49,0.613,0.503,0.712,0.225,1.0,6.58,gate: candidate vs gen0,3.3,-0.42 to 7.02
-2026-11-24 05:07,6ef3db7,7,9.0,128,"puct:weights=weights/candidate.pt,temp_moves=6","puct:weights=weights/best.pt,temp_moves=6",80,42,0.525,0.417,0.631,0.05,1.0,6.43,gate: candidate vs gen1,0.74,-2.70 to 4.17
-2026-11-24 05:09,6ef3db7,7,9.0,200,"puct:weights=weights/best.pt,temp_moves=6","uct:rave=1,k=300",60,32,0.533,0.409,0.654,0.233,0.833,4.05,"net-guided PUCT (200 sims) vs RAVE (200 playouts), 7x7",25.35,18.88 to 31.82
-2026-11-24 05:14,6ef3db7,7,9.0,400,"puct:weights=weights/best.pt,temp_moves=6","uct:rave=1,k=300",60,23,0.383,0.271,0.51,0.067,0.7,9.61,net-guided PUCT vs RAVE at 400,17.73,11.43 to 24.03
-2026-11-24 05:17,6ef3db7,7,9.0,128,"puct:weights=weights/best.pt,temp_moves=6","puct:weights=weights/gen0.pt,temp_moves=6",60,37,0.617,0.49,0.729,0.233,1.0,6.26,best net vs the bootstrap net,2.4,-1.77 to 6.57
+when,commit,size,komi,playouts,a,b,games,a_wins,a_rate,ci_low,ci_high,a_black_rate,a_white_rate,sec_per_game,note,a_margin,margin_ci,resigns,black_rate
+2026-11-24 02:07,288cef7,9,7.0,1000,fyp_flat,random,50,42,0.84,0.715,0.917,0.92,0.76,18.97,baseline: FYP agent vs random,,,,
+2026-11-24 02:21,288cef7,9,7.0,1000,uct,fyp_flat,50,50,1.0,0.929,1.0,1.0,1.0,33.53,fixed tree search vs FYP agent,,,,
+2026-11-24 02:32,288cef7,9,7.0,1000,uct:rave=1,uct,60,30,0.5,0.377,0.623,0.2,0.8,20.97,RAVE k=600 vs plain UCT | SUPERSEDED: bug made pass over-explored under RAVE; fixed in the next commit,,,,
+2026-11-24 02:36,288cef7,9,7.0,300,"uct:rave=1,k=300",uct,60,3,0.05,0.017,0.137,0.033,0.067,6.51,RAVE k=300 vs UCT at low playouts | SUPERSEDED: bug made pass over-explored under RAVE; fixed in the next commit,,,,
+2026-11-24 02:38,288cef7,7,9.0,800,uct,random,40,40,1.0,0.912,1.0,1.0,1.0,6.04,7x7 sanity: UCT vs random,,,,
+2026-11-24 02:47,68385c9,9,7.0,300,"uct:rave=1,k=300",uct,100,99,0.99,0.946,0.998,0.98,1.0,7.94,"RAVE vs plain UCT, after the pass fix",,,,
+2026-11-24 02:52,68385c9,9,7.0,300,"uct:rave=1,k=300,heavy=1","uct:rave=1,k=300",100,30,0.3,0.219,0.396,0.2,0.4,6.54,heavy playouts on top of RAVE,,,,
+2026-11-24 03:23,68385c9,9,7.0,1000,"uct:rave=1,k=300",fyp_flat,50,50,1.0,0.929,1.0,1.0,1.0,19.39,best search (RAVE) vs FYP agent,,,,
+2026-11-24 03:44,68385c9,7,9.0,96,puct:weights=weights/candidate.pt,puct:weights=weights/best.pt,80,40,0.5,0.393,0.607,0.0,1.0,3.45,"gate: candidate vs gen0 | SUPERSEDED: both nets played deterministically, so the 80 games were 2 games repeated; gates now sample the first 6 moves",,,,
+2026-11-24 04:17,6ef3db7,7,9.0,128,"puct:weights=weights/candidate.pt,temp_moves=6","puct:weights=weights/best.pt,temp_moves=6",80,42,0.525,0.417,0.631,0.05,1.0,6.49,gate: candidate vs gen0,2.24,-1.65 to 6.13,,
+2026-11-24 04:42,6ef3db7,7,9.0,128,"puct:weights=weights/candidate.pt,temp_moves=6","puct:weights=weights/best.pt,temp_moves=6",80,49,0.613,0.503,0.712,0.225,1.0,6.58,gate: candidate vs gen0,3.3,-0.42 to 7.02,,
+2026-11-24 05:07,6ef3db7,7,9.0,128,"puct:weights=weights/candidate.pt,temp_moves=6","puct:weights=weights/best.pt,temp_moves=6",80,42,0.525,0.417,0.631,0.05,1.0,6.43,gate: candidate vs gen1,0.74,-2.70 to 4.17,,
+2026-11-24 05:09,6ef3db7,7,9.0,200,"puct:weights=weights/best.pt,temp_moves=6","uct:rave=1,k=300",60,32,0.533,0.409,0.654,0.233,0.833,4.05,"net-guided PUCT (200 sims) vs RAVE (200 playouts), 7x7",25.35,18.88 to 31.82,,
+2026-11-24 05:14,6ef3db7,7,9.0,400,"puct:weights=weights/best.pt,temp_moves=6","uct:rave=1,k=300",60,23,0.383,0.271,0.51,0.067,0.7,9.61,net-guided PUCT vs RAVE at 400,17.73,11.43 to 24.03,,
+2026-11-24 05:17,6ef3db7,7,9.0,128,"puct:weights=weights/best.pt,temp_moves=6","puct:weights=weights/gen0.pt,temp_moves=6",60,37,0.617,0.49,0.729,0.233,1.0,6.26,best net vs the bootstrap net,2.4,-1.77 to 6.57,,
+2026-11-25 17:31,8e26b69,7,0.5,300,"uct:rave=1,k=300","uct:rave=1,k=300",60,30,0.5,0.377,0.623,0.667,0.333,2.29,"komi sweep: RAVE vs itself, black win rate",1.38,-1.45 to 4.22,53,0.667
+2026-11-25 17:32,8e26b69,7,2.5,300,"uct:rave=1,k=300","uct:rave=1,k=300",60,31,0.517,0.393,0.638,0.533,0.5,2.45,"komi sweep: RAVE vs itself, black win rate",-0.78,-3.70 to 2.13,50,0.517
+2026-11-25 17:34,8e26b69,7,4.5,300,"uct:rave=1,k=300","uct:rave=1,k=300",60,25,0.417,0.301,0.543,0.5,0.333,2.58,"komi sweep: RAVE vs itself, black win rate",-0.88,-3.52 to 1.76,54,0.583
+2026-11-25 17:35,8e26b69,7,6.5,300,"uct:rave=1,k=300","uct:rave=1,k=300",60,26,0.433,0.316,0.559,0.367,0.5,2.5,"komi sweep: RAVE vs itself, black win rate",-0.52,-3.40 to 2.37,57,0.433
+2026-11-25 17:36,8e26b69,7,8.5,300,"uct:rave=1,k=300","uct:rave=1,k=300",60,33,0.55,0.425,0.669,0.5,0.6,2.71,"komi sweep: RAVE vs itself, black win rate",0.73,-2.41 to 3.87,54,0.45
+2026-11-25 17:39,8e26b69,7,5.5,300,"uct:rave=1,k=300","uct:rave=1,k=300",100,52,0.52,0.423,0.615,0.44,0.6,2.75,"komi sweep: RAVE vs itself, black win rate",0.9,-1.66 to 3.46,90,0.42

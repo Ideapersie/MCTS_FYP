@@ -57,6 +57,8 @@ class PUCT:
 
     @torch.no_grad()
     def _evaluate(self, b: Board):
+        if b.n != self.net.n:
+            raise ValueError(f"net was trained for {self.net.n}x{self.net.n}, board is {b.n}x{b.n}")
         logits, v = self.net(torch.from_numpy(encode(b))[None])
         logits = logits[0].numpy()
         n = b.n

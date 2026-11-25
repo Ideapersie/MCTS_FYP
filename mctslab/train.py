@@ -65,7 +65,8 @@ def train(files, out, n=7, epochs=12, batch=256, lr=2e-3, init=None, blocks=4, c
             vl = F.mse_loss(v, Z[vb]).item()
             acc = (logits.argmax(1) == P[vb].argmax(1)).float().mean().item()
         print(f"epoch {ep + 1}: val policy CE {pl:.3f}, value MSE {vl:.3f}, top-1 match {acc:.1%} ({time.time() - t:.0f}s)")
-    torch.save({"config": {"n": n, "blocks": blocks, "ch": ch}, "state": net.state_dict(),
+    komis = sorted({float(d["komi"]) for d in data if "komi" in d.files})
+    torch.save({"config": {"n": n, "blocks": blocks, "ch": ch}, "state": net.state_dict(), "komi": komis,
                 "val": {"policy_ce": pl, "value_mse": vl, "top1": acc}, "positions": len(x)}, out)
     print(f"saved {out}: {len(x)} positions x8")
 
@@ -76,6 +77,8 @@ if __name__ == "__main__":
     ap.add_argument("--out", required=True)
     ap.add_argument("--epochs", type=int, default=12)
     ap.add_argument("--init", default=None)
-    ap.add_argument("--n", type=int, default=7)
+    ap.add_argument("--n", type=int, default=7, help="board size")
+    ap.add_argument("--blocks", type=int, default=4)
+    ap.add_argument("--ch", type=int, default=32)
     a = ap.parse_args()
-    train(a.files, a.out, a.n, a.epochs, init=a.init)
+    train(a.files, a.out, a.n, a.epochs, init=a.init, blocks=a.blocks, ch=a.ch)

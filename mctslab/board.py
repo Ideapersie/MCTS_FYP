@@ -315,7 +315,7 @@ def playout(board, colour, ko, n, komi, max_moves, seed, amaf, last=-1, heavy=Fa
 # The one place komi defaults live. Every entry point (arena, selfplay, iterate,
 # train metadata) takes --komi and falls back to this table by board size.
 # 7x7: chosen from the RAVE-vs-RAVE sweep in results/ladder.csv (see README).
-KOMI = {5: 3.0, 7: 9.0, 9: 7.0}
+KOMI = {5: 3.0, 7: 4.5, 9: 7.0}
 
 
 def default_komi(n: int) -> float:
