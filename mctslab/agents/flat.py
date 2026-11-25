@@ -78,8 +78,9 @@ def truncated_playout(board, colour, ko, n, komi, depth, seed, caps_b, caps_w):
 class FlatMC:
     name = "fyp_flat"
 
-    def __init__(self, playouts: int = 1000, seed: int = 0):
+    def __init__(self, playouts: int = 1000, seed: int = 0, resign: float = 0.1):
         self.playouts = playouts
+        self.resign = resign
         self.rng = np.random.default_rng(seed)
         self.caps = {1: 0, 2: 0}
 
@@ -114,7 +115,7 @@ class FlatMC:
         pass_at = 0.25 + (move_ratio - 0.7) * (0.45 - 0.25) / 0.25 if move_ratio > 0.65 else 0.25
         if winrate < pass_at and move_ratio > 0.6:
             return PASS
-        if winrate < 0.1:
+        if winrate < self.resign:
             return RESIGN
         return int(moves[best])
 

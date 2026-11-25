@@ -312,15 +312,25 @@ def playout(board, colour, ko, n, komi, max_moves, seed, amaf, last=-1, heavy=Fa
     return area_score(board, n, stride, komi)
 
 
+# The one place komi defaults live. Every entry point (arena, selfplay, iterate,
+# train metadata) takes --komi and falls back to this table by board size.
+# 7x7: chosen from the RAVE-vs-RAVE sweep in results/ladder.csv (see README).
+KOMI = {5: 3.0, 7: 9.0, 9: 7.0}
+
+
+def default_komi(n: int) -> float:
+    return KOMI.get(n, 7.0)
+
+
 class Board:
     """Python-side game state. The arrays are handed to the numba kernels."""
 
     __slots__ = ("n", "stride", "komi", "cells", "to_play", "ko", "passes", "moves", "history", "_mark", "_stamp", "_buf")
 
-    def __init__(self, n: int = 9, komi: float = 7.0):
+    def __init__(self, n: int = 9, komi: float | None = None):
         self.n = n
         self.stride = n + 2
-        self.komi = komi
+        self.komi = default_komi(n) if komi is None else float(komi)
         self.cells = np.full(self.stride * self.stride, BORDER, dtype=np.int8)
         for r in range(1, n + 1):
             self.cells[r * self.stride + 1 : r * self.stride + n + 1] = EMPTY
